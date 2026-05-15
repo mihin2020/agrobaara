@@ -1,1005 +1,0 @@
-
-CAHIER DES CHARGES
-FONCTIONNEL ET TECHNIQUE
-AGRO ECO BAARA
-Plateforme web et guichet pour l'emploi en agroécologie
-
-
-Projet « Territoires en Perspective »
-Maître d'ouvrage : Association Yelemani
-Partenaire de mise en œuvre : CRIC (Italie)
-Financement : Ministère de l'Intérieur Italien — CUP F41D24000140008
-Stack technique : Laravel · Livewire · MySQL
-Version 1.0 — Novembre 2026
-Document confidentiel
-
-
-Informations sur le document
-
-ÉlémentValeurTitre du documentCahier des charges fonctionnel et technique — Agro Eco BAARAVersion1.0Date d'émissionNovembre 2026StatutDocument de travail / À validerPérimètre géographiqueRégion du Kadiogo et région d'Oubri (Burkina Faso)Maître d'ouvrageAssociation YelemaniPartenaireCRIC — Centro Regionale d'Intervento per la CooperazionePhase couverteMVP (Phase 1) + Roadmap Phases 2 & 3Échéance MVPFévrier 2027Stack techniqueLaravel 11+ / Livewire 3 / MySQL 8 / Tailwind CSS
-Historique des révisions
-
-VersionDateAuteurDescription1.0Nov. 2026Équipe techniqueCréation initiale du document
-Validation
-
-RôleNomSignatureDateMaître d'ouvrage (Yelemani)Partenaire (CRIC)Chef de projet techniqueArchitecte logiciel
-
-Sommaire
-
-Informations sur le document	1
-Historique des révisions	1
-Validation	1
-Sommaire	1
-1. Présentation du projet	1
-1.1 Contexte	1
-1.2 Vision et objectifs	1
-Objectifs stratégiques	1
-Objectifs opérationnels du MVP	1
-1.3 Public cible	1
-1.4 Périmètre fonctionnel du MVP	1
-Inclus dans le MVP	1
-Hors périmètre MVP (reporté en Phase 2 ou 3)	1
-2. Acteurs et personas	1
-2.1 Vue d'ensemble des acteurs	1
-2.2 Persona — Super-administrateur	1
-2.3 Persona — Modérateur	1
-2.4 Persona — Opérateur de guichet	1
-2.5 Persona — Visiteur public	1
-3. Architecture fonctionnelle	1
-3.1 Vue d'ensemble des modules	1
-Schéma macro des modules	1
-3.2 Cartographie des dépendances	1
-3.3 Principes d'architecture	1
-Modularité	1
-Configurabilité	1
-Sécurité par défaut	1
-Traçabilité	1
-Performance et frugalité	1
-4. Stack technique et choix d'architecture	1
-4.1 Vue d'ensemble de la pile	1
-4.2 Choix structurants	1
-Back-office en Livewire custom	1
-Pas d'API publique dans le MVP	1
-Multilinguisme prévu mais limité au français en MVP	1
-Mobile-first responsive	1
-4.3 Dépendances Laravel recommandées	1
-4.4 Environnements	1
-4.5 Arborescence applicative cible	1
-5. Modèle de données MySQL	1
-5.1 Conventions	1
-5.2 Vue d'ensemble des tables principales	1
-5.3 Détail des tables clés	1
-Table : candidates	1
-Table : companies	1
-Table : job_offers	1
-Table : matches (mises en relation)	1
-Table : landing_sections (configurateur)	1
-5.4 Stratégie d'indexation	1
-5.5 Référentiels (tables maîtres)	1
-6. Système de rôles et permissions	1
-6.1 Principes	1
-Principes fondateurs	1
-6.2 Rôles définis	1
-6.3 Matrice des permissions — Modules métier	1
-6.4 Matrice des permissions — Administration	1
-6.5 Création de rôles personnalisés	1
-7. Sécurité et conformité	1
-7.1 Authentification	1
-7.2 Autorisation	1
-7.3 Protection contre les attaques courantes	1
-7.4 Gestion des fichiers téléversés	1
-7.5 Journalisation et audit	1
-7.6 Protection des données personnelles	1
-7.7 Sauvegardes	1
-8. Module M01 — Landing page modulaire	1
-8.1 Objectif	1
-8.2 Sections prévues	1
-8.3 Configurateur de landing page	1
-Fonctionnalités du configurateur	1
-8.4 Workflow d'édition d'une section	1
-8.5 Comportement public de la landing page	1
-8.6 Formulaire de contact public (M02)	1
-Champs du formulaire	1
-9. Module M03 — Authentification	1
-9.1 Périmètre	1
-9.2 Fonctionnalités	1
-9.3 Workflow de connexion	1
-9.4 Workflow de réinitialisation de mot de passe	1
-9.5 Gestion des comptes par le super-administrateur	1
-Workflow de création d'un compte	1
-Gestion du cycle de vie	1
-10. Module M05 — Gestion des candidats (jeunes)	1
-10.1 Objectif	1
-10.2 Fonctionnalités principales	1
-10.3 Filtres et recherche	1
-10.4 Structure du formulaire candidat	1
-Section A — Informations générales	1
-Section B — Contacts	1
-Section C — Documents et formation	1
-Section D — Expériences et compétences	1
-Section E — Besoins exprimés au guichet (interne)	1
-10.5 Validation et règles métier	1
-11. Module M06 — Gestion des entreprises et organisations	1
-11.1 Objectif	1
-11.2 Fonctionnalités principales	1
-11.3 Filtres et recherche	1
-11.4 Structure du formulaire entreprise	1
-Section A — Informations générales	1
-Section B — Sites d'activité	1
-Section C — Contacts	1
-Section D — Besoins exprimés au guichet (interne)	1
-11.5 Validation et règles métier	1
-12. Module M07 — Offres et opportunités	1
-12.1 Objectif	1
-12.2 Cycle de vie d'une offre	1
-12.3 Workflow de gestion d'une offre	1
-12.4 Structure du formulaire d'offre	1
-12.5 Fonctionnalités de listing	1
-13. Module M08 — Mise en relation (matching)	1
-13.1 Objectif	1
-13.2 Approche du MVP	1
-13.3 Critères de suggestion	1
-13.4 Cycle de vie d'une mise en relation	1
-13.5 Workflow opérateur — Mise en relation depuis une offre	1
-13.6 Workflow opérateur — Mise en relation depuis un candidat	1
-13.7 Indicateurs de performance par opérateur	1
-14. Module M09 — Tableau de bord	1
-14.1 Principe	1
-14.2 Tableau de bord Opérateur	1
-Indicateurs personnels	1
-Files de travail	1
-Actions rapides	1
-14.3 Tableau de bord Modérateur	1
-14.4 Tableau de bord Super-administrateur	1
-14.5 Mise à jour des indicateurs	1
-15. Modules transverses M10, M11, M14	1
-15.1 Module M10 — Recherche et filtres transversaux	1
-Périmètre de la recherche globale	1
-Performance	1
-15.2 Module M11 — Notifications par e-mail	1
-Notifications aux utilisateurs internes	1
-Notifications aux bénéficiaires (optionnel MVP)	1
-Aspects techniques	1
-15.3 Module M14 — Journal d'audit	1
-Modèles tracés	1
-Événements système tracés	1
-Interface de consultation	1
-16. Workflows métiers détaillés	1
-16.1 Vue d'ensemble	1
-16.2 Liste des workflows documentés	1
-16.3 WF-01 — Accueil et enregistrement d'un nouveau candidat	1
-Pré-conditions	1
-Étapes	1
-Post-conditions	1
-Cas alternatifs	1
-16.4 WF-04 — Dépôt d'une offre par une entreprise existante	1
-Pré-conditions	1
-Étapes	1
-Post-conditions	1
-16.5 WF-05 — Mise en relation d'un candidat avec une offre	1
-Déclencheur	1
-Étapes (depuis une offre)	1
-Étapes (depuis un candidat)	1
-16.6 WF-06 — Suivi et clôture d'une mise en relation	1
-Étapes	1
-Indicateurs alimentés	1
-16.7 WF-07 — Validation d'une offre en brouillon	1
-Étapes	1
-16.8 WF-08 — Configuration et publication de la landing page	1
-Étapes	1
-Cas alternatifs	1
-16.9 WF-09 — Création d'un compte utilisateur back-office	1
-Étapes	1
-16.10 Schéma de flux global du dispositif	1
-17. Backlog produit priorisé	1
-17.1 Méthode de priorisation	1
-17.2 EPIC A — Landing page publique	1
-17.3 EPIC B — Configurateur de landing page	1
-17.4 EPIC C — Authentification et sécurité	1
-17.5 EPIC D — Rôles et permissions	1
-17.6 EPIC E — Gestion des candidats	1
-17.7 EPIC F — Gestion des entreprises	1
-17.8 EPIC G — Offres et opportunités	1
-17.9 EPIC H — Mise en relation	1
-17.10 EPIC I — Tableau de bord et reporting	1
-17.11 EPIC J — Modules transverses	1
-17.12 EPIC K — Phases 2 et 3 (vision long terme)	1
-17.13 Récapitulatif	1
-18. Performance et scalabilité	1
-18.1 Objectifs de performance	1
-18.2 Stratégies d'optimisation	1
-Mise en cache	1
-Optimisation des requêtes	1
-Optimisation front	1
-Optimisation Livewire	1
-18.3 Capacité et montée en charge	1
-19. Déploiement et exploitation	1
-19.1 Infrastructure recommandée	1
-19.2 Workflow de déploiement	1
-Cycle de livraison	1
-Outils recommandés	1
-19.3 Procédures d'exploitation	1
-Sauvegardes	1
-Surveillance	1
-Maintenance applicative	1
-20. Stratégie de tests	1
-20.1 Pyramide des tests	1
-20.2 Scénarios de test prioritaires	1
-Tests d'authentification et autorisation	1
-Tests métier candidats	1
-Tests métier entreprises et offres	1
-Tests mise en relation	1
-Tests configurateur landing	1
-20.3 Données de test	1
-21. Planning prévisionnel	1
-21.1 Vue d'ensemble	1
-21.2 Découpage en sprints	1
-21.3 Jalons clés	1
-21.4 Risques identifiés et mitigations	1
-22. Annexes	1
-22.1 Glossaire	1
-22.2 Références	1
-22.3 Modèles de référence pour les formulaires	1
-22.4 Points ouverts	1
-22.5 Contact	1
-
-
-
-1. Présentation du projet
-1.1 Contexte
-Le projet « Territoires en perspective : autosuffisance alimentaire, protection de l'environnement et opportunités d'emploi pour les femmes et les jeunes en milieu rural au Burkina Faso » est porté par l'Association Yelemani en partenariat avec le Centro Regionale d'Intervento per la Cooperazione (CRIC). Il bénéficie du financement du Ministère de l'Intérieur Italien (CUP F41D24000140008).
-Le projet vise à structurer un écosystème collaboratif autour de l'agroécologie, en facilitant la création de projets sociaux, la formation des acteurs de terrain et la mise en relation entre l'offre et la demande de compétences dans ce secteur.
-
-?? Zones d'intervention
-Le projet couvre deux zones géographiques principales : la région du Kadiogo (Grand Ouagadougou) et la région d'Oubri (commune de Loumbila notamment). La plateforme et le guichet sont conçus pour servir ces deux territoires de manière intégrée.
-1.2 Vision et objectifs
-Agro Eco BAARA est conçu comme une infrastructure double — physique et numérique — destinée à devenir le point de référence de l'emploi en agroécologie au Burkina Faso. Le service combine un guichet d'accueil physique animé par des opérateurs spécialisés et une plateforme web qui prolonge et amplifie le service.
-Objectifs stratégiques
-• Faciliter l'insertion professionnelle des jeunes formés ou en formation dans le domaine de l'agroécologie.
-• Permettre aux entreprises, ONG, associations et organisations paysannes de trouver les profils dont elles ont besoin.
-• Valoriser les compétences locales et soutenir la transition agroécologique sur le terrain.
-• Centraliser et structurer les opportunités d'emploi, de stage, de formation et de financement du secteur.
-• Documenter et mesurer l'impact du dispositif (suivi, statistiques, capitalisation).
-Objectifs opérationnels du MVP
-• Mettre en ligne une landing page institutionnelle modulaire d'ici février 2027.
-• Déployer un back-office Livewire opérationnel pour les opérateurs du guichet.
-• Permettre l'enregistrement et la gestion des profils de jeunes candidats.
-• Permettre l'enregistrement des entreprises et la publication de leurs offres.
-• Outiller la mise en relation candidats / offres avec un suivi par les opérateurs.
-
-1.3 Public cible
-PublicBesoin principalService attenduJeunes (15-35 ans)Trouver un emploi, un stage, une formation ou un financement en agroécologieProfil enregistré, mise en relation, accompagnement personnaliséEntreprises agroécologiquesRecruter de la main-d'œuvre qualifiéePublication d'offres, accès aux profils, appui RHONG et associationsMobiliser des compétences pour leurs projetsIdentification de profils, dépôt d'opportunitésOrganisations paysannesRenforcer leurs équipes saisonnières ou permanentesMise en contact rapide via le guichetCentres de formationInsertion professionnelle de leurs étudiantsVisibilité, partenariats, suivi des cohortesOpérateurs du guichetOutils de gestion quotidiensBack-office Livewire complet et ergonomique
-1.4 Périmètre fonctionnel du MVP
-Sur la base de la note de réunion du 16 janvier 2026 et des analyses ultérieures, le périmètre du MVP (Phase 1) est défini comme suit :
-Inclus dans le MVP
-• Landing page modulaire publique (présentation du projet, du guichet, des services, contact).
-• Configurateur de landing page accessible au super-administrateur (sections activables, ordonnables et éditables).
-• Système d'authentification multi-rôles (Super-administrateur, Modérateur, Opérateur).
-• Module de gestion des candidats (jeunes) avec formulaire complet, dépôt de documents et historique.
-• Module de gestion des entreprises/ONG avec formulaire dédié.
-• Module de gestion des offres et opportunités (CRUD, publication, archivage).
-• Module de mise en relation manuelle assistée par les opérateurs.
-• Tableau de bord opérateur avec indicateurs clés.
-• Module de notifications par e-mail.
-• Gestion des permissions granulaires par rôle.
-• Journal d'audit (qui a fait quoi, quand).
-Hors périmètre MVP (reporté en Phase 2 ou 3)
-• Espace candidat en libre-service (les jeunes créent eux-mêmes leur compte sur la plateforme).
-• Espace entreprise en libre-service (les entreprises créent elles-mêmes leur compte).
-• Matching automatique algorithmique.
-• Module de messagerie interne entre candidats et entreprises.
-• Application mobile native.
-• Module de témoignages et FAQ dynamique (en option Phase 2).
-• Module de paiement (services premium éventuels).
-• API publique pour partenaires externes.
-
-
-2. Acteurs et personas
-2.1 Vue d'ensemble des acteurs
-Le système distingue cinq grandes catégories d'acteurs, regroupées en deux familles : les utilisateurs internes (qui se connectent au back-office) et les utilisateurs externes (qui consultent la landing page publique sans authentification dans le MVP).
-
-CatégorieActeurAuthentifié ?Périmètre principalInterneSuper-administrateurOuiConfiguration globale, gestion des rôles, configurateur de landing pageInterneModérateurOuiValidation des contenus, supervision des opérateursInterneOpérateur de guichetOuiGestion quotidienne des candidats et des offresExterneVisiteur publicNon (MVP)Consultation de la landing page et prise de contactExterneBénéficiaire (jeune ou entreprise)Non (MVP)Se rend physiquement au guichet, son dossier est saisi par un opérateur
-
-?? Évolution future
-Dans les phases ultérieures, les bénéficiaires (jeunes et entreprises) pourront créer eux-mêmes leur compte et accéder à un espace personnel. Le MVP se limite volontairement à une saisie par les opérateurs pour garantir la qualité des données et l'accompagnement humain promis par le guichet.
-
-3. Architecture fonctionnelle
-3.1 Vue d'ensemble des modules
-L'application est organisée en modules fonctionnels indépendants mais interconnectés. Chaque module est responsable d'un domaine métier précis et expose ses fonctionnalités aux autres modules via des interfaces internes.
-
-Schéma macro des modules
-L'organigramme ci-dessous présente la cartographie des modules. Les flèches indiquent les dépendances et les flux d'information principaux.
-
-CoucheModuleRôlePublicM01 — Landing pageSite vitrine modulaire et configurablePublicM02 — Formulaire de contactRéception des demandes externesSécuritéM03 — AuthentificationLogin, mot de passe oublié, sessionsSécuritéM04 — Rôles & permissionsMatrice de droits, attribution des rôlesMétierM05 — Gestion des candidatsCRUD profils jeunes, documents, historiqueMétierM06 — Gestion des entreprisesCRUD entreprises/ONG, contacts, sitesMétierM07 — Offres et opportunitésCRUD offres, statuts, publicationMétierM08 — Mise en relationRapprochement candidat/offre, suiviPilotageM09 — Tableau de bordKPI temps réel par rôlePilotageM10 — Recherche & filtresMoteur de recherche transversalPilotageM11 — NotificationsE-mails sortants, alertes internesConfigurationM12 — Configurateur landingActivation/désactivation des sections, éditionConfigurationM13 — Paramètres générauxRéférentiels (communes, langues, compétences)TransverseM14 — Journal d'auditTraçabilité de toutes les actions sensiblesTransverseM15 — Gestion documentaireUpload sécurisé, prévisualisation, archivage
-3.2 Cartographie des dépendances
-Les dépendances entre modules respectent une hiérarchie claire pour éviter les couplages forts et faciliter la maintenance évolutive.
-
-ModuleDépend deEst utilisé parM01 — Landing pageM12, M13Visiteur publicM03 — Authentification—Tous les modules métierM04 — Rôles & permissionsM03Tous les modules métierM05 — CandidatsM03, M04, M13, M15M07, M08, M09, M10M06 — EntreprisesM03, M04, M13, M15M07, M08, M09, M10M07 — OffresM06, M13M08, M09, M10, M11M08 — Mise en relationM05, M06, M07M09, M11M09 — Tableau de bordM05, M06, M07, M08Tous les rôles internesM11 — NotificationsM05, M06, M07, M08—M14 — Journal d'auditTous les modulesM09, Super-admin
-3.3 Principes d'architecture
-Modularité
-Chaque module est conçu comme une unité fonctionnelle autonome avec son propre namespace dans le code applicatif. Cette organisation facilite l'évolution, les tests et la délégation du développement entre plusieurs équipes.
-Configurabilité
-Les modules clés peuvent être activés ou désactivés depuis le back-office par le super-administrateur. Le configurateur de landing page permet de composer dynamiquement la page d'accueil sans intervention technique.
-Sécurité par défaut
-Toutes les actions sensibles sont protégées par un double mécanisme : authentification + autorisation fine via la matrice de permissions. Aucun accès n'est ouvert par défaut — le principe du moindre privilège s'applique systématiquement.
-Traçabilité
-Toute opération de création, modification ou suppression sur les données métier est enregistrée dans un journal d'audit consultable par le super-administrateur et les modérateurs.
-Performance et frugalité
-Le contexte d'usage (connexions parfois lentes, terminaux variés) impose une attention particulière au poids des pages, au nombre de requêtes et à l'expérience mobile. La pile Livewire est exploitée pour minimiser le JavaScript côté client tout en offrant une interactivité moderne.
-
-
-4. Stack technique et choix d'architecture
-4.1 Vue d'ensemble de la pile
-La solution repose sur l'écosystème Laravel, choisi pour sa maturité, sa documentation complète, la disponibilité de compétences locales et internationales, et sa capacité à évoluer du MVP vers une plateforme à plus grande échelle.
-
-CoucheTechnologieVersion cibleJustificationLangage backendPHP8.2 ou 8.3Mature, écosystème riche, hébergement abordableFrameworkLaravel11.x (LTS)Standard de fait, sécurité, communautéInteractivitéLivewire3.xComposants full-stack, peu de JS, idéal back-officeFront légerAlpine.js3.xLivré avec Livewire, interactions microCSSTailwind CSS3.xProductivité, design cohérent, build légerBase de donnéesMySQL8.0+Standard, fiable, hébergement universelServeur HTTPNginx1.24+Performance, configuration éprouvéeCache & sessionsRedis (optionnel) sinon file7.xPerformance des sessions et du cacheFile d'attenteDatabase driver puis Redis—E-mails et tâches asynchronesStockage fichiersDisque local (MVP) puis S3-compatible—Évolutivité progressive
-4.2 Choix structurants
-Back-office en Livewire custom
-Conformément à l'orientation retenue, le back-office est développé de bout en bout en Livewire, sans s'appuyer sur un socle d'administration tiers (type Filament ou Backpack). Ce choix garantit un contrôle total sur l'ergonomie, le design et la dette technique, au prix d'un investissement initial plus important. Il permet aussi de produire une expérience utilisateur sur mesure pour les opérateurs du guichet, qui constituent l'audience principale du back-office.
-Pas d'API publique dans le MVP
-Le MVP ne nécessite pas d'API REST ou GraphQL publique. Les composants Livewire interagissent directement avec les modèles Eloquent côté serveur. Une API pourra être exposée ultérieurement si l'application mobile ou des intégrations partenaires deviennent nécessaires.
-Multilinguisme prévu mais limité au français en MVP
-Le code utilise les fichiers de langue Laravel dès le départ pour permettre une internationalisation ultérieure (anglais, langues nationales pour les libellés clés). Le MVP est livré en français uniquement.
-Mobile-first responsive
-L'ensemble des interfaces, y compris le back-office, est conçu en mobile-first. Les opérateurs doivent pouvoir saisir une fiche depuis un smartphone ou une tablette si nécessaire.
-
-4.3 Dépendances Laravel recommandées
-Les paquets suivants sont sélectionnés pour leur maturité et leur intégration native avec Laravel :
-
-PaquetRôleStatutGestion manuelleGestion des rôles et permissionsIndispensableGestion manuelleGestion centralisée des uploads (CV, diplômes, pièces d'identité)IndispensableGestion manuelleJournal d'audit automatique sur les modèles EloquentIndispensablespatie/laravel-backupSauvegardes automatisées de la base et des fichiersRecommandébarryvdh/laravel-dompdfGénération de PDF (fiches candidats, rapports)Recommandémaatwebsite/excelExport Excel des listingsRecommandéintervention/imageTraitement d'images (redimensionnement photos)Recommandé
-
-5. Modèle de données MySQL
-5.1 Conventions
-• Les suppressions sont logiques via soft deletes (champ deleted_at) sur les tables métier sensibles.
-
-5.2 Vue d'ensemble des tables principales
-TableDomaineDescription courteusersSécuritéComptes du back-office (super-admins, modérateurs, opérateurs)rolesSécuritéRôles fonctionnels (3 rôles MVP + extensibles)permissionsSécuritéPermissions granulaires (ex : candidates.create, offers.publish)model_has_rolesSécuritéAssociation user ? rôle (table pivot Spatie)role_has_permissionsSécuritéAssociation rôle ? permissions (table pivot Spatie)candidatesMétierProfils des jeunes (informations générales, contacts, formation)candidate_languagesMétierLangues parlées par chaque candidat (pivot)candidate_licensesMétierPermis de conduire détenus (pivot)candidate_skillsMétierCompétences agroécologiques du candidat (pivot)candidate_experiencesMétierExpériences professionnelles antérieurescandidate_needsMétierBesoins exprimés au guichet (champ caché côté public)companiesMétierEntreprises, ONG, associations, particuliers employeurscompany_sitesMétierSites/lieux d'activité des entreprises (1 ? N)company_needsMétierBesoins exprimés par les entreprises au guichetjob_offersMétierOffres d'emploi publiées par les entreprisesoffer_skillsMétierCompétences recherchées par offre (pivot)matchesMétierMises en relation candidat ? offre avec statut et suivilanding_sectionsConfigurationSections de la landing page (configurables)site_settingsConfigurationParamètres globaux (titre, logo, contact, horaires)referentials_communesRéférentielListe des communes des zones d'interventionreferentials_languagesRéférentielLangues disponibles (nationales + internationales)referentials_skillsRéférentielCompétences agroécologiques (Maraîchage, Élevage…)referentials_licensesRéférentielTypes de permis (A, A1, B, B1, C, D, E, F, BCD…)mediaDocumentaireFichiers uploadés (table Spatie Media Library)activity_logAuditJournal d'audit automatique (table Spatie ActivityLog)notificationsNotificationFile des notifications Laraveljobs / failed_jobsTechniqueFile d'attente et erreurssessionsTechniqueSessions utilisateur
-5.3 Détail des tables clés
-Table : candidates
-ColonneTypeContrainteDescriptionidbigintPK, AIIdentifiant uniquereferencevarchar(20)uniqueCode interne ex. AEB-2027-0001first_namevarchar(100)NOT NULLPrénomlast_namevarchar(100)NOT NULLNomgenderenumNOT NULLF / Mmarital_statusenumNULLcelibataire / marie / veufbirth_datedateNOT NULLDate de naissance (âge calculé)birth_placevarchar(150)NULLLieu de naissancenationalityvarchar(80)NULLNationalitécommune_idbigintFK communesCommune de résidenceaddressvarchar(255)NULLAdresse précisetransport_modeenumNULLdeux_roues / voiture / autre / aucunphonevarchar(30)NOT NULLNuméro principalemailvarchar(150)NULLAdresse e-maileducation_levelenumNULLsecondaire / licence / master / autreagro_training_texttextNULLFormation en agroécologie (réponse ouverte)agro_training_placevarchar(200)NULLLieu de formationother_skills_texttextNULLAutres compétences (réponse ouverte)created_bybigintFK usersOpérateur qui a saisiupdated_bybigintFK usersDernier modificateurcreated_at / updated_attimestamp—Horodatage Eloquentdeleted_attimestampNULLSoft delete
-Table : companies
-ColonneTypeContrainteDescriptionidbigintPK, AIIdentifiant uniquereferencevarchar(20)uniqueCode interne ex. AEB-COM-0001namevarchar(200)NOT NULLRaison sociale / nomstatusenumNOT NULLGIE / SA / SARL / SCOOP / Ent. individuelle / SAS / autrelegal_rep_first_namevarchar(100)NULLPrénom du représentant légallegal_rep_last_namevarchar(100)NULLNom du représentant légalactivity_typesetNOT NULLMaraîchage, Élevage, Pisciculture…descriptiontextNULLPrésentation libre (taille, activités, projets)phonevarchar(30)NOT NULLTéléphone principalemailvarchar(150)NULLAdresse e-mailwebsitevarchar(255)NULLSite websocial_linksjsonNULLLiens sociaux (Facebook, LinkedIn…)created_bybigintFK usersOpérateur qui a saisiupdated_bybigintFK usersDernier modificateurcreated_at / updated_attimestamp—Horodatagedeleted_attimestampNULLSoft delete
-Table : job_offers
-ColonneTypeContrainteDescriptionidbigintPK, AIIdentifiant uniquereferencevarchar(20)uniqueCode interne ex. AEB-OFF-0001company_idbigintFK companiesEntreprise émettricetitlevarchar(200)NOT NULLIntitulé du poste / missioncontract_typeenumNOT NULLsalarie / saisonnier / ponctuel / apprentissage / entrepreneuriat / autredurationvarchar(100)NULLDurée et période concernéeeconomic_conditionstextNULLSalaire, avantages, remboursementsmission_descriptiontextNOT NULLDescription des missionslocationsjsonNULLLieux d'activité (multi-sites possibles)statusenumNOT NULLbrouillon / publiee / archiveepublished_attimestampNULLDate de publicationarchived_attimestampNULLDate d'archivagecreated_bybigintFK usersOpérateur saisisseurcreated_at / updated_attimestamp—Horodatagedeleted_attimestampNULLSoft delete
-Table : matches (mises en relation)
-ColonneTypeContrainteDescriptionidbigintPK, AIIdentifiant uniquecandidate_idbigintFK candidatesCandidat concernéoffer_idbigintFK job_offersOffre concernéestatusenumNOT NULLpropose / contacte / entretien / accepte / refuse / abandonneoperator_idbigintFK usersOpérateur en chargenotestextNULLNotes internes de suiviproposed_attimestampNULLDate de la propositionclosed_attimestampNULLDate de clôture du dossiercreated_at / updated_attimestamp—Horodatage
-Table : landing_sections (configurateur)
-ColonneTypeContrainteDescriptionidbigintPK, AIIdentifiant uniqueslugvarchar(60)uniqueCode de la section : hero, about, services, contact…typevarchar(60)NOT NULLType de bloc (hero, partners, faq, testimonials…)titlevarchar(200)NULLTitre affiché de la sectioncontentjsonNULLContenu structuré (texte, images, liens, items)order_indexsmallintNOT NULLOrdre d'affichage (réordonnable)is_activebooleanNOT NULLSection activée ou nonupdated_bybigintFK usersDernier modificateurcreated_at / updated_attimestamp—Horodatage
-5.4 Stratégie d'indexation
-Au-delà des index automatiques sur les clés primaires et étrangères, les colonnes suivantes sont indexées pour optimiser les requêtes les plus fréquentes :
-• candidates.reference, candidates.phone, candidates.email — recherche rapide par identifiant ou contact.
-• candidates.commune_id, candidates.education_level — filtres fréquents du back-office.
-• companies.name, companies.reference, companies.phone — recherche entreprise.
-• job_offers.status, job_offers.published_at — listings paginés filtrés.
-• matches.status, matches.operator_id — tableau de bord opérateur.
-• landing_sections.order_index — tri par ordre d'affichage.
-• activity_log.subject_type + subject_id — journal d'audit ciblé.
-
-5.5 Référentiels (tables maîtres)
-Les référentiels sont des tables de paramétrage modifiables par le super-administrateur depuis le back-office. Ils servent à alimenter les listes déroulantes et cases à cocher des formulaires.
-
-RéférentielValeurs initiales (seed)CommunesCommunes du Kadiogo (Ouagadougou et arrondissements) + commune de Loumbila et environs (Oubri)LanguesFrançais, Anglais, Mooré, Fulfuldé, Goulmancema, Dioula, Bissa, Lyélé, Dagara, Nuni + autrePermis de conduireA, A1, B, B1, C, D, E, F, BCD, autre, aucunCompétences agroécologiquesMaraîchage, Production végétale, Élevage, Pisciculture, Apiculture, Transformation, Production d'intrants, Commercialisation, Communication, Conception et planification, Gestion d'exploitation, Animation territoriale, autreStatuts juridiquesGIE, SA, SARL, SCOOP, Entreprise individuelle, SAS, autreTypes d'activitéMaraîchage, Élevage, Pisciculture, Apiculture, Transformation, Production d'intrants, Commercialisation, Animation, autreTypes de contratEmploi salarié, contrats saisonniers, missions ponctuelles, apprentissage, entrepreneuriat, autreMoyens de transportDeux-roues, Voiture, Autre, AucunNiveaux d'étudeSecondaire, Licence, Master, Autre
-
-6. Système de rôles et permissions
-6.1 Principes
-Le système de rôles repose sur le paquet spatie/laravel-permission, qui permet une gestion fine et extensible des droits. Trois rôles sont prévus dans le MVP, mais le super-administrateur peut créer de nouveaux rôles personnalisés et composer leur matrice de permissions sans intervention technique.
-Principes fondateurs
-• Principe du moindre privilège : chaque rôle reçoit uniquement les permissions strictement nécessaires.
-• Séparation des pouvoirs : un opérateur ne peut pas modifier les comptes ni les paramètres globaux.
-• Auditabilité : toute action sensible est tracée avec l'identifiant de l'auteur.
-• Extensibilité : ajout de nouveaux rôles sans redéploiement applicatif.
-
-6.2 Rôles définis
-RôleDescriptionCibleSuper-administrateurContrôle total de la plateforme. Gère les comptes, les rôles, la configuration et la landing page.1 à 2 personnes maximum (responsable technique et chef de projet Yelemani)ModérateurSupervise les opérateurs, valide les contenus sensibles, accède aux statistiques globales.Coordinateur(s) du guichetOpérateurSaisit les candidats, les entreprises et les offres. Effectue les mises en relation au quotidien.Agents d'accueil du guichet (2 à 5 personnes)
-6.3 Matrice des permissions — Modules métier
-Légende : ? = autorisé, — = refusé, ?* = autorisé sous condition (voir notes en bas de matrice).
-
-PermissionSuper-adminModérateurOpérateurcandidates.view???candidates.create???candidates.update???*candidates.delete??—candidates.export??—candidates.view_internal_needs???companies.view???companies.create???companies.update???*companies.delete??—companies.export??—offers.view???offers.create???offers.update???*offers.delete??—offers.publish??—offers.archive???matches.view???*matches.create???matches.update???*matches.close???*
-(*) Conditions : un opérateur peut modifier uniquement les enregistrements qu'il a lui-même créés, sauf délégation explicite par un modérateur.
-
-6.4 Matrice des permissions — Administration
-PermissionSuper-adminModérateurOpérateurusers.view??—users.create?——users.update?——users.delete?——users.assign_role?——roles.manage?——permissions.manage?——audit.view??—settings.view??—settings.update?——referentials.manage?——landing.configure?——landing.preview??—statistics.global??—statistics.team??—statistics.personal???
-6.5 Création de rôles personnalisés
-Au-delà des trois rôles standards, le super-administrateur peut créer des rôles supplémentaires depuis l'écran « Rôles & permissions » du back-office. Cas d'usage typiques :
-• Un rôle « Stagiaire » avec lecture seule sur les candidats et aucun droit de modification.
-• Un rôle « Partenaire externe » accédant à une vue restreinte des offres publiées.
-• Un rôle « Auditeur » avec accès en lecture au journal d'audit et aux statistiques.
-Chaque rôle nouveau hérite par défaut d'aucune permission. Le super-administrateur compose la matrice à la carte.
-
-
-7. Sécurité et conformité
-7.1 Authentification
-• Identifiants : adresse e-mail + mot de passe. Aucun compte n'est créé sans validation par les operateur de guichet
-• Politique de mot de passe : minimum 8  caractères, combinaison majuscule, minuscule, chiffre et caractère spécial.
-• Hachage des mots de passe avec bcrypt (algorithme par défaut de Laravel).
-• Verrouillage temporaire du compte après 5 tentatives infructueuses consécutives (10 minutes).
-• Procédure de réinitialisation de mot de passe par e-mail, jeton à usage unique valable 60 minutes.
-• Sessions sécurisées avec cookies HttpOnly, Secure (en HTTPS), SameSite=Lax, durée 8 heures.
-• Déconnexion automatique après 60 minutes d'inactivité.
-
-7.2 Autorisation
-• Vérification systématique des permissions sur chaque action sensible (méthodes Livewire et routes).
-• Policies Laravel par modèle Eloquent pour centraliser la logique d'autorisation.
-• Middlewares dédiés pour les routes nécessitant un rôle spécifique.
-• Refus par défaut : toute action non explicitement autorisée est refusée.
-
-7.3 Protection contre les attaques courantes
-AttaqueMesure de protectionInjection SQLUtilisation exclusive d'Eloquent ORM avec requêtes paramétréesXSS (Cross-Site Scripting)Échappement automatique des sorties Blade, sanitisation des contenus richesCSRF (Cross-Site Request Forgery)Jeton CSRF Laravel sur tous les formulaires, géré nativement par LivewireBrute forceRate limiting Laravel sur les routes d'authentification (5 tentatives / 10 min)Énumération de comptesRéponses uniformes sur la réinitialisation de mot de passe (ne révèle pas l'existence d'un e-mail)Mass assignmentUtilisation stricte des $fillable sur tous les modèles EloquentTéléversement malveillantValidation stricte du type MIME, extension, taille ; stockage hors webrootSession hijackingCookies HttpOnly + Secure + régénération de l'ID de session à la connexionClickjackingEn-tête X-Frame-Options: DENYMIME sniffingEn-tête X-Content-Type-Options: nosniffRedirections ouvertesListe blanche des URL de redirection après authentification
-7.4 Gestion des fichiers téléversés
-• Stockage hors du répertoire public (storage/app/private) avec accès via URL signée temporaire.
-• Types autorisés et tailles maximales paramétrables par catégorie de document.
-• Renommage systématique des fichiers (UUID) pour éviter la divulgation de l'arborescence.
-
-Type de documentFormats acceptésTaille maxPhoto d'identité professionnelleJPG, PNG, WEBP , pdf, jpeg3 MoPièce d'identité (recto/verso)JPG, PNG, PDF ,jpeg5 Mo par faceCVPDF5 MoDiplômes et attestationsPDF5 Mo par fichierDocuments entreprise (statuts…)PDF10 Mo
-7.5 Journalisation et audit
-Le journal d'audit enregistre automatiquement toutes les actions sensibles via le paquet spatie/laravel-activitylog. Pour chaque entrée sont stockés :
-• Date et heure précise (timestamp UTC).
-• Identifiant et nom de l'utilisateur auteur.
-• Adresse IP et user-agent.
-• Type d'action (created, updated, deleted, published, archived, login, logout…).
-• Modèle concerné (Candidate, Company, JobOffer, User, Role…).
-• Identifiant de l'enregistrement concerné.
-• Valeurs avant/après modification (diff).
-
-?? Conservation du journal
-Le journal d'audit est conservé pendant 24 mois minimum. Au-delà, les entrées peuvent être archivées (export) puis purgées sur décision du super-administrateur. Le journal n'est jamais modifiable depuis l'interface — seule la lecture est possible.
-7.6 Protection des données personnelles
-La plateforme manipule des données personnelles sensibles (identité, contacts, parcours, documents officiels). Les principes suivants s'appliquent :
-• Consentement éclairé : à chaque enregistrement d'un candidat ou d'une entreprise, l'opérateur recueille le consentement explicite de la personne (case cochée + signature physique conservée au guichet).
-• Finalité : les données ne sont utilisées qu'à des fins de mise en relation pour l'emploi en agroécologie.
-• Minimisation : seules les données strictement nécessaires sont collectées.
-• Droit d'accès, de rectification et de suppression : sur demande au guichet, un dossier peut être consulté, modifié ou supprimé.
-
-
-
-8. Module M01 — Landing page modulaire
-8.1 Objectif
-La landing page est la vitrine publique du service Agro Eco BAARA. Elle doit informer les visiteurs sur le guichet, ses services, son emplacement et ses partenaires. Elle est composée de sections indépendantes que le super-administrateur peut activer, désactiver, réordonner et éditer depuis un configurateur dédié, sans intervention technique.
-8.2 Sections prévues
-Chaque section correspond à un type de bloc Livewire, avec un contenu structuré stocké en base. Les sections suivantes sont prévues dans le MVP :
-
-SlugTypeContenu éditableActivable ?heroBannière d'accueilTitre, sous-titre, image de fond, boutons d'appel à l'actionOui (par défaut actif)audiencesPour qui ?Cartes pour Jeunes, Entreprises/ONG, Centres de formationOui (par défaut actif)guichetPrésentation du guichetTexte, adresse, horaires, contacts, photoOui (par défaut actif)servicesCe que vous trouverezDeux blocs : services aux jeunes et services aux entreprisesOui (par défaut actif)how_it_worksComment ça marcheÉtapes numérotées (3 par défaut)Oui (par défaut actif)other_servicesAutres servicesListe des ateliers, événements, rencontresOui (par défaut actif)testimonialsTémoignagesCartes avec photo, nom, parcours, citationOui (désactivé par défaut)faqQuestions fréquentesListe question / réponse repliableOui (désactivé par défaut)projectLe projetBannière + texte sur le projet « Territoires en perspective »Oui (par défaut actif)partnersPartenairesLogos + liens des partenaires (Yelemani, CRIC, Humus Job, CNABio…)Oui (par défaut actif)contactContactez-nousAdresse, téléphone, e-mail, Facebook, formulaire de contactOui (par défaut actif)footerPied de pageMentions, crédits, liens utiles, financeursToujours actif (système)
-8.3 Configurateur de landing page
-Le configurateur est l'écran central qui permet au super-administrateur de piloter la landing page. Il est accessible depuis le menu Administration > Configuration > Landing page.
-Fonctionnalités du configurateur
-• Liste de toutes les sections avec leur statut actif/inactif (toggle).
-• Réorganisation par glisser-déposer (drag & drop) pour modifier l'ordre d'affichage.
-• Édition en place du contenu de chaque section via un formulaire dédié au type de bloc.
-• Aperçu temps réel sur un nouvel onglet (mode prévisualisation).
-• Publication explicite : les modifications sont mises en cache et nécessitent un clic « Publier » pour être visibles publiquement.
-• Historique des publications (les 10 dernières publications avec date, auteur, possibilité de revenir en arrière).
-• Gestion fine des images de chaque section (upload, recadrage, alt text).
-
-?? Pourquoi la publication explicite ?
-Le configurateur sépare l'édition de la mise en ligne pour éviter qu'un brouillon incomplet ne soit visible par le public. Toute modification reste en zone de travail jusqu'à la validation explicite par un clic « Publier ». Le cache public est alors invalidé et la nouvelle version remplace l'ancienne.
-8.4 Workflow d'édition d'une section
-1. Le super-administrateur ouvre le configurateur depuis le back-office.
-2. Il sélectionne la section à éditer dans la liste.
-3. Le formulaire dédié au type de bloc s'ouvre (composant Livewire spécifique).
-4. Il modifie les champs textuels, charge éventuellement de nouvelles images.
-5. Il clique sur « Sauvegarder le brouillon » — la modification est persistée mais pas publiée.
-6. Il clique sur « Prévisualiser » pour ouvrir un onglet avec la version brouillon.
-7. Une fois satisfait, il clique sur « Publier » — la version devient publique, l'ancienne est versionnée dans l'historique.
-8. Le cache de la page d'accueil est invalidé automatiquement.
-9. Une entrée est ajoutée au journal d'audit (utilisateur, section, horodatage, diff).
-
-8.5 Comportement public de la landing page
-• Page d'accueil servie en lecture seule, sans authentification.
-• Mise en cache HTML complète (5 minutes par défaut, paramétrable) pour réduire la charge serveur.
-• Invalidation automatique du cache à chaque publication depuis le configurateur.
-• Responsive mobile-first avec breakpoints tablette et desktop.
-• Performance cible : Lighthouse Performance ? 85 sur mobile en 3G simulée.
-• Accessibilité : conformité AA des bonnes pratiques WCAG 2.1 sur les composants standards.
-• SEO : balises meta description, Open Graph, titres hiérarchisés, URLs propres.
-
-8.6 Formulaire de contact public (M02)
-Le formulaire de la section Contact permet aux visiteurs de soumettre un message sans créer de compte. Il est protégé contre le spam et limité en fréquence.
-Champs du formulaire
-ChampTypeObligatoireValidationNom completTexte courtOui2 à 100 caractèresAdresse e-mailEmailOuiFormat e-mail valideTéléphoneTexte courtNonFormat international soupleProfilListe déroulanteOuiJeune / Entreprise / ONG / AutreObjetTexte courtOui5 à 150 caractèresMessageTexte longOui20 à 2000 caractèresConsentement RGPDCase à cocherOuiDoit être cochée
-Mesures anti-spam : honeypot, rate limiting (3 envois par IP toutes les 10 minutes), validation côté serveur, e-mail de confirmation au visiteur. Les messages reçus arrivent dans une boîte de réception interne du back-office (Module M02) assignée aux modérateurs.
-
-
-9. Module M03 — Authentification
-9.1 Périmètre
-Le module d'authentification couvre l'ensemble des fonctionnalités d'accès au back-office : connexion, déconnexion, réinitialisation de mot de passe, gestion du profil de l'utilisateur connecté. Dans le MVP, l'authentification est réservée aux utilisateurs internes (super-admin, modérateurs, opérateurs).
-9.2 Fonctionnalités
-• Page de connexion avec champs e-mail et mot de passe.
-• Option « Se souvenir de moi » (cookie persistant chiffré, durée 30 jours).
-• Lien « Mot de passe oublié » avec procédure de réinitialisation par e-mail.
-• Première connexion : changement de mot de passe obligatoire pour les comptes nouvellement créés.
-• Page de profil utilisateur (modification du nom, de l'e-mail sous validation, du mot de passe et de la photo).
-• Déconnexion explicite (bouton dans le menu utilisateur) et automatique après 60 minutes d'inactivité.
-• Affichage de la dernière connexion réussie (date, heure, IP partielle) sur le tableau de bord.
-
-9.3 Workflow de connexion
-10. L'utilisateur ouvre l'URL du back-office et est redirigé vers la page de connexion.
-11. Il saisit son e-mail et son mot de passe.
-12. Le système vérifie : compte existant, mot de passe valide, compte non verrouillé, compte actif.
-13. En cas d'échec : message générique « identifiants invalides » + incrément du compteur de tentatives.
-14. Après 5 échecs consécutifs : verrouillage 10 minutes (information affichée).
-15. En cas de succès : régénération de l'ID de session, écriture de l'horodatage de dernière connexion, redirection vers le tableau de bord du rôle.
-16. Le journal d'audit enregistre l'événement « login » avec IP et user-agent.
-
-9.4 Workflow de réinitialisation de mot de passe
-17. L'utilisateur clique sur « Mot de passe oublié » depuis la page de connexion.
-18. Il saisit son adresse e-mail.
-19. Le système répond toujours par un message uniforme « Si un compte existe, un e-mail vient d'être envoyé » (pour éviter l'énumération).
-20. Si l'e-mail correspond à un compte actif, un jeton à usage unique est généré (valable 60 minutes) et envoyé par e-mail.
-21. L'utilisateur clique sur le lien dans l'e-mail. Il est redirigé vers une page de définition du nouveau mot de passe.
-22. Il saisit deux fois le nouveau mot de passe (qui doit respecter la politique de mot de passe).
-23. Le jeton est consommé et invalidé. Toutes les sessions actives du compte sont invalidées.
-24. L'utilisateur est redirigé vers la page de connexion avec un message de succès.
-25. Le journal d'audit enregistre l'événement « password_reset ».
-
-9.5 Gestion des comptes par le super-administrateur
-Tous les comptes utilisateurs du back-office sont créés exclusivement par le super-administrateur depuis l'écran « Administration > Utilisateurs ».
-Workflow de création d'un compte
-26. Le super-administrateur ouvre la liste des utilisateurs et clique sur « Nouvel utilisateur ».
-27. Il renseigne le nom, prénom, e-mail professionnel et sélectionne le rôle.
-28. Il génère un mot de passe temporaire (suggéré par le système) ou en saisit un.
-29. À l'enregistrement, un e-mail d'accueil est envoyé au nouvel utilisateur avec ses identifiants et un lien de première connexion.
-30. Au premier login, l'utilisateur est obligatoirement invité à changer son mot de passe.
-Gestion du cycle de vie
-• Désactivation d'un compte (sans suppression) : possibilité de bloquer temporairement l'accès.
-• Réactivation : remise en service par le super-administrateur.
-• Suppression : soft delete avec conservation des traces d'audit (les actions du compte restent attribuées dans le journal).
-• Modification du rôle : prise d'effet immédiate à la prochaine requête de l'utilisateur.
-
-
-10. Module M05 — Gestion des candidats (jeunes)
-10.1 Objectif
-Ce module est le cœur opérationnel du back-office. Il permet aux opérateurs de saisir les profils des jeunes accueillis au guichet, de tenir leurs dossiers à jour, d'y attacher des documents et d'en assurer le suivi dans le temps.
-10.2 Fonctionnalités principales
-• Liste paginée des candidats avec recherche, tri et filtres multiples.
-• Fiche détaillée d'un candidat regroupant toutes les informations en sections accordéon.
-• Formulaire de création multi-étapes (informations générales, contacts, documents, expériences, besoins).
-• Édition section par section sans devoir tout ressaisir.
-• Téléversement de documents (photo, pièce d'identité, diplômes, CV) avec prévisualisation.
-• Historique des modifications d'un dossier (qui a modifié quoi et quand).
-• Export d'une fiche au format PDF pour impression au guichet.
-• Export d'un listing filtré au format Excel pour reporting.
-• Archivage logique d'un dossier (sortie de la file active sans suppression).
-
-10.3 Filtres et recherche
-La liste des candidats est exploitable avec les filtres suivants, combinables :
-• Recherche libre sur nom, prénom, référence, téléphone, e-mail.
-• Filtre par commune de résidence.
-• Filtre par niveau d'étude.
-• Filtre par compétences (multi-sélection).
-• Filtre par langues parlées.
-• Filtre par disponibilité d'un moyen de transport.
-• Filtre par sexe et tranche d'âge.
-• Filtre par opérateur créateur.
-• Filtre par date de création (intervalle).
-• Tri par nom, date de création, date de modification.
-
-10.4 Structure du formulaire candidat
-Le formulaire est organisé en cinq sections distinctes pour faciliter la saisie progressive et la reprise en cas d'interruption.
-
-Section A — Informations générales
-ChampTypeObligatoireNotesNomTexte courtOuiMajuscule automatiquePrénomTexte courtOuiCapitalisation autoSexeBoutons radioOuiFéminin / MasculinSituation matrimonialeBoutons radioNonCélibataire / Marié·e / Veuf·veDate de naissanceDateOuiSélecteur de date, âge calculé automatiquementLieu de naissanceTexte courtNonNationalitéTexte courtNonBurkinabè par défautCommune de résidenceListe déroulanteOuiRéférentiel des communesAdresse préciseTexte courtNonQuartier, secteur, repèreLangues parléesCases à cocher multiplesOui (? 1)Référentiel + champ « autre »Permis de conduireCases à cocher multiplesNonRéférentiel + champ « autre »Moyen de transportBoutons radioNonDeux-roues / Voiture / Autre / AucunPhoto d'identitéUpload imageNonRecadrage carré recommandé, max 3 Mo
-Section B — Contacts
-ChampTypeObligatoireNotesTéléphone principalTexte courtOuiFormat international soupleTéléphone secondaireTexte courtNonOptionnelAdresse e-mailE-mailNonValidation format
-Section C — Documents et formation
-ChampTypeObligatoireNotesPièce d'identité recto versoUploadNonPDF, max 5 MoNiveau d'étudeBoutons radioOuiSecondaire / Licence / Master / AutreFormation en agroécologieTexte longNonDescription libreLieu de formationTexte courtNonDiplômes et attestationsUpload multipleNonPlusieurs fichiers possibles
-Section D — Expériences et compétences
-• Question filtre : « A-t-il déjà eu d'autres emplois ou stages ? » Oui / Non.
-• Si oui, formulaire répétable avec : année, lieu, fonction, références ou contacts des employeurs.
-• Compétences en agroécologie : cases à cocher multiples sur le référentiel (Maraîchage, Production végétale, Élevage, Pisciculture, Apiculture, Transformation, Production d'intrants, Commercialisation, Communication, Conception et planification, Gestion d'exploitation, Animation territoriale, autre).
-• Autres compétences : champ texte long ouvert.
-• CV : upload PDF/DOC/DOCX, 5 Mo maximum.
-
-Section E — Besoins exprimés au guichet (interne)
-?? Visibilité restreinte
-Cette section est saisie par l'opérateur lors de l'entretien mais reste strictement interne. Elle n'est jamais exposée sur la partie publique de la plateforme et n'est consultable que par les utilisateurs disposant de la permission candidates.view_internal_needs.
-• Besoin d'emploi : emploi salarié, contrats saisonniers, missions ponctuelles, apprentissage, entrepreneuriat (cases à cocher multiples).
-• Besoin de formation : information sur les opportunités de formation (cours, master, atelier, stage, voyage d'échange) — case à cocher.
-• Besoin de financement : information sur les opportunités de financement et services pour l'entrepreneuriat — case à cocher.
-• Besoin d'appui : accompagnement à la rédaction de CV — case à cocher.
-• Commentaires libres de l'opérateur : champ texte long.
-
-10.5 Validation et règles métier
-• Le doublon par téléphone est détecté à la saisie : si un autre candidat a déjà ce numéro, un avertissement s'affiche avec le lien vers la fiche existante.
-• L'âge est calculé automatiquement à partir de la date de naissance et affiché en permanence.
-• L'enregistrement de la fiche est possible avec uniquement la Section A complétée — les autres sections peuvent être complétées ultérieurement.
-• Toute modification d'un champ enregistre une entrée dans le journal d'audit.
-• La référence interne du candidat (format AEB-AAAA-NNNN) est générée automatiquement à la création.
-
-
-11. Module M06 — Gestion des entreprises et organisations
-11.1 Objectif
-Ce module gère l'autre versant du dispositif : les structures employeuses ou demandeuses de compétences. Il couvre les entreprises commerciales, les ONG, les associations, les organisations paysannes et les particuliers employeurs. Le formulaire est unique mais le champ « statut » permet de typer chaque enregistrement.
-11.2 Fonctionnalités principales
-• Liste paginée des entreprises/organisations avec recherche, tri et filtres.
-• Fiche détaillée organisée en sections (identité, sites, contacts, description, offres associées).
-• Formulaire de création multi-étapes.
-• Gestion des sites/lieux d'activité multiples (relation 1 ? N).
-• Lien direct vers les offres publiées par l'entreprise depuis sa fiche.
-• Téléversement de documents (statuts, agréments, brochures…).
-• Export PDF d'une fiche et Excel d'un listing.
-
-11.3 Filtres et recherche
-• Recherche libre sur nom, référence, téléphone, e-mail.
-• Filtre par statut juridique (GIE, SA, SARL, SCOOP, etc.).
-• Filtre par type d'activité (Maraîchage, Élevage, etc.).
-• Filtre par commune ou région du site principal.
-• Filtre par présence d'offres actives.
-• Filtre par opérateur créateur.
-
-11.4 Structure du formulaire entreprise
-Section A — Informations générales
-ChampTypeObligatoireNotesNom de l'entreprise / organisationTexte courtOuiRaison sociale officielleStatut juridiqueListe déroulanteOuiGIE / SA / SARL / SCOOP / Ent. ind. / SAS / autreReprésentant légal — NomTexte courtNonReprésentant légal — PrénomTexte courtNonType(s) d'activitéCases à cocher multiplesOui (? 1)Multi-sélection sur référentielDescription brèveTexte longNonTaille, activités, productions, projets…
-Section B — Sites d'activité
-Une entreprise peut avoir plusieurs lieux d'activité. Le formulaire permet d'en ajouter autant que nécessaire (composant Livewire répétable).
-Champ par siteTypeObligatoireNotesIntitulé du siteTexte courtOuiEx : siège, ferme principale, antenne…CommuneListe déroulanteOuiRéférentielAdresse préciseTexte courtNonQuartier, secteur, repèreCoordonnées GPSTexte courtNonLatitude, longitude (préparation Phase 2)Site principal ?Case à cocherNonUn seul site principal par entreprise
-Section C — Contacts
-ChampTypeObligatoireNotesTéléphoneTexte courtOuiFormat international soupleAdresse e-mailE-mailNonValidation formatSite webURLNonValidation format URLPages socialesListe répétableNonType (Facebook, LinkedIn…) + URL
-Section D — Besoins exprimés au guichet (interne)
-?? Visibilité restreinte
-Comme pour les candidats, cette section est interne et non exposée publiquement.
-• Besoin de formation : information sur les opportunités de formation en agroécologie (perfectionnement, innovation) — case à cocher.
-• Besoin de financement : information sur les opportunités de financement pour les entreprises — case à cocher.
-• Besoin d'appui : accompagnement dans la formalisation du contrat — case à cocher.
-• Commentaires libres de l'opérateur : champ texte long.
-
-11.5 Validation et règles métier
-• Détection du doublon par nom (recherche fuzzy) à la saisie : suggestion des entreprises existantes similaires.
-• Au moins un site d'activité doit être déclaré, et un seul peut être marqué comme « principal ».
-• La référence interne (AEB-COM-NNNN) est générée automatiquement à la création.
-• Le téléphone principal est unique en base — un second enregistrement avec le même numéro génère un avertissement bloquant.
-
-
-12. Module M07 — Offres et opportunités
-12.1 Objectif
-Ce module gère les offres d'emploi, de stage, de mission ou d'apprentissage déposées par les entreprises et les organisations. Une offre est toujours rattachée à une entreprise existante (Module M06). Les offres ont un cycle de vie clair allant du brouillon à l'archivage.
-12.2 Cycle de vie d'une offre
-Une offre traverse plusieurs états distincts. Le passage d'un état à l'autre est soumis aux permissions du rôle de l'utilisateur.
-
-ÉtatDescriptionTransitions possiblesBrouillonSaisie en cours, non visible pour la mise en relationVers publiée (modérateur/super-admin), suppriméePubliéeActive, exploitable pour les mises en relationVers archivée, supprimée (super-admin uniquement)ArchivéeHors file active, conservée pour l'historiqueVers publiée (réactivation), supprimée (super-admin)Supprimée (soft)Soft delete, masquée mais récupérableRestauration possible par super-admin
-12.3 Workflow de gestion d'une offre
-31. Un opérateur reçoit une demande d'une entreprise au guichet ou par téléphone.
-32. Il ouvre la fiche de l'entreprise dans le back-office (ou la crée si elle n'existe pas).
-33. Depuis l'onglet « Offres » de la fiche, il clique sur « Nouvelle offre ».
-34. Il complète le formulaire d'offre (titre, type de contrat, durée, conditions, compétences recherchées, lieu, mission).
-35. Il enregistre en brouillon. À ce stade, l'offre n'est pas exploitable pour le matching.
-36. Un modérateur ou le super-administrateur examine l'offre et clique sur « Publier » après vérification.
-37. L'offre est désormais publiée et apparaît dans le moteur de recherche du matching.
-38. À la fin de la période de recrutement, un opérateur ou un modérateur clique sur « Archiver » — l'offre quitte la file active.
-39. À tout moment, le journal d'audit conserve la trace des transitions et des modifications.
-
-12.4 Structure du formulaire d'offre
-ChampTypeObligatoireNotesEntreprise associéeSélecteur de ficheOuiRecherche dans les entreprises existantesIntitulé du poste / missionTexte courtOui5 à 200 caractèresType de contratBoutons radioOuiSalarié / saisonnier / ponctuel / apprentissage / entrepreneuriat / autreDurée et période concernéeTexte courtNonEx : 6 mois, mai-octobre 2027Conditions économiquesTexte longNonSalaire, avantages, remboursementsDescription des missionsTexte longOuiDescription détaillée des tâchesCompétences recherchéesCases à cocher multiplesOui (? 1)Référentiel des compétences agroécologiquesAutres exigencesTexte longNonPermis, langues spécifiques, autreLieu(x) d'activitéListe répétableOui (? 1)Commune + adresseDate de début souhaitéeDateNonNombre de postesEntierNon1 par défaut
-12.5 Fonctionnalités de listing
-• Liste paginée triable par date de publication, titre, entreprise, statut.
-• Filtres : statut, type de contrat, compétences requises, commune, période, entreprise.
-• Compteurs par statut (brouillons, publiées, archivées) affichés en en-tête.
-• Actions rapides depuis la liste : voir, modifier, publier, archiver, voir les mises en relation.
-• Export Excel d'un listing filtré.
-
-
-13. Module M08 — Mise en relation (matching)
-13.1 Objectif
-La mise en relation est le service à valeur ajoutée du guichet. Elle consiste à proposer à une entreprise des candidats correspondant à ses besoins, ou à proposer à un candidat des offres adaptées à son profil. Le MVP s'appuie sur un matching manuel assisté par l'opérateur, avec des suggestions automatiques de candidats pour chaque offre (et vice-versa).
-13.2 Approche du MVP
-?? Matching assisté et non automatique
-Contrairement à un algorithme de matching automatique qui prendrait la décision à la place de l'opérateur, le MVP propose des suggestions basées sur des critères simples (compétences communes, commune de résidence proche du lieu d'activité, permis si requis, etc.). L'opérateur garde la main pour proposer, valider ou rejeter chaque mise en relation. Cette approche permet de capitaliser sur l'expertise humaine du guichet tout en gagnant du temps sur la sélection initiale.
-13.3 Critères de suggestion
-Pour chaque offre publiée, le système propose une liste de candidats classés selon les critères suivants (pondération paramétrable) :
-CritèrePondération MVPCalculCompétences en commun50 %Nombre de compétences requises possédées par le candidat / nombre de compétences requisesProximité géographique20 %Commune du candidat = commune du site OU communes limitrophesNiveau d'étude pertinent10 %Bonus si formation en agroécologie déclaréeExpérience préalable10 %Bonus si expérience(s) antérieure(s) déclarée(s)Moyen de transport10 %Bonus si transport disponible (cas pertinent pour les sites éloignés)
-Le score final est affiché en pourcentage (0 à 100 %) à côté de chaque candidat suggéré. Les candidats sont triés par score décroissant. L'opérateur peut affiner manuellement la liste via des filtres complémentaires.
-
-13.4 Cycle de vie d'une mise en relation
-StatutDescriptionProposéeL'opérateur a sélectionné un candidat pour une offre. Aucun contact n'a encore eu lieu.ContactéeLe candidat a été contacté (par téléphone ou en personne au guichet). Réponse en attente.EntretienUn entretien est planifié ou a eu lieu avec l'entreprise.AcceptéeL'entreprise a retenu le candidat. La mise en relation est un succès.RefuséeL'entreprise n'a pas retenu le candidat OU le candidat a décliné.AbandonnéeLe dossier est clos sans suite (perte de contact, désistement…).
-13.5 Workflow opérateur — Mise en relation depuis une offre
-40. Un opérateur ouvre la fiche d'une offre publiée.
-41. Il clique sur l'onglet « Candidats suggérés ».
-42. La liste affiche les candidats triés par score, avec leur profil résumé et leurs compétences mises en évidence.
-43. L'opérateur peut prévisualiser chaque fiche candidat sans quitter l'écran (panneau latéral).
-44. Il sélectionne un ou plusieurs candidats à proposer et clique sur « Créer une mise en relation ».
-45. Une mise en relation est créée avec le statut « Proposée ».
-46. L'opérateur planifie un appel au candidat ou attend la prochaine visite au guichet.
-47. Après le contact, il met à jour le statut (Contactée, Entretien, Acceptée, Refusée, Abandonnée) en saisissant des notes de suivi.
-48. Les transitions sont horodatées et tracées dans le journal d'audit.
-
-13.6 Workflow opérateur — Mise en relation depuis un candidat
-49. L'opérateur ouvre la fiche d'un candidat.
-50. Il clique sur l'onglet « Offres pertinentes ».
-51. La liste affiche les offres publiées dont les compétences recoupent le profil du candidat.
-52. Il sélectionne une ou plusieurs offres et crée la mise en relation.
-53. Le suivi se déroule ensuite comme dans le workflow par offre.
-
-13.7 Indicateurs de performance par opérateur
-• Nombre de mises en relation créées dans la période.
-• Taux de conversion : mises en relation acceptées / mises en relation proposées.
-• Temps moyen entre la proposition et la clôture.
-• Nombre de candidats placés.
-• Nombre d'offres pourvues.
-
-
-14. Module M09 — Tableau de bord
-14.1 Principe
-Le tableau de bord est la page d'accueil du back-office après authentification. Son contenu s'adapte au rôle de l'utilisateur connecté. Il regroupe les indicateurs essentiels et les actions rapides du quotidien.
-14.2 Tableau de bord Opérateur
-Indicateurs personnels
-• Nombre de candidats créés par moi (ce mois / total).
-• Nombre d'entreprises créées par moi.
-• Nombre d'offres saisies par moi.
-• Mises en relation en cours dont je suis responsable (ventilées par statut).
-• Mises en relation acceptées ce mois.
-Files de travail
-• Candidats à recontacter (date du dernier contact > 30 jours).
-• Mises en relation en statut « Proposée » ou « Contactée » depuis plus de 7 jours.
-• Brouillons d'offres en attente de finalisation.
-Actions rapides
-• Bouton « Nouveau candidat ».
-• Bouton « Nouvelle entreprise ».
-• Bouton « Nouvelle offre ».
-• Recherche transversale en haut de page (candidat, entreprise, offre, par référence ou téléphone).
-
-14.3 Tableau de bord Modérateur
-Le modérateur voit, en plus de tout le contenu opérateur, les indicateurs suivants couvrant l'ensemble de l'équipe :
-• Total candidats actifs en base.
-• Total entreprises et organisations enregistrées.
-• Total offres publiées et archivées.
-• Carte de chaleur des compétences les plus demandées par les entreprises.
-• Top 5 des compétences les plus représentées chez les candidats (potentiel mal exploité).
-• Performance par opérateur : tableau comparatif (mises en relation créées, taux de conversion, temps moyen).
-• Dossiers candidats incomplets (sections obligatoires manquantes).
-• Offres en attente de publication (brouillons à valider).
-• Messages reçus via le formulaire de contact public à traiter.
-
-14.4 Tableau de bord Super-administrateur
-Le super-administrateur a accès à toutes les vues précédentes plus des indicateurs techniques et de gouvernance :
-• Nombre de comptes actifs / inactifs / verrouillés par rôle.
-• Dernières actions du journal d'audit (10 plus récentes).
-• Espace de stockage utilisé (base + fichiers).
-• Dernière sauvegarde réussie (date, taille, statut).
-• Erreurs applicatives récentes (si intégration d'un outil de monitoring type Sentry en Phase 2).
-• Statistiques d'évolution mensuelle (graphiques) sur candidats, entreprises, offres, mises en relation.
-• Export complet des données au format CSV/Excel pour reporting externe (bailleur).
-
-14.5 Mise à jour des indicateurs
-Les indicateurs sont calculés à la volée à chaque chargement du tableau de bord avec un cache de 5 minutes pour limiter la charge serveur. Les chiffres affichés indiquent la date de dernière mise à jour. Un bouton « Rafraîchir » permet de forcer un recalcul immédiat.
-
-
-15. Modules transverses M10, M11, M14
-15.1 Module M10 — Recherche et filtres transversaux
-En complément des moteurs de recherche internes à chaque module, une barre de recherche globale est disponible en haut de chaque écran du back-office. Elle permet de retrouver rapidement n'importe quel élément depuis n'importe quel écran.
-Périmètre de la recherche globale
-• Recherche dans les candidats : nom, prénom, référence, téléphone, e-mail.
-• Recherche dans les entreprises : nom, référence, téléphone, e-mail.
-• Recherche dans les offres : intitulé, référence.
-• Résultats groupés par type (candidats, entreprises, offres) avec compteur.
-• Aperçu rapide au survol, accès direct à la fiche au clic.
-• Filtrage par rôle : un opérateur ne voit que ce qu'il a le droit de voir selon ses permissions.
-Performance
-• Recherche déclenchée après 300 ms de pause de frappe (debounce).
-• Recherche limitée aux 10 premiers résultats par catégorie.
-• Lien « Voir tous les résultats » pour accéder à une page de résultats étendue.
-
-15.2 Module M11 — Notifications par e-mail
-Le système envoie des notifications par e-mail aux utilisateurs internes et, dans certains cas définis, aux bénéficiaires externes.
-Notifications aux utilisateurs internes
-ÉvénementDestinataireCréation d'un compte utilisateurL'utilisateur concerné (identifiants + lien première connexion)Réinitialisation de mot de passeL'utilisateur concerné (jeton)Verrouillage du compte après échecsL'utilisateur concerné + le super-administrateurNouveau message via le formulaire publicLes modérateursBrouillon d'offre en attente depuis 7 joursLe modérateur (rappel hebdomadaire)Échec d'une sauvegarde automatiqueLe super-administrateurModification de rôle d'un compteL'utilisateur concerné + le super-administrateur
-Notifications aux bénéficiaires (optionnel MVP)
-• Confirmation d'enregistrement de la demande de contact public.
-• Communication ponctuelle décidée par les opérateurs (envoi manuel depuis la fiche du candidat ou de l'entreprise).
-Aspects techniques
-• Envoi asynchrone via la file d'attente Laravel pour ne pas bloquer l'interface.
-• Gabarits HTML responsive avec version texte de secours.
-• En-tête, pied de page et palette de couleurs cohérents avec l'identité graphique du projet.
-• Traitement des échecs : 3 tentatives avec back-off exponentiel, alerte au super-admin en cas d'échec persistant.
-• Possibilité de consulter l'historique des e-mails envoyés depuis le back-office (Phase 2).
-
-15.3 Module M14 — Journal d'audit
-Le journal d'audit est une fonctionnalité transverse qui enregistre automatiquement toutes les actions sensibles. Il s'appuie sur le paquet spatie/laravel-activitylog, branché sur les modèles Eloquent métier.
-Modèles tracés
-• User — création, modification, suppression, changement de rôle.
-• Candidate — création, modification, suppression, restauration.
-• Company — création, modification, suppression.
-• JobOffer — création, modification, publication, archivage, suppression.
-• Match — création, changement de statut, clôture.
-• LandingSection — activation, désactivation, modification du contenu, publication.
-• Role / Permission — création, modification, attribution.
-• SiteSetting — modification de paramètre global.
-Événements système tracés
-• Connexion réussie (login).
-• Échec de connexion (failed_login) avec compteur d'échecs successifs.
-• Verrouillage de compte (account_locked).
-• Déconnexion (logout).
-• Réinitialisation de mot de passe (password_reset).
-• Export de données (data_export) — qui exporte quoi.
-Interface de consultation
-• Écran réservé au super-administrateur et aux modérateurs.
-• Filtres : par utilisateur, par type d'action, par modèle concerné, par plage de dates.
-• Pagination, tri chronologique inversé par défaut (plus récent en haut).
-• Détail d'une entrée : valeurs avant/après pour les modifications.
-• Export Excel pour archivage et reporting externe.
-
-
-16. Workflows métiers détaillés
-16.1 Vue d'ensemble
-Cette section présente les enchaînements complets des actions du quotidien sur la plateforme. Chaque workflow est décrit pas à pas avec les acteurs impliqués, les états traversés et les points de décision. Les workflows servent de référence pour la conception des écrans, les tests fonctionnels et la formation des opérateurs.
-16.2 Liste des workflows documentés
-Réf.WorkflowActeur principalWF-01Accueil et enregistrement d'un nouveau candidat au guichetOpérateurWF-02Mise à jour du dossier d'un candidat existantOpérateurWF-03Enregistrement d'une nouvelle entrepriseOpérateurWF-04Dépôt d'une offre par une entreprise existanteOpérateur + ModérateurWF-05Mise en relation d'un candidat avec une offreOpérateurWF-06Suivi et clôture d'une mise en relationOpérateurWF-07Validation d'une offre en brouillonModérateurWF-08Configuration et publication de la landing pageSuper-administrateurWF-09Création d'un compte utilisateur back-officeSuper-administrateurWF-10Consultation du journal d'auditModérateur / Super-administrateur
-16.3 WF-01 — Accueil et enregistrement d'un nouveau candidat
-Description : ce workflow est déclenché lorsqu'un jeune se présente au guichet pour la première fois et souhaite s'inscrire.
-Pré-conditions
-• L'opérateur est connecté au back-office.
-• Le jeune apporte idéalement une pièce d'identité et un CV (mais ce n'est pas bloquant).
-Étapes
-54. L'opérateur accueille le jeune et vérifie l'absence d'un dossier existant en saisissant son téléphone dans la recherche globale.
-55. Si un dossier existe, on bascule sur le workflow WF-02 (mise à jour).
-56. Sinon, l'opérateur clique sur « Nouveau candidat » depuis le tableau de bord.
-57. Il remplit la Section A — Informations générales (nom, prénom, sexe, date de naissance, commune, langues, transport, photo).
-58. Il enregistre le brouillon à la fin de la Section A — une référence interne est automatiquement attribuée.
-59. Il passe à la Section B — Contacts (téléphone obligatoire, e-mail si disponible).
-60. Il passe à la Section C — Documents et formation (pièce d'identité, niveau d'étude, formation agroécologique, diplômes).
-61. Il passe à la Section D — Expériences et compétences (cocher les compétences, ajouter les expériences éventuelles, téléverser le CV).
-62. Il passe à la Section E — Besoins exprimés au guichet (interne).
-63. Il valide l'enregistrement final.
-64. Le système génère une fiche imprimable au format PDF qui peut être remise au candidat.
-65. L'opérateur explique au candidat les prochaines étapes (contact en cas d'opportunité).
-Post-conditions
-• Le candidat dispose d'un dossier complet dans la base.
-• Le dossier est disponible pour les recherches et les mises en relation.
-• Le journal d'audit contient une entrée de création.
-Cas alternatifs
-• Interruption en cours de saisie : le dossier reste en l'état avec les sections déjà complétées. L'opérateur peut le rouvrir plus tard.
-• Doublon détecté par téléphone : message d'avertissement avec lien vers la fiche existante. L'opérateur peut choisir de fusionner mentalement ou de poursuivre malgré l'avertissement (action tracée).
-
-16.4 WF-04 — Dépôt d'une offre par une entreprise existante
-Pré-conditions
-• L'entreprise existe déjà dans la base (sinon, créer la fiche d'abord).
-• L'opérateur est connecté avec les droits de création d'offre.
-Étapes
-66. Une entreprise contacte le guichet (téléphone, e-mail ou visite) pour déposer une offre.
-67. L'opérateur ouvre la fiche de l'entreprise via la recherche globale.
-68. Il clique sur « Offres » puis « Nouvelle offre ».
-69. Il complète le formulaire avec l'entreprise (titre, type de contrat, durée, conditions économiques, missions, compétences requises, lieux).
-70. Il enregistre l'offre en brouillon. Le système attribue une référence interne (AEB-OFF-AAAA-NNNN).
-71. Une notification automatique part vers les modérateurs (workflow WF-07).
-72. L'opérateur informe l'entreprise que l'offre sera publiée après validation interne sous 24 à 48h.
-73. Une fois publiée par un modérateur, l'offre devient exploitable pour les mises en relation.
-Post-conditions
-• Une offre en statut « Brouillon » est créée.
-• Les modérateurs ont reçu une notification de validation.
-
-16.5 WF-05 — Mise en relation d'un candidat avec une offre
-Déclencheur
-• Soit un opérateur reçoit une offre et veut trouver des candidats.
-• Soit un candidat se présente au guichet et l'opérateur cherche des opportunités pour lui.
-Étapes (depuis une offre)
-74. L'opérateur ouvre l'offre publiée.
-75. Il clique sur l'onglet « Candidats suggérés ».
-76. Le système affiche les candidats triés par score de pertinence (compétences, géographie, expérience…).
-77. L'opérateur consulte les profils proposés dans le panneau latéral d'aperçu rapide.
-78. Il sélectionne un ou plusieurs candidats prometteurs.
-79. Il clique sur « Créer la mise en relation » et ajoute éventuellement des notes initiales.
-80. Chaque mise en relation créée passe en statut « Proposée » et lui est attribuée comme responsable.
-81. Le système ajoute ces mises en relation à sa file de travail personnelle.
-Étapes (depuis un candidat)
-82. L'opérateur ouvre la fiche du candidat.
-83. Il clique sur l'onglet « Offres pertinentes ».
-84. Le système affiche les offres publiées correspondant au profil.
-85. Il sélectionne une ou plusieurs offres pertinentes.
-86. Il crée la mise en relation comme précédemment.
-
-16.6 WF-06 — Suivi et clôture d'une mise en relation
-Étapes
-87. L'opérateur consulte sa file de mises en relation depuis le tableau de bord.
-88. Il sélectionne une mise en relation en statut « Proposée ».
-89. Il contacte le candidat (par téléphone, SMS ou en attendant sa prochaine visite).
-90. Après le contact, il met à jour le statut vers « Contactée » et saisit des notes.
-91. Si le candidat est intéressé, l'opérateur informe l'entreprise et facilite la prise de rendez-vous.
-92. Au moment de l'entretien, il fait passer le statut à « Entretien » avec date et notes.
-93. Après l'entretien, l'entreprise donne sa décision.
-94. L'opérateur clôture la mise en relation avec le statut adéquat : « Acceptée », « Refusée » ou « Abandonnée ».
-95. Une notification est envoyée au modérateur en cas de mise en relation « Acceptée » (suivi statistique).
-Indicateurs alimentés
-• Statistiques personnelles de l'opérateur (taux de conversion, temps moyen).
-• Statistiques globales d'équipe pour le modérateur.
-• Reporting pour le bailleur (nombre de placements).
-
-16.7 WF-07 — Validation d'une offre en brouillon
-Étapes
-96. Le modérateur consulte la liste des offres en statut « Brouillon » depuis son tableau de bord.
-97. Il sélectionne une offre à examiner.
-98. Il vérifie : cohérence des informations, clarté de la description, conformité éthique de l'offre, complétude des champs essentiels.
-99. Si l'offre est conforme, il clique sur « Publier » — l'offre passe en statut « Publiée » avec horodatage.
-100. Si l'offre nécessite des corrections, il ajoute des commentaires (champ note interne) et notifie l'opérateur saisisseur.
-101. Si l'offre est inappropriée, il peut la refuser (suppression logique) avec motif obligatoire.
-102. Le journal d'audit trace la décision.
-
-16.8 WF-08 — Configuration et publication de la landing page
-Étapes
-103. Le super-administrateur ouvre Administration > Configuration > Landing page.
-104. Il visualise la liste des sections avec leur statut (actif / inactif) et leur ordre actuel.
-105. Il peut désactiver une section en cliquant sur son toggle (la modification reste en brouillon).
-106. Il peut réorganiser les sections par glisser-déposer.
-107. Il édite le contenu d'une section en cliquant sur « Modifier » — un formulaire dédié au type de bloc s'ouvre.
-108. Il sauvegarde les modifications en brouillon.
-109. Il clique sur « Prévisualiser » pour ouvrir un nouvel onglet avec la version brouillon (URL non indexée par les moteurs de recherche).
-110. Une fois satisfait, il clique sur « Publier les modifications ».
-111. Le cache public est invalidé et la nouvelle version remplace l'ancienne.
-112. L'ancienne version est conservée dans l'historique des publications (10 dernières).
-113. Le journal d'audit trace la publication avec le diff.
-Cas alternatifs
-• Retour à une version antérieure : depuis l'historique, le super-administrateur peut restaurer une publication précédente en un clic.
-• Désactivation totale de la landing page (mode maintenance) : option globale dans les paramètres généraux.
-
-16.9 WF-09 — Création d'un compte utilisateur back-office
-Étapes
-114. Le super-administrateur ouvre Administration > Utilisateurs.
-115. Il clique sur « Nouvel utilisateur ».
-116. Il saisit : nom, prénom, e-mail professionnel, rôle initial.
-117. Le système suggère un mot de passe temporaire conforme à la politique (le super-admin peut le modifier).
-118. À la validation, le compte est créé en base avec un statut « Première connexion en attente ».
-119. Un e-mail d'accueil est envoyé automatiquement au nouvel utilisateur avec ses identifiants et le lien du back-office.
-120. Au premier login, l'utilisateur doit changer son mot de passe avant d'accéder au back-office.
-121. Le journal d'audit trace la création avec les détails (auteur, rôle attribué, horodatage).
-
-16.10 Schéma de flux global du dispositif
-Le schéma narratif ci-dessous résume l'interaction entre les acteurs et les modules dans le fonctionnement quotidien :
-
-ÉtapeActeurModule impliquéSortie produite1. Visite du jeune au guichetJeune + OpérateurM05 — CandidatsFiche candidat créée ou mise à jour2. Visite ou appel d'une entrepriseEntreprise + OpérateurM06 + M07Fiche entreprise + offre en brouillon3. Validation de l'offreModérateurM07 — OffresOffre publiée4. Recherche de candidats pour l'offreOpérateurM07 + M08Liste de candidats suggérés5. Création des mises en relationOpérateurM08 — MatchingMises en relation « Proposées »6. Contact et suiviOpérateur + Jeune + EntrepriseM08 + M11Progression des statuts7. Clôture du dossierOpérateurM08Statut final (Acceptée/Refusée/Abandonnée)8. Reporting et pilotageModérateur + Super-adminM09 — Tableau de bordIndicateurs et exports pour bailleur
-?? Cycle vertueux
-Plus la base s'enrichit en candidats et en offres, plus les suggestions de mise en relation sont pertinentes. La qualité du dispositif repose sur la rigueur de la saisie au quotidien — d'où l'importance des écrans ergonomiques pour les opérateurs, qui constituent l'investissement principal de l'UX.
-
-17. Backlog produit priorisé
-17.1 Méthode de priorisation
-Le backlog est priorisé selon la méthode MoSCoW, qui distingue quatre niveaux d'importance :
-• Must have : indispensable au MVP, sans quoi le service ne peut être lancé.
-• Should have : très important mais peut être contourné temporairement.
-• Could have : nice to have, à intégrer si le temps et le budget le permettent.
-• Won't have (this time) : explicitement reporté à une phase ultérieure.
-
-Chaque user story suit le format standard : « En tant que [rôle], je veux [fonctionnalité] afin de [bénéfice] ».
-
-?? Lecture du backlog
-Le backlog est organisé par épopée (epic) regroupant des user stories liées. Les colonnes « Priorité » et « Phase » permettent de visualiser rapidement le périmètre MVP (Phase 1 — février 2027) par rapport aux phases ultérieures.
-17.2 EPIC A — Landing page publique
-IDUser storyPrioritéPhaseUS-A01En tant que visiteur, je veux consulter la page d'accueil pour comprendre l'offre du guichetMust1US-A02En tant que visiteur mobile, je veux une page rapide et lisible sur smartphoneMust1US-A03En tant que visiteur, je veux trouver l'adresse, les horaires et les contacts du guichetMust1US-A04En tant que visiteur, je veux envoyer un message via un formulaire de contactMust1US-A05En tant que visiteur, je veux découvrir les partenaires du projet et leurs liensMust1US-A06En tant que visiteur, je veux comprendre comment fonctionne le guichet en 3 étapesMust1US-A07En tant que visiteur, je veux accéder à la page Facebook du projetShould1US-A08En tant que visiteur, je veux consulter une FAQ pour mes questions courantesCould2US-A09En tant que visiteur, je veux lire des témoignages de bénéficiairesCould2US-A10En tant que visiteur, je veux une version anglaise de la landing pageWon't3
-17.3 EPIC B — Configurateur de landing page
-IDUser storyPrioritéPhaseUS-B01En tant que super-admin, je veux activer ou désactiver chaque section de la landingMust1US-B02En tant que super-admin, je veux réorganiser les sections par glisser-déposerMust1US-B03En tant que super-admin, je veux modifier les textes de chaque sectionMust1US-B04En tant que super-admin, je veux téléverser des images pour les sectionsMust1US-B05En tant que super-admin, je veux prévisualiser avant publicationMust1US-B06En tant que super-admin, je veux publier explicitement mes modificationsMust1US-B07En tant que super-admin, je veux consulter l'historique des publicationsShould1US-B08En tant que super-admin, je veux restaurer une version antérieureShould1US-B09En tant que super-admin, je veux gérer le mode maintenance (page fermée)Could2US-B10En tant que super-admin, je veux dupliquer une section existanteCould2
-17.4 EPIC C — Authentification et sécurité
-IDUser storyPrioritéPhaseUS-C01En tant qu'utilisateur interne, je veux me connecter avec mon e-mail et mot de passeMust1US-C02En tant qu'utilisateur, je veux pouvoir réinitialiser mon mot de passe oubliéMust1US-C03En tant qu'utilisateur, je veux changer mon mot de passe à la première connexionMust1US-C04En tant qu'utilisateur, je veux modifier mon profil personnelMust1US-C05En tant que système, je veux verrouiller un compte après échecs répétésMust1US-C06En tant qu'utilisateur, je veux voir mes dernières connexions sur mon tableau de bordShould1US-C07En tant qu'utilisateur, je veux que ma session soit fermée automatiquement après inactivitéMust1US-C08En tant qu'utilisateur, je veux activer l'authentification à deux facteursCould2
-17.5 EPIC D — Rôles et permissions
-IDUser storyPrioritéPhaseUS-D01En tant que super-admin, je veux créer des comptes utilisateursMust1US-D02En tant que super-admin, je veux attribuer un rôle à chaque utilisateurMust1US-D03En tant que super-admin, je veux désactiver un compte sans le supprimerMust1US-D04En tant que super-admin, je veux créer des rôles personnalisésMust1US-D05En tant que super-admin, je veux composer la matrice de permissions d'un rôleMust1US-D06En tant que super-admin, je veux supprimer (soft) un compte tout en gardant l'auditMust1US-D07En tant que système, je veux refuser toute action non autorisée par défautMust1
-17.6 EPIC E — Gestion des candidats
-IDUser storyPrioritéPhaseUS-E01En tant qu'opérateur, je veux créer un dossier candidat en plusieurs étapesMust1US-E02En tant qu'opérateur, je veux téléverser la photo et la pièce d'identitéMust1US-E03En tant qu'opérateur, je veux téléverser le CV et les diplômesMust1US-E04En tant qu'opérateur, je veux saisir les compétences via cases à cocherMust1US-E05En tant qu'opérateur, je veux saisir les expériences professionnelles antérieuresMust1US-E06En tant qu'opérateur, je veux que l'âge se calcule automatiquementMust1US-E07En tant qu'opérateur, je veux détecter les doublons par téléphoneMust1US-E08En tant qu'opérateur, je veux saisir les besoins exprimés (champ interne)Must1US-E09En tant qu'opérateur, je veux rechercher rapidement un dossierMust1US-E10En tant qu'opérateur, je veux filtrer les candidats par compétencesMust1US-E11En tant qu'opérateur, je veux modifier section par section sans tout ressaisirMust1US-E12En tant qu'opérateur, je veux exporter une fiche en PDFShould1US-E13En tant que modérateur, je veux exporter un listing en ExcelShould1US-E14En tant que modérateur, je veux identifier les dossiers incompletsShould1US-E15En tant qu'opérateur, je veux consulter l'historique des modifications d'une ficheShould1
-17.7 EPIC F — Gestion des entreprises
-IDUser storyPrioritéPhaseUS-F01En tant qu'opérateur, je veux créer une fiche entrepriseMust1US-F02En tant qu'opérateur, je veux ajouter plusieurs sites d'activité à une entrepriseMust1US-F03En tant qu'opérateur, je veux téléverser des documents (statuts, agréments)Should1US-F04En tant qu'opérateur, je veux rechercher une entreprise rapidementMust1US-F05En tant qu'opérateur, je veux détecter les doublons par téléphone et par nom procheMust1US-F06En tant qu'opérateur, je veux voir toutes les offres associées à une entrepriseMust1US-F07En tant qu'opérateur, je veux saisir les besoins exprimés par l'entrepriseMust1US-F08En tant qu'opérateur, je veux exporter une fiche entreprise en PDFCould1
-17.8 EPIC G — Offres et opportunités
-IDUser storyPrioritéPhaseUS-G01En tant qu'opérateur, je veux créer une offre rattachée à une entrepriseMust1US-G02En tant qu'opérateur, je veux sauvegarder une offre en brouillonMust1US-G03En tant que modérateur, je veux examiner et publier une offre en brouillonMust1US-G04En tant qu'opérateur ou modérateur, je veux archiver une offre devenue obsolèteMust1US-G05En tant que super-admin, je veux supprimer définitivement une offre erronéeMust1US-G06En tant qu'opérateur, je veux filtrer les offres par type, lieu, compétencesMust1US-G07En tant qu'opérateur, je veux modifier une offre existanteMust1US-G08En tant que modérateur, je veux exporter un listing d'offres en ExcelShould1US-G09En tant que modérateur, je veux refuser une offre inappropriée avec motifShould1
-17.9 EPIC H — Mise en relation
-IDUser storyPrioritéPhaseUS-H01En tant qu'opérateur, je veux voir les candidats suggérés pour une offreMust1US-H02En tant qu'opérateur, je veux voir les offres pertinentes pour un candidatMust1US-H03En tant qu'opérateur, je veux comprendre le score de pertinence proposéMust1US-H04En tant qu'opérateur, je veux créer une mise en relation en un clicMust1US-H05En tant qu'opérateur, je veux suivre le statut d'une mise en relationMust1US-H06En tant qu'opérateur, je veux ajouter des notes de suivi à chaque étapeMust1US-H07En tant qu'opérateur, je veux clôturer une mise en relation avec un statut finalMust1US-H08En tant qu'opérateur, je veux voir ma file de mises en relation en coursMust1US-H09En tant que modérateur, je veux suivre les performances de mises en relation par opérateurMust1US-H10En tant que système, je veux pouvoir ajuster la pondération du scoringCould2
-17.10 EPIC I — Tableau de bord et reporting
-IDUser storyPrioritéPhaseUS-I01En tant qu'opérateur, je veux voir mes indicateurs personnels sur mon tableau de bordMust1US-I02En tant que modérateur, je veux voir les indicateurs globaux d'équipeMust1US-I03En tant que super-admin, je veux voir les indicateurs techniques (stockage, sauvegarde)Must1US-I04En tant que modérateur, je veux exporter un rapport pour le bailleur (CSV/Excel)Must1US-I05En tant qu'opérateur, je veux voir mes mises en relation à relancerMust1US-I06En tant que modérateur, je veux voir les cartes de chaleur des compétencesShould1US-I07En tant que modérateur, je veux voir l'évolution mensuelle des indicateursShould1US-I08En tant que modérateur, je veux personnaliser les widgets de mon tableau de bordCould2
-17.11 EPIC J — Modules transverses
-IDUser storyPrioritéPhaseUS-J01En tant qu'utilisateur, je veux une recherche globale dans toute l'applicationMust1US-J02En tant qu'utilisateur, je veux recevoir des e-mails de notification pour mes événements clésMust1US-J03En tant que super-admin, je veux consulter le journal d'audit completMust1US-J04En tant que modérateur, je veux consulter le journal pour mes équipesMust1US-J05En tant que super-admin, je veux gérer les référentiels (communes, langues, compétences)Must1US-J06En tant que super-admin, je veux paramétrer les coordonnées du guichet (adresse, horaires)Must1US-J07En tant que super-admin, je veux activer ou désactiver des modules completsShould1US-J08En tant qu'utilisateur, je veux que les sauvegardes soient automatiséesMust1US-J09En tant que super-admin, je veux purger les anciennes entrées d'auditShould2
-17.12 EPIC K — Phases 2 et 3 (vision long terme)
-IDUser storyPrioritéPhaseUS-K01En tant que jeune, je veux créer mon compte en libre-service sur la plateformeShould2US-K02En tant qu'entreprise, je veux créer mon compte en libre-serviceShould2US-K03En tant que jeune connecté, je veux consulter les offres compatibles avec mon profilShould2US-K04En tant qu'entreprise connectée, je veux déposer mes offres en autonomieShould2US-K05En tant qu'utilisateur, je veux envoyer des messages dans une messagerie interneCould2US-K06En tant que jeune, je veux télécharger une attestation d'inscriptionCould2US-K07En tant que système, je veux exposer une API REST sécurisée pour les partenairesCould3US-K08En tant que jeune, je veux utiliser une application mobile nativeCould3US-K09En tant que système, je veux proposer un matching automatique plus avancé (ML)Could3US-K10En tant que super-admin, je veux gérer plusieurs guichets (multi-tenant)Could3US-K11En tant que visiteur, je veux une interface en plusieurs languesCould3US-K12En tant que système, je veux envoyer des SMS (rappels, notifications)Could2
-17.13 Récapitulatif
-CatégorieUser stories MVP (Must)Should Phase 1Could Phase 2-3EPIC A — Landing page613EPIC B — Configurateur622EPIC C — Authentification611EPIC D — Rôles & permissions700EPIC E — Candidats1140EPIC F — Entreprises611EPIC G — Offres720EPIC H — Mise en relation901EPIC I — Tableau de bord521EPIC J — Transverses711EPIC K — Phases ultérieures0012TOTAL701422
-
-
-
-21. Planning prévisionnel
-21.1 Vue d'ensemble
-Le MVP doit être livré et opérationnel d'ici février 2027 selon les engagements pris en réunion de cadrage. Le découpage en sprints de deux semaines est recommandé pour assurer un rythme régulier de livraisons intermédiaires et de validations par Yelemani.
-
-?? Hypothèses de planning
-Le planning ci-dessous suppose une équipe de 1 développeur senior temps plein, ou 2 développeurs (1 senior + 1 confirmé) à mi-temps, avec un appui ponctuel d'un designer UI pour le configurateur de landing page. Toute modification de l'effectif aura un impact direct sur les délais.
-21.2 Découpage en sprints
-SprintDuréeObjectifs principauxLivrablesSprint 01 semaineInitialisation projet, environnements, dépôt Git, conventionsSquelette Laravel + Livewire fonctionnel sur stagingSprint 12 semainesAuth, rôles, permissions, layout back-officeConnexion fonctionnelle, gestion des comptes, matrice de permissionsSprint 22 semainesModule candidats (formulaire + listing + fiche)Saisie complète d'un dossier candidatSprint 32 semainesModule entreprises + référentielsSaisie complète d'une fiche entreprise + admin des référentielsSprint 42 semainesModule offres + cycle de vieCréation, publication, archivage des offresSprint 52 semainesModule mise en relation + scoringSuggestions, création, suivi des mises en relationSprint 62 semainesLanding page publique + configurateurPage publique en ligne + configurateur fonctionnelSprint 72 semainesTableau de bord, notifications, audit, recherche globaleIndicateurs en place, e-mails sortants, journal d'audit consultableSprint 81 semaineStabilisation, tests, documentation, formationTests fonctionnels passés, doc utilisateur, recette par YelemaniSprint 91 semaineMise en production, sauvegardes, monitoringProduction en ligne, sauvegardes actives, équipes formées
-21.3 Jalons clés
-JalonDate cibleCritères de validationJ1 — Squelette technique prêtT0 + 1 semaineBuild OK sur staging, dépôt Git, conventions documentéesJ2 — Authentification livréeT0 + 3 semainesConnexion, comptes, rôles fonctionnelsJ3 — Saisie candidat fonctionnelleT0 + 5 semainesDémo enregistrement complet d'un candidatJ4 — Saisie entreprise + offre fonctionnellesT0 + 9 semainesDémo cycle complet entreprise ? offre publiéeJ5 — Mise en relation opérationnelleT0 + 11 semainesDémo workflow complet de matchingJ6 — Landing page en ligne sur stagingT0 + 13 semainesConfigurateur utilisable par le super-adminJ7 — Recette utilisateur terminéeT0 + 16 semainesTests par Yelemani validésJ8 — Mise en productionT0 + 17 semainesSite en ligne, équipes formées
-21.4 Risques identifiés et mitigations
-RisqueImpactMitigationRetard de fourniture des contenus de la landing pageÉlevéDémarrer avec des contenus placeholder, prévoir contenus définitifs au Sprint 6Charge sous-estimée du configurateur de landingMoyenDécouper en deux livraisons (lecture seule en Sprint 6, édition complète en Sprint 7)Évolution des besoins en cours de projetMoyenCadrer strictement le périmètre MVP, parking lot pour le hors-MVPIndisponibilité des opérateurs pour la recetteÉlevéPlanifier la recette dès le démarrage, prévoir des plages dédiéesConnexion Internet du guichet limitéeMoyenOptimiser le poids des pages, prévoir un mode dégradéDépart d'un développeur cléÉlevéDocumentation continue, revues de code croisées, conventions strictes
-
-— Fin du document —
-Agro Eco BAARA  —  Cahier des charges fonctionnel et technique
-
-Version 1.0 — Novembre 2026  •  Page 1 / 1
-
