@@ -10,55 +10,185 @@ html { font-size: 93.75%; } /* 15px base — back-office density */
 @source '../../app/**/*.php';
 
 @theme {
-    --font-sans:  'Inter', ui-sans-serif, system-ui, sans-serif;
-    --font-inter: 'Inter', ui-sans-serif, system-ui, sans-serif;
-    --font-sora:  'Sora', ui-sans-serif, system-ui, sans-serif;
-    --font-mono:  'JetBrains Mono', ui-monospace, monospace;
+    --font-sans:    'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-inter:   'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-sora:    'Raleway', ui-sans-serif, system-ui, sans-serif; /* Raleway remplace Sora */
+    --font-raleway: 'Raleway', ui-sans-serif, system-ui, sans-serif;
+    --font-mono:    'JetBrains Mono', ui-monospace, monospace;
 
-    --color-primary:          #2c6904;
-    --color-primary-dark:     #1a4003;
-    --color-primary-light:    #448322;
-    --color-primary-fixed:    #aef585;
-    --color-primary-fixed-dim: #93d86c;
+    /* ─ Primary ─ */
+    --color-primary:                    #2c6904;
+    --color-primary-dark:               #1a4003;
+    --color-primary-light:              #448322;
+    --color-primary-fixed:              #aef585;
+    --color-primary-fixed-dim:          #93d86c;
+    --color-primary-container:          #448322;
+    --color-on-primary:                 #ffffff;
+    --color-on-primary-container:       #f8ffed;
+    --color-on-primary-fixed:           #082100;
+    --color-on-primary-fixed-variant:   #1f5100;
+    --color-inverse-primary:            #93d86c;
 
-    --color-secondary:          #875212;
-    --color-secondary-container: #ffb870;
-    --color-secondary-fixed:    #ffdcbd;
+    /* ─ Secondary ─ */
+    --color-secondary:                      #875212;
+    --color-secondary-container:            #ffb870;
+    --color-secondary-fixed:                #ffdcbd;
+    --color-secondary-fixed-dim:            #ffb870;
+    --color-on-secondary:                   #ffffff;
+    --color-on-secondary-container:         #794704;
+    --color-on-secondary-fixed:             #2c1600;
+    --color-on-secondary-fixed-variant:     #693c00;
 
-    --color-surface:            #fff8f5;
-    --color-surface-container:  #f5ece7;
-    --color-surface-low:        #fbf2ed;
-    --color-surface-high:       #efe6e2;
-    --color-surface-highest:    #e9e1dc;
+    /* ─ Tertiary ─ */
+    --color-tertiary:                       #615c47;
+    --color-tertiary-fixed:                 #ebe2c8;
+    --color-tertiary-fixed-dim:             #cec6ad;
+    --color-tertiary-container:             #7b745e;
+    --color-on-tertiary:                    #ffffff;
+    --color-on-tertiary-container:          #ffffff;
+    --color-on-tertiary-fixed:              #1f1c0b;
+    --color-on-tertiary-fixed-variant:      #4c4733;
 
-    --color-on-surface:         #1e1b18;
-    --color-on-surface-variant: #41493b;
-    --color-outline:            #717a69;
-    --color-outline-variant:    #c1c9b6;
+    /* ─ Surface / Background ─ */
+    --color-surface:                        #fff8f5;
+    --color-surface-dim:                    #e1d8d4;
+    --color-surface-bright:                 #fff8f5;
+    --color-surface-tint:                   #2e6c08;
+    --color-surface-container:              #f5ece7;
+    --color-surface-low:                    #fbf2ed;
+    --color-surface-high:                   #efe6e2;
+    --color-surface-highest:                #e9e1dc;
+    --color-surface-container-low:          #fbf2ed;
+    --color-surface-container-high:         #efe6e2;
+    --color-surface-container-highest:      #e9e1dc;
+    --color-surface-container-lowest:       #ffffff;
+    --color-background:                     #fff8f5;
+    --color-on-background:                  #1e1b18;
+    --color-inverse-surface:                #34302c;
+    --color-inverse-on-surface:             #f8efea;
 
-    --color-tertiary:           #615c47;
-    --color-tertiary-fixed:     #ebe2c8;
+    /* ─ On-Surface / Outline ─ */
+    --color-on-surface:                     #1e1b18;
+    --color-on-surface-variant:             #41493b;
+    --color-outline:                        #717a69;
+    --color-outline-variant:                #c1c9b6;
 
-    --color-status-accepted:    #2E7D32;
-    --color-status-refused:     #D32F2F;
-    --color-status-locked:      #F57C00;
-    --color-status-draft:       #757575;
+    /* ─ Error ─ */
+    --color-error:                          #ba1a1a;
+    --color-on-error:                       #ffffff;
+    --color-error-container:                #ffdad6;
+    --color-on-error-container:             #93000a;
 
-    --color-error:              #ba1a1a;
-    --color-error-container:    #ffdad6;
+    /* ─ Status ─ */
+    --color-status-accepted:                #2E7D32;
+    --color-status-refused:                 #D32F2F;
+    --color-status-locked:                  #F57C00;
+    --color-status-draft:                   #757575;
+
+    /* ─ Brand extras ─ */
+    --color-land-green-vibrant:             #76B82A;
+    --color-internal-section-bg:            #F9F7F2;
+
+    /* ─ Landing spacing scale ─ */
+    --spacing-margin-mobile:    1rem;       /* 16px */
+    --spacing-margin-desktop:   4rem;       /* 64px */
+    --width-container-max:      1280px;
 }
 
-/* ── Utilitaires custom ── */
-.font-sora   { font-family: var(--font-sora); }
-.font-inter  { font-family: var(--font-inter); }
-.font-mono   { font-family: var(--font-mono); }
+/* ════════════════════════════════════════════════════
+   TYPOGRAPHY SCALE  (design-system code.html)
+   @utility = variant-aware → md:text-display-hero etc.
+════════════════════════════════════════════════════ */
+@utility text-display-hero {
+    font-size: 48px;
+    line-height: 56px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+@utility text-display-hero-mobile {
+    font-size: 32px;
+    line-height: 40px;
+    font-weight: 700;
+}
+@utility text-headline-lg {
+    font-size: 32px;
+    line-height: 40px;
+    font-weight: 600;
+}
+@utility text-headline-md {
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 600;
+}
+@utility text-headline-sm {
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 600;
+}
+@utility text-body-lg {
+    font-size: 18px;
+    line-height: 28px;
+}
+@utility text-body-md {
+    font-size: 16px;
+    line-height: 24px;
+}
+@utility text-body-sm {
+    font-size: 14px;
+    line-height: 20px;
+}
+@utility text-label-bold {
+    font-size: 14px;
+    line-height: 16px;
+    font-weight: 600;
+}
 
-/* Material Symbols fill variant */
+/* ════════════════════════════════════════════════════
+   FONT FAMILY UTILITIES
+════════════════════════════════════════════════════ */
+.font-sora,
+.font-raleway,
+.font-display-hero,
+.font-display-hero-mobile,
+.font-headline-lg,
+.font-headline-md,
+.font-headline-sm {
+    font-family: 'Raleway', ui-sans-serif, system-ui, sans-serif;
+}
+.font-inter,
+.font-body-lg,
+.font-body-md,
+.font-body-sm,
+.font-label-bold {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+.font-mono,
+.font-code-ref {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* ════════════════════════════════════════════════════
+   MATERIAL SYMBOLS
+════════════════════════════════════════════════════ */
 .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
 }
 .material-fill {
     font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
+
+/* ════════════════════════════════════════════════════
+   LANDING PAGE HELPERS
+════════════════════════════════════════════════════ */
+.bento-item { transition: transform 0.3s ease; }
+.bento-item:hover { transform: translateY(-4px); }
+
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+details[open] summary .expand-icon { transform: rotate(180deg); }
+
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
 [x-cloak] { display: none !important; }

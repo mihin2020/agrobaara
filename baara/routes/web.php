@@ -22,8 +22,9 @@ use App\Livewire\Offers\OfferEdit;
 use App\Livewire\Offers\OfferShow;
 use App\Livewire\Matching\MatchIndex;
 use App\Livewire\Matching\MatchShow;
-use App\Livewire\Landing\LandingPage;
 use App\Livewire\Landing\ContactForm;
+use App\Livewire\Landing\LandingPage;
+use App\Livewire\Landing\Mediatheque;
 use App\Livewire\Admin\Landing\LandingConfigurator;
 use App\Livewire\Admin\Audit\AuditLog;
 use App\Livewire\Admin\Settings\SettingsIndex;
@@ -34,6 +35,7 @@ use Illuminate\Support\Facades\Route;
 // LANDING PAGE PUBLIQUE
 // ─────────────────────────────────────────────────────────────────────────────
 Route::get('/', LandingPage::class)->name('home');
+Route::get('/mediatheque', Mediatheque::class)->name('mediatheque');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // AUTHENTIFICATION (invités seulement)

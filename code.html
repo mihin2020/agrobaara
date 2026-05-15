@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Sora:wght@600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#93d86c",
+                        "internal-section-bg": "#F9F7F2",
+                        "tertiary-container": "#7b745e",
+                        "surface": "#fff8f5",
+                        "outline-variant": "#c1c9b6",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#fff8f5",
+                        "tertiary": "#615c47",
+                        "surface-container-low": "#fbf2ed",
+                        "on-tertiary-fixed": "#1f1c0b",
+                        "surface-dim": "#e1d8d4",
+                        "on-secondary": "#ffffff",
+                        "status-locked": "#F57C00",
+                        "error-container": "#ffdad6",
+                        "outline": "#717a69",
+                        "surface-bright": "#fff8f5",
+                        "on-surface-variant": "#41493b",
+                        "on-background": "#1e1b18",
+                        "on-primary-container": "#f8ffed",
+                        "status-accepted": "#2E7D32",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed-dim": "#ffb870",
+                        "on-tertiary-container": "#fffbff",
+                        "on-primary-fixed-variant": "#1f5100",
+                        "status-refused": "#D32F2F",
+                        "status-draft": "#757575",
+                        "surface-container-highest": "#e9e1dc",
+                        "surface-variant": "#e9e1dc",
+                        "on-tertiary": "#ffffff",
+                        "secondary-container": "#ffb870",
+                        "primary-container": "#448322",
+                        "on-tertiary-fixed-variant": "#4c4733",
+                        "inverse-primary": "#93d86c",
+                        "inverse-surface": "#34302c",
+                        "primary": "#2c6904",
+                        "on-primary-fixed": "#082100",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f8efea",
+                        "tertiary-fixed-dim": "#cec6ad",
+                        "surface-tint": "#2e6c08",
+                        "surface-container-high": "#efe6e2",
+                        "primary-fixed": "#aef585",
+                        "on-secondary-fixed-variant": "#693c00",
+                        "on-secondary-fixed": "#2c1600",
+                        "on-secondary-container": "#794704",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#ffdcbd",
+                        "on-surface": "#1e1b18",
+                        "land-green-vibrant": "#76B82A",
+                        "surface-container": "#f5ece7",
+                        "secondary": "#875212",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#ebe2c8"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "64px",
+                        "form-gap": "20px",
+                        "gutter-desktop": "24px",
+                        "unit": "4px",
+                        "gutter-mobile": "16px",
+                        "margin-mobile": "16px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "label-bold": ["Inter"],
+                        "headline-lg": ["Sora"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "code-ref": ["JetBrains Mono"],
+                        "display-hero-mobile": ["Sora"],
+                        "headline-sm": ["Sora"],
+                        "headline-md": ["Sora"],
+                        "display-hero": ["Sora"]
+                    },
+                    "fontSize": {
+                        "label-bold": ["14px", {"lineHeight": "16px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "code-ref": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "display-hero-mobile": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "display-hero": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .bento-item { transition: transform 0.3s ease; }
+        .bento-item:hover { transform: translateY(-4px); }
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        details[open] summary .expand-icon { transform: rotate(180deg); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="bg-surface docked full-width top-0 border-b border-outline-variant z-50 sticky">
+<nav class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
+<div class="flex items-center gap-4">
+<img alt="Agro Eco BAARA Logo" class="h-20 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAzpbcglFrXp83qaNSplq7pnweoWJYke3uk9-PpO8jog7JvjW3_LxAkvux17_NMZa97soNde3PlU9tJTqNc_XXirQ88fB1SMJvZihfaRaddGDfwe_tvCFRRhX6dwUy66A4sy4jpN6mfuIsEEDBTzVmmLLo_mYvJwSdMohLg9UVqfdArVCb8J29ZXG59ihBUxdPdnxB9COpXlh1S_7Egh5s8K0dECj4AqbxgTRZRS-LSUbJ7qxFKJn9GmPIb3nEOLeqnA1VU6enk1Pr"/>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-primary border-b-2 border-primary pb-1 font-label-bold hover:text-primary transition-colors" href="#">Accueil</a>
+<a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="#audiences">S'adresse à vous</a>
+<a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="#guichet">Le Guichet</a>
+<a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="#partenaires">Partenaires</a>
+<a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="#mediatheque">Médiathèque</a>
+<a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="#contact">Contact</a>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-lg font-label-bold hover:opacity-90 transition-all">Connexion</button>
+</div>
+<button class="md:hidden text-primary">
+<span class="material-symbols-outlined text-3xl">menu</span>
+</button>
+</nav>
+</header>
+<main>
+<!-- Hero Slider -->
+<style>
+#hs{position:relative;height:80vh;overflow:hidden;background:#111;}
+.hs-slide{position:absolute;inset:0;height:100%;display:flex;align-items:center;opacity:0;transition:opacity .8s ease;pointer-events:none;z-index:0;}
+.hs-slide.on{opacity:1;pointer-events:auto;z-index:1;}
+.hs-slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.hs-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.72),transparent);z-index:1;}
+.hs-body{position:relative;z-index:2;width:100%;padding:0 1rem;max-width:1280px;margin:0 auto;}
+@media(min-width:768px){.hs-body{padding:0 4rem;}}
+.hs-btn-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:10;width:48px;height:48px;border-radius:9999px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.hs-btn-nav:hover{background:rgba(255,255,255,.36);}
+#hs-dot-wrap{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:10;display:flex;gap:8px;align-items:center;}
+.hs-dot{height:8px;border-radius:9999px;border:none;cursor:pointer;transition:all .3s;background:rgba(255,255,255,.4);}
+.hs-dot.on{width:32px!important;background:#fff;}
+</style>
+
+<section id="hs">
+
+    <!-- Slide 1 -->
+    <div class="hs-slide on">
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPcKMZLN4J5wb3SrPQ7Q_DcwU4MEBfw04H2ZoXmeKm1-svyfPOrO9FIems6HlO15RuIBsyvNX-tTkz0XQJeJaRouRml8NhPJY5yzC2Up7hxYB7ah-ErYT6GtG7Q-eYpvjgKBDOglVsOqz-SM2f3kRtGR4FCgI8XcOI9ZsvWAimXcQ1x7ZcQxQS7X0NNkQSyVjVtnFNMnZPwHPl-1AxaiYY4cpzku_42A-Tvk-4F7G2dEWMzAK2b7LbNcakrPF5O4dnOsx09goHI8Z5" alt="Agroécologie Burkina" />
+        <div class="hs-overlay"></div>
+        <div class="hs-body text-white">
+            <div style="max-width:48rem">
+                <h1 class="font-display-hero-mobile md:font-display-hero text-display-hero-mobile md:text-display-hero mb-2">Agro Eco BAARA</h1>
+                <h2 class="font-headline-lg text-headline-lg mb-6 text-primary-fixed">Connecter les talents et les opportunités en Agroécologie</h2>
+                <p class="font-body-lg text-body-lg mb-8 text-surface-container-highest" style="max-width:42rem">Bienvenue sur Agro Eco BAARA, la plateforme pour répondre à vos besoins d’emplois en Agroécologie !</p>
+                <div style="display:flex;flex-wrap:wrap;gap:1rem">
+                    <a href="#contact" class="bg-primary text-on-primary px-8 py-4 rounded-xl font-headline-sm" style="display:inline-flex;align-items:center;gap:8px">Nous contacter <span class="material-symbols-outlined">arrow_forward</span></a>
+                    <a href="#audiences" style="display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25)" class="text-white px-8 py-4 rounded-xl font-headline-sm">En savoir plus</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="hs-slide">
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBNcZftyJWjUoGgfVa_M4hDmQM8vUgCkqTtpAUNxbYKpSEi4rW7pcA81XypsdsTx6dNDzvrkGA0YEi2OUpYUZvJ3UcAvYTQSmo_gd4MXgRc0Mkj4JHT0V_LhQnTy87A0dnS9te-TKgCvHGtCh0cXmTiCCf-mJJC2Kyua2y9Hf5YaYrrt2nzj0SflyaP8bgJIiOntFiUQkoO9GRhMDVJDtWVRTtcBP3xYsp3AegRO6yExHipXPTPcOvQyyY_y20-hc5ATTDw_OLrOiE" alt="Guichet emploi" />
+        <div class="hs-overlay"></div>
+        <div class="hs-body text-white">
+            <div style="max-width:48rem">
+                <h1 class="font-display-hero-mobile md:font-display-hero text-display-hero-mobile md:text-display-hero mb-2">Un Guichet pour l’Emploi</h1>
+                <h2 class="font-headline-lg text-headline-lg mb-6 text-primary-fixed">Accueil, écoute et accompagnement personnalisé</h2>
+                <p class="font-body-lg text-body-lg mb-8 text-surface-container-highest" style="max-width:42rem">Un espace dédié pour dynamiser l’avenir de l’agriculture durable au Burkina Faso.</p>
+                <div>
+                    <a href="#guichet" class="bg-primary text-on-primary px-8 py-4 rounded-xl font-headline-sm" style="display:inline-flex;align-items:center;gap:8px">Découvrir le guichet <span class="material-symbols-outlined">arrow_forward</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="hs-slide">
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPcKMZLN4J5wb3SrPQ7Q_DcwU4MEBfw04H2ZoXmeKm1-svyfPOrO9FIems6HlO15RuIBsyvNX-tTkz0XQJeJaRouRml8NhPJY5yzC2Up7hxYB7ah-ErYT6GtG7Q-eYpvjgKBDOglVsOqz-SM2f3kRtGR4FCgI8XcOI9ZsvWAimXcQ1x7ZcQxQS7X0NNkQSyVjVtnFNMnZPwHPl-1AxaiYY4cpzku_42A-Tvk-4F7G2dEWMzAK2b7LbNcakrPF5O4dnOsx09goHI8Z5" alt="Jeunes agroécologie" />
+        <div class="hs-overlay"></div>
+        <div class="hs-body text-white">
+            <div style="max-width:48rem">
+                <h1 class="font-display-hero-mobile md:font-display-hero text-display-hero-mobile md:text-display-hero mb-2">Pour les Jeunes &amp; Entreprises</h1>
+                <h2 class="font-headline-lg text-headline-lg mb-6 text-primary-fixed">Trouvez vos opportunités, recrutez vos talents</h2>
+                <p class="font-body-lg text-body-lg mb-8 text-surface-container-highest" style="max-width:42rem">Jeunes diplômés, ONG, entreprises agroécologiques — la plateforme qui vous met en relation.</p>
+                <div style="display:flex;flex-wrap:wrap;gap:1rem">
+                    <a href="#audiences" class="bg-primary text-on-primary px-8 py-4 rounded-xl font-headline-sm" style="display:inline-flex;align-items:center;gap:8px">Voir les publics <span class="material-symbols-outlined">arrow_forward</span></a>
+                    <a href="#contact" style="display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25)" class="text-white px-8 py-4 rounded-xl font-headline-sm">Nous contacter</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flèches -->
+    <button id="hs-prev" class="hs-btn-nav" style="left:1rem"><span class="material-symbols-outlined">chevron_left</span></button>
+    <button id="hs-next" class="hs-btn-nav" style="right:1rem"><span class="material-symbols-outlined">chevron_right</span></button>
+
+    <!-- Dots -->
+    <div id="hs-dot-wrap"></div>
+
+</section>
+
+<script>
+(function(){
+    var slides  = document.querySelectorAll(‘#hs .hs-slide’);
+    var dotWrap = document.getElementById(‘hs-dot-wrap’);
+    var cur     = 0;
+    var n       = slides.length;
+    var timer;
+
+    /* Créer les dots */
+    for(var i=0;i<n;i++){
+        var d=document.createElement(‘button’);
+        d.className=’hs-dot’;
+        d.style.width=’8px’;
+        d.setAttribute(‘data-i’,i);
+        d.addEventListener(‘click’,function(){go(+this.getAttribute(‘data-i’));});
+        dotWrap.appendChild(d);
+    }
+
+    function updateDots(){
+        var ds=dotWrap.querySelectorAll(‘.hs-dot’);
+        ds.forEach(function(d,i){
+            if(i===cur){d.classList.add(‘on’);d.style.width=’32px’;}
+            else{d.classList.remove(‘on’);d.style.width=’8px’;}
+        });
+    }
+
+    function go(idx){
+        slides[cur].classList.remove(‘on’);
+        cur=(idx%n+n)%n;
+        slides[cur].classList.add(‘on’);
+        updateDots();
+        clearInterval(timer);
+        timer=setInterval(function(){go(cur+1);},5000);
+    }
+
+    document.getElementById(‘hs-prev’).addEventListener(‘click’,function(){go(cur-1);});
+    document.getElementById(‘hs-next’).addEventListener(‘click’,function(){go(cur+1);});
+
+    updateDots();
+    timer=setInterval(function(){go(cur+1);},5000);
+})();
+</script>
+<!-- Le Projet Section -->
+<section class="py-20 bg-surface-container-low">
+<div class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="flex flex-col lg:flex-row items-center gap-12">
+<div class="flex-1">
+<div class="inline-flex items-center gap-2 px-4 py-2 bg-primary-container text-on-primary-container rounded-full font-label-bold text-sm mb-6">
+<span class="material-symbols-outlined text-sm">rocket_launch</span>
+                        NOTRE MISSION
+                    </div>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-4">Le Projet</h2>
+<div class="h-1.5 w-24 bg-secondary rounded-full mb-6"></div>
+<div class="prose prose-lg text-on-surface-variant max-w-none space-y-6">
+<p class="font-body-lg leading-9">Le service <strong>Agro Eco BAARA</strong> est une initiative de l’association <strong>Yelemani</strong> en collaboration avec son partenaire <strong>Centro Regionale d’Intervento per la Cooperazione (CRIC)</strong>.</p>
+<p class="leading-9">Elle s’inscrit dans le cadre du projet <em>« Territoires en perspective : transition agroécologique et autonomisation des femmes et des jeunes dans les régions du Kadiogo et de l’Oubritenga au Burkina Faso »</em>, financé par le <strong>Ministère Italien des Affaires Étrangères et de la Coopération Internationale</strong> (MAECI) à travers l’<strong>Agence Italienne de Coopération au Développement</strong> (AICS).</p>
+</div>
+</div>
+<div class="lg:w-1/3 flex justify-center">
+<div class="relative">
+<div class="absolute -inset-4 bg-primary/10 rounded-full blur-3xl"></div>
+<span class="material-symbols-outlined text-[180px] text-primary relative">eco</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- S'ADRESSE À VOUS Section (Audiences) -->
+<section class="py-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto" id="audiences">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-4 uppercase">Agro Eco BAARA S'ADRESSE à VOUS</h2>
+<div class="h-1.5 w-24 bg-secondary mx-auto rounded-full"></div>
+</div>
+<div class="grid md:grid-cols-3 gap-8">
+<!-- Jeunes -->
+<div class="group relative overflow-hidden rounded-3xl bg-surface-container-low border border-outline-variant p-8 bento-item">
+<div class="mb-6 inline-flex p-4 rounded-2xl bg-primary-container text-on-primary-container">
+<span class="material-symbols-outlined text-4xl">person_search</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-4">Jeunes</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">Vous êtes en formation, diplômés ou vous souhaitez travailler dans l’agroécologie ? Trouvez des opportunités et faites évoluer votre parcours.</p>
+<button class="text-primary font-label-bold flex items-center gap-2 group-hover:gap-4 transition-all">
+                    Explorer les opportunités <span class="material-symbols-outlined">east</span>
+</button>
+</div>
+<!-- Entreprises/ONG -->
+<div class="group relative overflow-hidden rounded-3xl bg-surface-container-high border border-outline-variant p-8 bento-item">
+<div class="mb-6 inline-flex p-4 rounded-2xl bg-secondary-container text-on-secondary-container">
+<span class="material-symbols-outlined text-4xl">corporate_fare</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-4">Entreprises &amp; ONG</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">Entreprises agroécologiques ou en transition, ONG, organisations paysannes, promoteurs agricoles. Vous recrutez ou vous recherchez des compétences ? Trouvez les profils adaptés.</p>
+<button class="text-secondary font-label-bold flex items-center gap-2 group-hover:gap-4 transition-all">
+                    Recruter des talents <span class="material-symbols-outlined">east</span>
+</button>
+</div>
+<!-- Centres de formation -->
+<div class="group relative overflow-hidden rounded-3xl bg-tertiary-fixed text-on-tertiary-fixed border border-outline-variant p-8 bento-item">
+<div class="mb-6 inline-flex p-4 rounded-2xl bg-tertiary-container text-on-tertiary-container">
+<span class="material-symbols-outlined text-4xl">school</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-4">Centres de formation</h3>
+<p class="font-body-md text-body-md mb-6">Centres professionnels, lycées et centres universitaires actifs en agroécologie. Vous souhaitez accompagner vos étudiants vers l'emploi ? Facilitez leur insertion.</p>
+<button class="font-label-bold flex items-center gap-2 group-hover:gap-4 transition-all">
+                    Partenariat insertion <span class="material-symbols-outlined">east</span>
+</button>
+</div>
+</div>
+</section>
+<!-- UN GUICHET POUR L’EMPLOI Section -->
+<section class="py-20 bg-primary text-on-primary overflow-hidden relative" id="guichet">
+<div class="absolute right-0 top-0 opacity-10 -mr-20 -mt-20">
+<span class="material-symbols-outlined text-[300px]">meeting_room</span>
+</div>
+<div class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto relative z-10">
+<div class="grid lg:grid-cols-2 gap-12 items-center">
+<div>
+<h2 class="font-headline-lg text-headline-lg mb-6">UN GUICHET POUR L’EMPLOI</h2>
+<p class="font-body-lg mb-10 opacity-90">Un espace d’accueil, d’écoute et d’accompagnement personnalisé pour dynamiser l'avenir de l'agriculture durable au Burkina Faso.</p>
+<div class="space-y-6">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined p-3 bg-white/10 rounded-full">location_on</span>
+<div>
+<p class="font-label-bold">Localisation</p>
+<p class="opacity-80">1200 Logements/Ouagadougou, Burkina Faso</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined p-3 bg-white/10 rounded-full">schedule</span>
+<div>
+<p class="font-label-bold">Horaires d'ouverture</p>
+<p class="opacity-80">Lundi – Vendredi, 8h00 – 17h00</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined p-3 bg-white/10 rounded-full">contact_support</span>
+<div>
+<p class="font-label-bold">Contacts</p>
+<p class="opacity-80">Tél: [Numéro de téléphone] | Email: [Adresse email]</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white/10 backdrop-blur-sm p-8 rounded-3xl border border-white/20">
+<img alt="Guichet accueil" class="rounded-2xl w-full h-64 object-cover mb-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBNcZftyJWjUoGgfVa_M4hDmQM8vUgCkqTtpAUNxbYKpSEi4rW7pcA81XypsdsTx6dNDzvrkGA0YEi2OUpYUZvJ3UcAvYTQSmo_gd4MXgRc0Mkj4JHT0V_LhQnTy87A0dnS9te-TKgCvHGtCh0cXmTiCCf-mJJC2Kyua2y9Hf5YaYrrt2nzj0SflyaP8bgJIiOntFiUQkoO9GRhMDVJDtWVRTtcBP3xYsp3AegRO6yExHipXPTPcOvQyyY_y20-hc5ATTDw_OLrOiE"/>
+<p class="italic text-center opacity-80">"Une équipe dédiée pour orienter vos projets professionnels."</p>
+</div>
+</div>
+</div>
+</section>
+<!-- CE QUE VOUS POUVEZ TROUVER Section -->
+<section class="py-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<h2 class="font-headline-lg text-headline-lg text-primary text-center mb-4 uppercase">CE QUE VOUS POUVEZ TROUVER</h2>
+<div class="h-1.5 w-24 bg-secondary mx-auto rounded-full mb-12"></div>
+<div class="grid md:grid-cols-2 gap-12">
+<!-- Pour les jeunes -->
+<div class="bg-surface-container-lowest p-10 rounded-3xl border-2 border-primary-container shadow-lg">
+<h3 class="font-headline-md text-headline-md text-primary mb-8 flex items-center gap-3">
+<span class="material-symbols-outlined text-3xl">school</span>
+                    Pour les jeunes
+                </h3>
+<ul class="space-y-4">
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary mt-1">check_circle</span>
+<span class="font-body-md">Conseils emploi &amp; orientation</span>
+</li>
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary mt-1">check_circle</span>
+<span class="font-body-md">Accompagnement CV / Profil professionnel</span>
+</li>
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary mt-1">check_circle</span>
+<span class="font-body-md">Offres (emplois, stages, opportunités)</span>
+</li>
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary mt-1">check_circle</span>
+<span class="font-body-md">Informations sur les formations &amp; financements</span>
+</li>
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary mt-1">check_circle</span>
+<span class="font-body-md">Accompagnement au lancement d'activity</span>
+</li>
+</ul>
+</div>
+<!-- Pour les entreprises -->
+<div class="bg-surface-container-lowest p-10 rounded-3xl border-2 border-secondary-container shadow-lg">
+<h3 class="font-headline-md text-headline-md text-secondary mb-8 flex items-center gap-3">
+<span class="material-symbols-outlined text-3xl">corporate_fare</span>
+                    Pour les entreprises
+                </h3>
+<ul class="space-y-4">
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-secondary mt-1">check_circle</span>
+<span class="font-body-md">Appui au recrutement spécialisé</span>
+</li>
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-secondary mt-1">check_circle</span>
+<span class="font-body-md">Accès aux profils de jeunes formés</span>
+</li>
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-secondary mt-1">check_circle</span>
+<span class="font-body-md">Accompagnement à la définition des besoins</span>
+</li>
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-secondary mt-1">check_circle</span>
+<span class="font-body-md">Mise en relation directe avec les talents</span>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<!-- COMMENT ÇA MARCHE Section -->
+<section class="py-20 bg-surface-container-low">
+<div class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<h2 class="font-headline-lg text-headline-lg text-primary text-center mb-4 uppercase">COMMENT ÇA MARCHE ?</h2>
+<div class="h-1.5 w-24 bg-secondary mx-auto rounded-full mb-12"></div>
+<div class="relative">
+<div class="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-outline-variant -translate-y-1/2 z-0"></div>
+<div class="grid md:grid-cols-3 gap-12 relative z-10">
+<div class="text-center group">
+<div class="w-20 h-20 bg-surface border-4 border-primary rounded-full flex items-center justify-center mx-auto mb-6 transition-all group-hover:bg-primary group-hover:text-white shadow-lg">
+<span class="font-headline-sm">1</span>
+</div>
+<h4 class="font-headline-sm mb-3">Premier Contact</h4>
+<p class="text-on-surface-variant font-body-sm px-4">Vous venez au guichet ou vous nous contactez par téléphone ou par email</p>
+</div>
+<div class="text-center group">
+<div class="w-20 h-20 bg-surface border-4 border-primary rounded-full flex items-center justify-center mx-auto mb-6 transition-all group-hover:bg-primary group-hover:text-white shadow-lg">
+<span class="font-headline-sm">2</span>
+</div>
+<h4 class="font-headline-sm mb-3">Diagnostic</h4>
+<p class="text-on-surface-variant font-body-sm px-4">Un opérateur vous accompagne pour clarifier votre besoin ou votre profil</p>
+</div>
+<div class="text-center group">
+<div class="w-20 h-20 bg-surface border-4 border-primary rounded-full flex items-center justify-center mx-auto mb-6 transition-all group-hover:bg-primary group-hover:text-white shadow-lg">
+<span class="font-headline-sm">3</span>
+</div>
+<h4 class="font-headline-sm mb-3">Mise en relation</h4>
+<p class="text-on-surface-variant font-body-sm px-4">Nous facilitons la mise en relation et assurons un suivi rigoureux</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- AUTRES SERVICES Section -->
+<section class="py-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="bg-surface-container-low rounded-[2rem] p-8 md:p-12 border border-outline-variant flex flex-col md:flex-row items-center gap-12">
+<div class="flex-1">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-4 uppercase">AUTRES SERVICES</h2>
+<div class="h-1.5 w-24 bg-secondary rounded-full mb-6"></div>
+<p class="font-body-lg text-on-surface-variant mb-8">Nous créons des espaces d'échange pour renforcer la communauté agroécologique :</p>
+<div class="grid sm:grid-cols-2 gap-6 mb-10">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">groups</span>
+<span class="font-label-bold">Ateliers thématiques</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">diversity_3</span>
+<span class="font-label-bold">Moments de rencontre</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">forum</span>
+<span class="font-label-bold">Échanges d'expériences</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">hub</span>
+<span class="font-label-bold">Réseautage</span>
+</div>
+</div>
+<a class="inline-flex items-center gap-3 bg-[#1877F2] text-white px-6 py-3 rounded-xl hover:opacity-90 transition-all font-label-bold" href="https://facebook.com/yelemani.burkina">
+<span class="material-symbols-outlined">facebook</span>
+                    Suivez-nous sur Facebook
+                </a>
+</div>
+<div class="flex-shrink-0 w-full md:w-1/3 text-center">
+<span class="material-symbols-outlined text-[160px] text-primary/10">event_available</span>
+</div>
+</div>
+</section>
+<!-- PARTENAIRES Section — Slider -->
+<section class="py-20 bg-surface-container-low" id="partenaires">
+<div class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<h2 class="font-headline-lg text-headline-lg text-primary text-center mb-4 uppercase">NOS PARTENAIRES</h2>
+<div class="h-1.5 w-24 bg-secondary mx-auto rounded-full mb-12"></div>
+
+<div class="relative px-14">
+    <button id="partners-prev" class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-surface border border-outline-variant rounded-full shadow-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all">
+        <span class="material-symbols-outlined">chevron_left</span>
+    </button>
+
+    <div id="partners-track" class="overflow-hidden">
+        <div id="partners-inner" class="flex gap-6 transition-transform duration-500 ease-in-out">
+
+            <!-- Commune de Loumbila -->
+            <div class="bg-surface p-8 rounded-3xl border border-outline-variant flex flex-col items-center text-center flex-shrink-0 w-full md:w-[calc(33.333%-1rem)]">
+                <div class="h-24 flex items-center justify-center mb-6">
+                    <img alt="Commune de Loumbila" class="max-h-full w-auto object-contain" src="baara/public/images/partners/Image1.png"/>
+                </div>
+                <h4 class="font-headline-sm mb-2">Commune de Loumbila</h4>
+                <p class="text-sm text-on-surface-variant mb-6 flex-grow">Collectivité territoriale partenaire du projet.</p>
+                <div class="flex gap-4">
+                    <a class="flex items-center gap-1 text-primary text-xs font-label-bold hover:underline" href="#"><span class="material-symbols-outlined text-sm">language</span> Site Web</a>
+                </div>
+            </div>
+
+            <!-- Yelemani -->
+            <div class="bg-surface p-8 rounded-3xl border border-outline-variant flex flex-col items-center text-center flex-shrink-0 w-full md:w-[calc(33.333%-1rem)]">
+                <div class="h-24 flex items-center justify-center mb-6">
+                    <img alt="Yelemani" class="max-h-full w-auto object-contain" src="baara/public/images/partners/Image2.png"/>
+                </div>
+                <h4 class="font-headline-sm mb-2">Yelemani</h4>
+                <p class="text-sm text-on-surface-variant mb-6 flex-grow">Organisation porteuse dédiée à la souveraineté alimentaire.</p>
+                <div class="flex gap-4">
+                    <a class="flex items-center gap-1 text-primary text-xs font-label-bold hover:underline" href="https://facebook.com/yelemani.burkina" target="_blank"><span class="material-symbols-outlined text-sm">facebook</span> Facebook</a>
+                </div>
+            </div>
+
+            <!-- CRIC -->
+            <div class="bg-surface p-8 rounded-3xl border border-outline-variant flex flex-col items-center text-center flex-shrink-0 w-full md:w-[calc(33.333%-1rem)]">
+                <div class="h-24 flex items-center justify-center mb-6">
+                    <img alt="CRIC" class="max-h-full w-auto object-contain" src="baara/public/images/partners/Image3.png"/>
+                </div>
+                <h4 class="font-headline-sm mb-2">CRIC</h4>
+                <p class="text-sm text-on-surface-variant mb-6 flex-grow">Centro Regionale d’Intervento per la Cooperazione.</p>
+                <div class="flex gap-4">
+                    <a class="flex items-center gap-1 text-primary text-xs font-label-bold hover:underline" href="#"><span class="material-symbols-outlined text-sm">language</span> Site Web</a>
+                </div>
+            </div>
+
+            <!-- Ministero dell’Interno -->
+            <div class="bg-surface p-8 rounded-3xl border border-outline-variant flex flex-col items-center text-center flex-shrink-0 w-full md:w-[calc(33.333%-1rem)]">
+                <div class="h-24 flex items-center justify-center mb-6">
+                    <img alt="Ministero dell’Interno" class="max-h-full w-auto object-contain" src="baara/public/images/partners/Image4.png"/>
+                </div>
+                <h4 class="font-headline-sm mb-2">Ministero dell’Interno</h4>
+                <p class="text-sm text-on-surface-variant mb-6 flex-grow">Partenaire institutionnel — Coopération italienne.</p>
+                <div class="flex gap-4">
+                    <a class="flex items-center gap-1 text-primary text-xs font-label-bold hover:underline" href="#"><span class="material-symbols-outlined text-sm">language</span> Site Web</a>
+                </div>
+            </div>
+
+            <!-- HUMUS JOB -->
+            <div class="bg-surface p-8 rounded-3xl border border-outline-variant flex flex-col items-center text-center flex-shrink-0 w-full md:w-[calc(33.333%-1rem)]">
+                <div class="h-24 flex items-center justify-center mb-6">
+                    <img alt="HUMUS JOB" class="max-h-full w-auto object-contain" src="baara/public/images/partners/Image5.jpg"/>
+                </div>
+                <h4 class="font-headline-sm mb-2">HUMUS JOB</h4>
+                <p class="text-sm text-on-surface-variant mb-6 flex-grow">Spécialiste de l’insertion professionnelle verte.</p>
+                <div class="flex gap-4">
+                    <a class="flex items-center gap-1 text-primary text-xs font-label-bold hover:underline" href="#"><span class="material-symbols-outlined text-sm">language</span> Site Web</a>
+                </div>
+            </div>
+
+            <!-- CNABio -->
+            <div class="bg-surface p-8 rounded-3xl border border-outline-variant flex flex-col items-center text-center flex-shrink-0 w-full md:w-[calc(33.333%-1rem)]">
+                <div class="h-24 flex items-center justify-center mb-6">
+                    <img alt="CNABio" class="max-h-full w-auto object-contain" src="baara/public/images/partners/Image6.jpg"/>
+                </div>
+                <h4 class="font-headline-sm mb-2">CNABio</h4>
+                <p class="text-sm text-on-surface-variant mb-6 flex-grow">Conseil National de l’Agriculture Biologique du Burkina Faso.</p>
+                <div class="flex gap-4">
+                    <a class="flex items-center gap-1 text-primary text-xs font-label-bold hover:underline" href="https://www.cnabio.net" target="_blank"><span class="material-symbols-outlined text-sm">language</span> Site Web</a>
+                </div>
+            </div>
+
+            <!-- Youth Connect Burkina Faso -->
+            <div class="bg-surface p-8 rounded-3xl border border-outline-variant flex flex-col items-center text-center flex-shrink-0 w-full md:w-[calc(33.333%-1rem)]">
+                <div class="h-24 flex items-center justify-center mb-6">
+                    <img alt="Youth Connect Burkina Faso" class="max-h-full w-auto object-contain" src="baara/public/images/partners/Image7.png"/>
+                </div>
+                <h4 class="font-headline-sm mb-2">Youth Connect BF</h4>
+                <p class="text-sm text-on-surface-variant mb-6 flex-grow">Réseau pour l’épanouissement et l’emploi des jeunes.</p>
+                <div class="flex gap-4">
+                    <a class="flex items-center gap-1 text-primary text-xs font-label-bold hover:underline" href="#"><span class="material-symbols-outlined text-sm">language</span> Site Web</a>
+                </div>
+            </div>
+
+            <!-- Agrinovia -->
+            <div class="bg-surface p-8 rounded-3xl border border-outline-variant flex flex-col items-center text-center flex-shrink-0 w-full md:w-[calc(33.333%-1rem)]">
+                <div class="h-24 flex items-center justify-center mb-6">
+                    <img alt="Agrinovia" class="max-h-full w-auto object-contain" src="baara/public/images/partners/Image8.jpg"/>
+                </div>
+                <h4 class="font-headline-sm mb-2">Agrinovia</h4>
+                <p class="text-sm text-on-surface-variant mb-6 flex-grow">Partenaire en innovation et développement agroécologique.</p>
+                <div class="flex gap-4">
+                    <a class="flex items-center gap-1 text-primary text-xs font-label-bold hover:underline" href="#"><span class="material-symbols-outlined text-sm">language</span> Site Web</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <button id="partners-next" class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-surface border border-outline-variant shadow-lg rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all">
+        <span class="material-symbols-outlined">chevron_right</span>
+    </button>
+</div>
+
+<div id="partners-dots" class="flex justify-center gap-2 mt-8"></div>
+</div>
+</section>
+
+<script>
+(function () {
+    var inner   = document.getElementById(‘partners-inner’);
+    var dotsEl  = document.getElementById(‘partners-dots’);
+    var btnPrev = document.getElementById(‘partners-prev’);
+    var btnNext = document.getElementById(‘partners-next’);
+
+    var total   = inner.children.length;
+    var perView = window.innerWidth >= 768 ? 3 : 1;
+    var current = 0;
+    var maxIdx  = total - perView;
+    var autoTimer;
+
+    for (var i = 0; i <= maxIdx; i++) {
+        var d = document.createElement(‘button’);
+        d.className = ‘w-2.5 h-2.5 rounded-full bg-outline-variant transition-all’;
+        d.setAttribute(‘data-idx’, i);
+        d.addEventListener(‘click’, function () { goTo(+this.getAttribute(‘data-idx’)); });
+        dotsEl.appendChild(d);
+    }
+
+    function updateDots() {
+        Array.from(dotsEl.children).forEach(function (d, i) {
+            d.className = i === current
+                ? ‘w-6 h-2.5 rounded-full bg-primary transition-all’
+                : ‘w-2.5 h-2.5 rounded-full bg-outline-variant transition-all’;
+        });
+    }
+
+    function goTo(idx) {
+        current = Math.max(0, Math.min(idx, maxIdx));
+        var cardW = inner.children[0].offsetWidth;
+        var gap   = 24;
+        inner.style.transform = ‘translateX(-’ + current * (cardW + gap) + ‘px)’;
+        updateDots();
+        resetAuto();
+    }
+
+    function next() { goTo(current >= maxIdx ? 0 : current + 1); }
+    function prev() { goTo(current <= 0 ? maxIdx : current - 1); }
+
+    function resetAuto() {
+        clearInterval(autoTimer);
+        autoTimer = setInterval(next, 3500);
+    }
+
+    btnNext.addEventListener(‘click’, next);
+    btnPrev.addEventListener(‘click’, prev);
+
+    window.addEventListener(‘resize’, function () {
+        perView = window.innerWidth >= 768 ? 3 : 1;
+        maxIdx  = total - perView;
+        goTo(0);
+    });
+
+    goTo(0);
+    resetAuto();
+})();
+</script>
+<!-- TÉMOIGNAGES Section (Moved after Partenaires) -->
+<section class="py-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<h2 class="font-headline-lg text-headline-lg text-primary text-center mb-4">TÉMOIGNAGES</h2>
+<div class="h-1.5 w-24 bg-secondary mx-auto rounded-full mb-12"></div>
+<div class="grid md:grid-cols-3 gap-8">
+<div class="bg-surface-container-low p-8 rounded-3xl border border-outline-variant relative">
+<span class="material-symbols-outlined text-6xl text-primary/10 absolute top-4 right-4">format_quote</span>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-14 h-14 rounded-full bg-primary-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div>
+<p class="font-label-bold">Issa Traoré</p>
+<p class="text-xs text-on-surface-variant">Stagiaire Agroécologue</p>
+</div>
+</div>
+<p class="italic text-on-surface-variant">"Grâce au guichet, j'ai trouvé un stage en maraîchage bio qui a changé ma vision de l'agriculture. L'accompagnement était top !"</p>
+</div>
+<div class="bg-surface-container-low p-8 rounded-3xl border border-outline-variant relative">
+<span class="material-symbols-outlined text-6xl text-primary/10 absolute top-4 right-4">format_quote</span>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-14 h-14 rounded-full bg-secondary-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div>
+<p class="font-label-bold">Mariam Ouédraogo</p>
+<p class="text-xs text-on-surface-variant">Entrepreneuse</p>
+</div>
+</div>
+<p class="italic text-on-surface-variant">"Le guichet m'a aidée à structurer mon projet de ferme pédagogique et à trouver les bons partenaires locaux."</p>
+</div>
+<div class="bg-surface-container-low p-8 rounded-3xl border border-outline-variant relative">
+<span class="material-symbols-outlined text-6xl text-primary/10 absolute top-4 right-4">format_quote</span>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-14 h-14 rounded-full bg-tertiary-fixed flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div>
+<p class="font-label-bold">Adama Barry</p>
+<p class="text-xs text-on-surface-variant">Jeune Diplômé</p>
+</div>
+</div>
+<p class="italic text-on-surface-variant">"Un service indispensable pour les jeunes qui veulent s'investir dans le durable au Burkina."</p>
+</div>
+</div>
+</section>
+<!-- Contact Section -->
+<section class="py-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto" id="contact">
+<div class="bg-white rounded-[2rem] overflow-hidden shadow-xl border border-outline-variant flex flex-col lg:flex-row">
+<div class="lg:w-1/2 p-12 bg-primary text-on-primary">
+<h2 class="font-headline-lg text-headline-lg mb-4">Contactez-nous</h2>
+<div class="h-1.5 w-24 bg-secondary rounded-full mb-8"></div>
+<p class="font-body-lg mb-12 opacity-90">Une question sur nos services ? Notre équipe vous répond sous 48h ouvrées.</p>
+<div class="space-y-8">
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined p-2 bg-white/10 rounded-lg">location_on</span>
+<div>
+<h5 class="font-label-bold">Siège Social</h5>
+<p class="opacity-80">1200 Logements, Ouagadougou, Burkina Faso</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined p-2 bg-white/10 rounded-lg">call</span>
+<div>
+<h5 class="font-label-bold">Téléphone</h5>
+<p class="opacity-80">[Numéro de téléphone]</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined p-2 bg-white/10 rounded-lg">mail</span>
+<div>
+<h5 class="font-label-bold">Email</h5>
+<p class="opacity-80">[Adresse email]</p>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:w-1/2 p-12 bg-surface">
+<form class="space-y-6">
+<div class="grid sm:grid-cols-2 gap-6">
+<div>
+<label class="font-label-bold text-on-surface-variant block mb-2">Nom complet</label>
+<input class="w-full bg-surface-container-low border-outline-variant rounded-xl p-4 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="Ex: Jean Traoré" type="text"/>
+</div>
+<div>
+<label class="font-label-bold text-on-surface-variant block mb-2">Email</label>
+<input class="w-full bg-surface-container-low border-outline-variant rounded-xl p-4 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="jean@exemple.bf" type="email"/>
+</div>
+</div>
+<div>
+<label class="font-label-bold text-on-surface-variant block mb-2">Message</label>
+<textarea class="w-full bg-surface-container-low border-outline-variant rounded-xl p-4 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="Dites-nous comment nous pouvons vous aider..." rows="4"></textarea>
+</div>
+<button class="w-full bg-primary hover:bg-primary-container text-on-primary font-headline-sm py-4 rounded-xl shadow-lg shadow-primary/20 transition-all">
+                        Envoyer le message
+                    </button>
+</form>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-highest full-width border-t border-outline-variant mt-20">
+<div class="w-full py-12 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-start gap-12 mb-12">
+<div class="max-w-sm">
+<img alt="Agro Eco BAARA Logo" class="h-16 w-auto object-contain mb-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuRijQqvLp95sSNJwMjLI846xn1Rab8bMWm4HXf2LoeFhSSJAV2H3hkdFznbOcXXc7xwEPkwgr6yjCndWw0vhacjZOsgGZEDO0gInmfHIf657Zemle0pmNnUVdBkNWCOx6TOt2UrH_YUA955jayCGr6ZsHkiccenXgjmHpRmrfgnPWy1kgXE5uBckIHGDhPKhE9nXK5mXkD-UL0qoKFcEDgtn8qhEF6YORJ9LE3sLjr1Xe50pV3eG05QpuovYzBoUxGufwtjyr903a"/>
+<p class="text-on-surface-variant font-body-sm">Facilitateur d'avenir pour l'agroécologie au Burkina Faso. Connecter les compétences d'aujourd'hui aux défis de demain.</p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-12">
+<div>
+<h6 class="font-label-bold text-on-surface mb-4">Navigation</h6>
+<ul class="space-y-2 text-body-sm text-on-surface-variant">
+<li><a class="hover:text-primary" href="#">Accueil</a></li>
+<li><a class="hover:text-primary" href="#audiences">Public</a></li>
+<li><a class="hover:text-primary" href="#guichet">Le Guichet</a></li>
+<li><a class="hover:text-primary" href="#partenaires">Partenaires</a></li>
+</ul>
+</div>
+<div>
+<h6 class="font-label-bold text-on-surface mb-4">À venir</h6>
+<ul class="space-y-2 text-body-sm text-on-surface-variant">
+<li><span class="hover:text-primary cursor-pointer">Témoignages</span></li>
+<li><a class="hover:text-primary" href="#contact">Contact</a></li>
+</ul>
+</div>
+<div>
+<h6 class="font-label-bold text-on-surface mb-4">Légal</h6>
+<ul class="space-y-2 text-body-sm text-on-surface-variant">
+<li><a class="hover:text-primary" href="#">Mentions Légales</a></li>
+<li><a class="hover:text-primary" href="#">Confidentialité</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="border-t border-outline-variant/30 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-body-sm text-on-surface-variant">© 2024 Agro Eco BAARA. Tous droits réservés.</p>
+<div class="flex gap-6">
+<a class="text-on-surface-variant hover:text-primary" href="#"><span class="material-symbols-outlined">facebook</span></a>
+<a class="text-on-surface-variant hover:text-primary" href="#"><span class="material-symbols-outlined">linked_camera</span></a>
+<a class="text-on-surface-variant hover:text-primary" href="#"><span class="material-symbols-outlined">share</span></a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>
