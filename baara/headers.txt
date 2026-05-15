@@ -1,0 +1,12 @@
+HTTP/1.1 200 OK
+Host: 127.0.0.1:8000
+Connection: close
+X-Powered-By: PHP/8.3.16
+Cache-Control: max-age=0, must-revalidate, no-cache, no-store, private
+Date: Thu, 14 May 2026 16:51:45 GMT
+Content-Type: text/html; charset=utf-8
+Pragma: no-cache
+Expires: Fri, 01 Jan 1990 00:00:00 GMT
+Set-Cookie: XSRF-TOKEN=eyJpdiI6InV5alF5dXpDajBnOXpnYUZJcUFkWGc9PSIsInZhbHVlIjoiWW5FRlprYnhGTG5DUTY0eWhETE1keVVMcE9ObjErWGlWOWRicld2NFZLYU5JMzUrb0ZnaFp3T0JsWFpOY3hycWRmQjlzZ0thcFN6UXNpYnVicWRxOVJZYS82Z2M2ZGFyREpvRkhtZ04xQnFwSEhsWWxDa3Q3bzkxWFZZTmwvUy8iLCJtYWMiOiJiNDhkODk4MTU3ZTJmN2JkM2Y2ZTkyODY5YzZjNjU5NTU1MzMzMWJiMTIwOTJjMzIzMjZhZDEzOTk0YjhmNjgwIiwidGFnIjoiIn0%3D; expires=Thu, 14 May 2026 18:51:45 GMT; Max-Age=7200; path=/; samesite=lax
+Set-Cookie: agro-eco-baara-session=eyJpdiI6IkZ3YUY0UC9qRWxvQXo0UFpETU9leGc9PSIsInZhbHVlIjoiekQ2NENSMVVJQlQzeXVRZ2xOWG5yMnlWRWtydG14YTlwRTBZd2t5eWEwNGxMUUxhbXQwVVJnQ1ZXa3ZzdmRXdnFzbU5XaXFRWmFwNXAzSUMwMGpSbGtmQ3BNVHQvRmdTZk90SFN3TjlqYko1eEpRSEZOa25hVGVmQjd1akRvekciLCJtYWMiOiIzMzE2MjVjMTVkZDcyMjJhZDc5NDBiYjA3Njk4YzQxYjkzNWJmYzZkZWIwZTU2YzY5N2M5ZTYyNDU2NDI2Y2QzIiwidGFnIjoiIn0%3D; expires=Thu, 14 May 2026 18:51:45 GMT; Max-Age=7200; path=/; httponly; samesite=lax
+

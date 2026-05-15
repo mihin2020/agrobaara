@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Agro Eco BAARA - Création Candidat</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Sora:wght@600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#f8ffed",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#7b745e",
+                        "on-primary-fixed": "#082100",
+                        "status-accepted": "#2E7D32",
+                        "secondary": "#875212",
+                        "surface-container": "#f5ece7",
+                        "primary-fixed-dim": "#93d86c",
+                        "land-green-vibrant": "#76B82A",
+                        "background": "#fff8f5",
+                        "internal-section-bg": "#F9F7F2",
+                        "secondary-container": "#ffb870",
+                        "tertiary-fixed": "#ebe2c8",
+                        "surface": "#fff8f5",
+                        "primary": "#2c6904",
+                        "primary-fixed": "#aef585",
+                        "inverse-primary": "#93d86c",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "tertiary": "#615c47",
+                        "status-refused": "#D32F2F",
+                        "on-tertiary-container": "#fffbff",
+                        "status-draft": "#757575",
+                        "surface-container-highest": "#e9e1dc",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c1c9b6",
+                        "on-tertiary-fixed-variant": "#4c4733",
+                        "on-surface": "#1e1b18",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#cec6ad",
+                        "secondary-fixed-dim": "#ffb870",
+                        "inverse-on-surface": "#f8efea",
+                        "on-secondary-fixed": "#2c1600",
+                        "primary-container": "#448322",
+                        "on-secondary-fixed-variant": "#693c00",
+                        "surface-container-high": "#efe6e2",
+                        "on-primary-fixed-variant": "#1f5100",
+                        "surface-variant": "#e9e1dc",
+                        "on-background": "#1e1b18",
+                        "outline": "#717a69",
+                        "surface-dim": "#e1d8d4",
+                        "on-secondary-container": "#794704",
+                        "surface-bright": "#fff8f5",
+                        "on-surface-variant": "#41493b",
+                        "surface-container-low": "#fbf2ed",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#ffdcbd",
+                        "inverse-surface": "#34302c",
+                        "status-locked": "#F57C00",
+                        "surface-tint": "#2e6c08",
+                        "on-tertiary-fixed": "#1f1c0b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "container-max": "1280px",
+                        "gutter-mobile": "16px",
+                        "margin-mobile": "16px",
+                        "gutter-desktop": "24px",
+                        "margin-desktop": "64px",
+                        "form-gap": "20px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Sora"],
+                        "headline-md": ["Sora"],
+                        "code-ref": ["JetBrains Mono"],
+                        "body-md": ["Inter"],
+                        "label-bold": ["Inter"],
+                        "display-hero-mobile": ["Sora"],
+                        "display-hero": ["Sora"],
+                        "headline-sm": ["Sora"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "code-ref": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-bold": ["14px", {"lineHeight": "16px", "fontWeight": "600"}],
+                        "display-hero-mobile": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "display-hero": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .stepper-line::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background-color: #c1c9b6;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md flex min-h-screen">
+<!-- SideNavBar (Authority: JSON & Strategy) -->
+<aside class="hidden md:flex flex-col h-screen w-64 bg-surface-container border-r border-outline-variant py-4 gap-2 sticky top-0">
+<div class="px-6 mb-8">
+<h1 class="font-headline-sm text-headline-sm text-primary font-bold">BAARA Ops</h1>
+<p class="text-body-sm text-on-surface-variant">Gestion des talents</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 py-3 px-4 mx-2 my-1 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-colors font-label-bold" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Tableau de bord
+            </a>
+<!-- Active Tab: Candidats (closest match to creating a candidate) -->
+<a class="flex items-center gap-3 py-3 px-4 bg-primary-container text-on-primary-container rounded-lg mx-2 my-1 transition-all duration-200 active:scale-95 font-label-bold" href="#">
+<span class="material-symbols-outlined" data-icon="person_search" style="font-variation-settings: 'FILL' 1;">person_search</span>
+                Candidats
+            </a>
+<a class="flex items-center gap-3 py-3 px-4 mx-2 my-1 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-colors font-label-bold" href="#">
+<span class="material-symbols-outlined" data-icon="domain">domain</span>
+                Entreprises
+            </a>
+<a class="flex items-center gap-3 py-3 px-4 mx-2 my-1 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-colors font-label-bold" href="#">
+<span class="material-symbols-outlined" data-icon="handshake">handshake</span>
+                Matching
+            </a>
+<a class="flex items-center gap-3 py-3 px-4 mx-2 my-1 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-colors font-label-bold" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Paramètres
+            </a>
+</nav>
+<div class="px-4 mt-auto space-y-1">
+<button class="w-full flex items-center justify-center gap-2 py-3 bg-primary text-on-primary rounded-xl font-label-bold shadow-md hover:opacity-90 transition-opacity mb-6">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                Nouveau Dossier
+            </button>
+<a class="flex items-center gap-3 py-2 px-4 text-on-surface-variant hover:bg-surface-container-highest rounded-lg font-label-bold" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+                Aide
+            </a>
+<a class="flex items-center gap-3 py-2 px-4 text-on-surface-variant hover:bg-surface-container-highest rounded-lg font-label-bold" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Déconnexion
+            </a>
+</div>
+</aside>
+<main class="flex-1 flex flex-col min-w-0">
+<!-- TopAppBar (Simulated Context) -->
+<header class="bg-surface border-b border-outline-variant flex justify-between items-center w-full px-4 md:px-8 py-4">
+<div class="flex items-center gap-4">
+<button class="md:hidden text-primary">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="person_add">person_add</span>
+<h2 class="font-headline-md text-headline-md font-bold text-primary">Nouveau Candidat</h2>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex flex-col items-end">
+<span class="font-label-bold text-on-surface">Jean Dupont</span>
+<span class="text-xs text-on-surface-variant">Opérateur Guichet</span>
+</div>
+<img alt="Profil" class="w-10 h-10 rounded-full object-cover border-2 border-primary-fixed" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgbazQlej5t--nEFVfF9R2nRFzmye9CpDSKaAhvlU36avkqMqkRRJD2Tu2U8gNebuivhnexE-UzfCxTjHVqrnBLrwrCGkSu4l2lEiGXO5RDSr568zD9iDdiNLXMj18nwQwvD1sEZVjM1OPcSLVBZuq5EqjNme9briMJ-D2k3zCtFrX5lJ4HiwyXaWhvFWNkFHtl3LBTBYlUDZth5W6IBR0Z6woEOmXJS_XDEBZ2sthdu1JbjULBMuvu2femUda-Oh98ht2H0yrZ4dM"/>
+</div>
+</header>
+<!-- Main Content Area -->
+<div class="flex-1 overflow-y-auto p-4 md:p-8 max-w-5xl mx-auto w-full">
+<!-- Stepper Indicator -->
+<div class="mb-12">
+<div class="relative flex justify-between">
+<!-- Progress Line -->
+<div class="absolute top-5 left-0 w-full h-0.5 bg-outline-variant -z-10"></div>
+<div class="absolute top-5 left-0 w-1/4 h-0.5 bg-primary -z-10"></div>
+<!-- Step 1: Active -->
+<div class="flex flex-col items-center gap-2 group">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold shadow-lg ring-4 ring-primary-container ring-opacity-30">1</div>
+<span class="font-label-bold text-primary text-xs md:text-sm text-center">Infos Générales</span>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant border-2 border-outline-variant flex items-center justify-center font-bold">2</div>
+<span class="font-label-bold text-on-surface-variant text-xs md:text-sm text-center">Contacts</span>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant border-2 border-outline-variant flex items-center justify-center font-bold">3</div>
+<span class="font-label-bold text-on-surface-variant text-xs md:text-sm text-center">Formation &amp; Docs</span>
+</div>
+<!-- Step 4 -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant border-2 border-outline-variant flex items-center justify-center font-bold">4</div>
+<span class="font-label-bold text-on-surface-variant text-xs md:text-sm text-center">Expériences</span>
+</div>
+<!-- Step 5 -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant border-2 border-outline-variant flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
+</div>
+<span class="font-label-bold text-on-surface-variant text-xs md:text-sm text-center">Besoins internes</span>
+</div>
+</div>
+</div>
+<!-- Form Content -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+<!-- Section Header -->
+<div class="bg-surface-container-high px-6 py-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="bg-primary-container p-2 rounded-lg text-on-primary-container">
+<span class="material-symbols-outlined" data-icon="badge">badge</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Section A : Informations Générales</h3>
+</div>
+<span class="px-3 py-1 bg-primary text-on-primary text-xs font-bold rounded-full">EN COURS</span>
+</div>
+<form class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-12 gap-y-6 gap-x-8">
+<!-- Identity Photo Upload -->
+<div class="md:col-span-12 flex flex-col md:flex-row items-start gap-6 pb-6 border-b border-outline-variant">
+<div class="w-32 h-32 rounded-xl bg-surface-container border-2 border-dashed border-outline flex flex-col items-center justify-center relative group overflow-hidden">
+<img alt="Prévisualisation" class="hidden w-full h-full object-cover" id="preview-photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOr9Gx02iUvKWd-LgazSfEAxcjRPiXSTWLtD6K_HUXd_ZBLqhngU6tn8BR3TRE3h_ohmuLvXpuDdncuTSNv0O1lQoDheBVIF-GWwDa3-T77LYrmUh19WKJid_ZmqMx9YSEerV3y5f9g6PQmGumvkR2ES5WZRPMA_dHaOgWW28RjRjxzmZvdbLQla03o2AY6BP9QAsqYCy9DMw7CbNTEmj2pF4NYiyDd3MEqfv2wA1YCnqKilYUZDBKVAm18-P_DFUi3qdKrB9ZUkLN"/>
+<span class="material-symbols-outlined text-outline text-4xl" data-icon="add_a_photo">add_a_photo</span>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold">Modifier</div>
+</div>
+<div class="flex-1 space-y-2">
+<h4 class="font-label-bold text-on-surface">Photo d'identité</h4>
+<p class="text-body-sm text-on-surface-variant max-w-md">Importez une photo claire du candidat (format JPG ou PNG, max 2Mo). Cette photo sera utilisée pour la carte de membre Agro Eco BAARA.</p>
+<button class="mt-2 inline-flex items-center gap-2 px-4 py-2 border border-secondary text-secondary rounded-lg font-label-bold hover:bg-secondary/5 transition-colors" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="upload_file">upload_file</span>
+                                Sélectionner un fichier
+                            </button>
+</div>
+</div>
+<!-- Row 1: Nom & Prénom -->
+<div class="md:col-span-6 space-y-2">
+<label class="font-label-bold text-on-surface" for="nom">Nom <span class="text-error">*</span></label>
+<input class="w-full h-12 bg-surface rounded-lg border border-outline focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all px-4 outline-none" id="nom" placeholder="Ex: TRAORÉ" type="text"/>
+</div>
+<div class="md:col-span-6 space-y-2">
+<label class="font-label-bold text-on-surface" for="prenom">Prénom <span class="text-error">*</span></label>
+<input class="w-full h-12 bg-surface rounded-lg border border-outline focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all px-4 outline-none" id="prenom" placeholder="Ex: Moussa" type="text"/>
+</div>
+<!-- Row 2: Sexe & Date de naissance -->
+<div class="md:col-span-6 space-y-2">
+<label class="font-label-bold text-on-surface">Sexe <span class="text-error">*</span></label>
+<div class="flex gap-4 mt-2">
+<label class="flex-1 flex items-center gap-3 p-3 bg-surface border border-outline rounded-lg cursor-pointer hover:bg-surface-container transition-colors">
+<input class="w-5 h-5 text-primary border-outline focus:ring-primary" name="sexe" type="radio"/>
+<span class="font-body-md">Masculin</span>
+</label>
+<label class="flex-1 flex items-center gap-3 p-3 bg-surface border border-outline rounded-lg cursor-pointer hover:bg-surface-container transition-colors">
+<input class="w-5 h-5 text-primary border-outline focus:ring-primary" name="sexe" type="radio"/>
+<span class="font-body-md">Féminin</span>
+</label>
+</div>
+</div>
+<div class="md:col-span-6 space-y-2">
+<label class="font-label-bold text-on-surface" for="dob">Date de naissance <span class="text-error">*</span></label>
+<div class="relative">
+<input class="w-full h-12 bg-surface rounded-lg border border-outline focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all px-4 outline-none appearance-none" id="dob" type="date"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none" data-icon="calendar_month">calendar_month</span>
+</div>
+</div>
+<!-- Row 3: Commune & Transport -->
+<div class="md:col-span-6 space-y-2">
+<label class="font-label-bold text-on-surface" for="commune">Commune de résidence <span class="text-error">*</span></label>
+<select class="w-full h-12 bg-surface rounded-lg border border-outline focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all px-4 outline-none appearance-none" id="commune">
+<option value="">Sélectionner une commune</option>
+<option value="ouaga">Ouagadougou</option>
+<option value="bobo">Bobo-Dioulasso</option>
+<option value="koudougou">Koudougou</option>
+<option value="banfora">Banfora</option>
+<option value="ouahigouya">Ouahigouya</option>
+</select>
+</div>
+<div class="md:col-span-6 space-y-2">
+<label class="font-label-bold text-on-surface" for="transport">Moyen de transport principal</label>
+<select class="w-full h-12 bg-surface rounded-lg border border-outline focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all px-4 outline-none" id="transport">
+<option value="aucun">Aucun (À pied)</option>
+<option value="velo">Velo</option>
+<option value="moto">Moto</option>
+<option value="commun">Transport en commun</option>
+</select>
+</div>
+<!-- Row 4: Langues (Bento-style selection) -->
+<div class="md:col-span-12 space-y-4">
+<label class="font-label-bold text-on-surface">Langues parlées (Plusieurs choix possibles)</label>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+<label class="relative flex flex-col items-center justify-center p-4 rounded-xl border border-outline-variant bg-surface hover:border-primary transition-all cursor-pointer group">
+<input class="absolute top-2 right-2 w-4 h-4 text-primary rounded focus:ring-primary" type="checkbox"/>
+<span class="material-symbols-outlined text-primary mb-2" data-icon="translate">translate</span>
+<span class="font-body-sm text-center">Français</span>
+</label>
+<label class="relative flex flex-col items-center justify-center p-4 rounded-xl border border-outline-variant bg-surface hover:border-primary transition-all cursor-pointer">
+<input class="absolute top-2 right-2 w-4 h-4 text-primary rounded focus:ring-primary" type="checkbox"/>
+<span class="material-symbols-outlined text-secondary mb-2" data-icon="chat_bubble">chat_bubble</span>
+<span class="font-body-sm text-center">Mooré</span>
+</label>
+<label class="relative flex flex-col items-center justify-center p-4 rounded-xl border border-outline-variant bg-surface hover:border-primary transition-all cursor-pointer">
+<input class="absolute top-2 right-2 w-4 h-4 text-primary rounded focus:ring-primary" type="checkbox"/>
+<span class="material-symbols-outlined text-secondary mb-2" data-icon="chat_bubble">chat_bubble</span>
+<span class="font-body-sm text-center">Dioula</span>
+</label>
+<label class="relative flex flex-col items-center justify-center p-4 rounded-xl border border-outline-variant bg-surface hover:border-primary transition-all cursor-pointer">
+<input class="absolute top-2 right-2 w-4 h-4 text-primary rounded focus:ring-primary" type="checkbox"/>
+<span class="material-symbols-outlined text-secondary mb-2" data-icon="chat_bubble">chat_bubble</span>
+<span class="font-body-sm text-center">Fulfuldé</span>
+</label>
+<label class="relative flex flex-col items-center justify-center p-4 rounded-xl border border-outline-variant bg-surface hover:border-primary transition-all cursor-pointer">
+<input class="absolute top-2 right-2 w-4 h-4 text-primary rounded focus:ring-primary" type="checkbox"/>
+<span class="material-symbols-outlined text-secondary mb-2" data-icon="chat_bubble">chat_bubble</span>
+<span class="font-body-sm text-center">Gourmantché</span>
+</label>
+<label class="relative flex flex-col items-center justify-center p-4 rounded-xl border border-outline-variant bg-surface-container-low hover:border-outline transition-all cursor-pointer">
+<span class="material-symbols-outlined text-outline mb-1" data-icon="add">add</span>
+<span class="font-body-sm text-center">Autre</span>
+</label>
+</div>
+</div>
+<!-- Internal Section Note (Contextual) -->
+<div class="md:col-span-12 bg-internal-section-bg p-4 rounded-lg flex items-start gap-4 border-l-4 border-status-locked mt-4">
+<span class="material-symbols-outlined text-status-locked" data-icon="info" style="font-variation-settings: 'FILL' 1;">info</span>
+<div>
+<p class="font-label-bold text-on-surface">Note de l'opérateur</p>
+<p class="text-body-sm text-on-surface-variant">Les informations saisies ici seront immédiatement validées et comparées aux profils agro-écologiques du module M07.</p>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="md:col-span-12 flex justify-between items-center pt-8 mt-4 border-t border-outline-variant">
+<button class="px-6 py-3 text-primary font-label-bold hover:bg-primary/5 rounded-xl transition-all active:scale-95" type="button">
+                            Annuler l'enregistrement
+                        </button>
+<div class="flex gap-4">
+<button class="flex items-center gap-2 px-8 py-3 bg-primary text-on-primary font-label-bold rounded-xl shadow-lg shadow-primary/20 hover:opacity-90 transition-all active:scale-95" type="submit">
+                                Étape Suivante
+                                <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</form>
+</div>
+<!-- Contextual Helper Card -->
+<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface border border-outline-variant p-5 rounded-xl flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-status-accepted/10 text-status-accepted flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
+</div>
+<div>
+<h5 class="font-label-bold">Conformité RGPD</h5>
+<p class="text-body-sm text-on-surface-variant">Les données sont stockées de manière sécurisée et ne sont accessibles qu'aux opérateurs certifiés.</p>
+</div>
+</div>
+<div class="bg-surface border border-outline-variant p-5 rounded-xl flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container/20 text-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined" data-icon="speed">speed</span>
+</div>
+<div>
+<h5 class="font-label-bold">Saisie Rapide</h5>
+<p class="text-body-sm text-on-surface-variant">Utilisez la touche 'Tab' pour naviguer entre les champs et 'Espace' pour cocher les cases.</p>
+</div>
+</div>
+<div class="bg-surface border border-outline-variant p-5 rounded-xl flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-tertiary-container/20 text-tertiary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined" data-icon="help_center">help_center</span>
+</div>
+<div>
+<h5 class="font-label-bold">Support Guichet</h5>
+<p class="text-body-sm text-on-surface-variant">Besoin d'aide ? Appelez le superviseur technique au poste #504.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer (Authority: JSON) -->
+<footer class="w-full py-8 px-8 mt-auto flex flex-col md:flex-row justify-between items-center gap-4 bg-surface-container-highest border-t border-outline-variant">
+<div class="flex flex-col items-center md:items-start">
+<span class="font-headline-sm text-headline-sm font-bold text-primary">Agro Eco BAARA</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 Agro Eco BAARA. Tous droits réservés.</p>
+</div>
+<div class="flex gap-6">
+<a class="text-on-surface-variant hover:text-secondary transition-colors font-body-sm" href="#">Mentions Légales</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors font-body-sm" href="#">Confidentialité</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors font-body-sm" href="#">Contact</a>
+</div>
+</footer>
+</main>
+<!-- Contextual FAB (Suppressed based on "Relevance Check" as this is a focused task screen) -->
+</body></html>

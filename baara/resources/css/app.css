@@ -1,0 +1,64 @@
+@import 'tailwindcss';
+
+html { font-size: 93.75%; } /* 15px base — back-office density */
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../vendor/livewire/livewire/src/**/*.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+@source '../../app/**/*.php';
+
+@theme {
+    --font-sans:  'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-inter: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-sora:  'Sora', ui-sans-serif, system-ui, sans-serif;
+    --font-mono:  'JetBrains Mono', ui-monospace, monospace;
+
+    --color-primary:          #2c6904;
+    --color-primary-dark:     #1a4003;
+    --color-primary-light:    #448322;
+    --color-primary-fixed:    #aef585;
+    --color-primary-fixed-dim: #93d86c;
+
+    --color-secondary:          #875212;
+    --color-secondary-container: #ffb870;
+    --color-secondary-fixed:    #ffdcbd;
+
+    --color-surface:            #fff8f5;
+    --color-surface-container:  #f5ece7;
+    --color-surface-low:        #fbf2ed;
+    --color-surface-high:       #efe6e2;
+    --color-surface-highest:    #e9e1dc;
+
+    --color-on-surface:         #1e1b18;
+    --color-on-surface-variant: #41493b;
+    --color-outline:            #717a69;
+    --color-outline-variant:    #c1c9b6;
+
+    --color-tertiary:           #615c47;
+    --color-tertiary-fixed:     #ebe2c8;
+
+    --color-status-accepted:    #2E7D32;
+    --color-status-refused:     #D32F2F;
+    --color-status-locked:      #F57C00;
+    --color-status-draft:       #757575;
+
+    --color-error:              #ba1a1a;
+    --color-error-container:    #ffdad6;
+}
+
+/* ── Utilitaires custom ── */
+.font-sora   { font-family: var(--font-sora); }
+.font-inter  { font-family: var(--font-inter); }
+.font-mono   { font-family: var(--font-mono); }
+
+/* Material Symbols fill variant */
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.material-fill {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+[x-cloak] { display: none !important; }
