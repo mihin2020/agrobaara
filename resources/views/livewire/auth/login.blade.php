@@ -1,5 +1,5 @@
 <div>
-    <div class="mb-8">
+    <div class="mb-8 text-center">
         <h2 class="font-sora text-3xl font-bold text-[#1e1b18]">Connexion</h2>
         <p class="mt-2 text-[#41493b]">Accédez à votre espace de gestion.</p>
     </div>

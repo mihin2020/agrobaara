@@ -20,12 +20,9 @@
              style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');">
         </div>
         <div class="relative z-10 flex flex-col justify-center px-16 text-white">
-            <div class="mb-12">
+            <div class="mb-12 flex flex-col items-center">
                 <img src="{{ asset('images/logo-white.png') }}" alt="Logo" class="h-16 w-auto mb-8"
                      onerror="this.style.display='none'">
-                <h1 class="font-sora text-4xl font-bold leading-tight mb-4">
-                    Agro Eco<br/><span class="text-[#93d86c]">BAARA</span>
-                </h1>
                 <p class="text-lg opacity-80 leading-relaxed">
                     Connecter les talents et les opportunités en agroécologie au Burkina Faso.
                 </p>
@@ -59,11 +56,6 @@
                     </div>
                 </div>
             </div>
-            <div class="mt-auto pt-16">
-                <p class="text-sm opacity-50">
-                    Association Yelemani · Partenaire CRIC · Financement Min. Intérieur Italien
-                </p>
-            </div>
         </div>
     </div>
 
@@ -71,8 +63,9 @@
     <div class="flex-1 flex flex-col justify-center py-12 px-6 sm:px-12 lg:px-16">
         <div class="mx-auto w-full max-w-md">
             {{-- Logo mobile --}}
-            <div class="lg:hidden mb-10 text-center">
-                <span class="font-sora text-2xl font-bold text-[#2c6904]">Agro Eco BAARA</span>
+            <div class="lg:hidden mb-10 flex justify-center">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-14 w-auto"
+                     onerror="this.style.display='none'">
             </div>
 
             @if (session('success'))
