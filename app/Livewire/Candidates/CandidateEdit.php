@@ -14,15 +14,19 @@ use App\Models\ReferentialSkill;
 use App\Services\ReferenceService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 #[Layout('components.layouts.app')]
 #[Title('Modifier candidat — Agro Eco BAARA')]
 class CandidateEdit extends Component
 {
+    use WithFileUploads;
+
     #[Locked]
     public string $candidateId = '';
 
@@ -53,6 +57,11 @@ class CandidateEdit extends Component
     public string $other_skills_text = '';
     public bool   $has_previous_jobs = false;
     public array  $experiences = [];
+    // Fichiers (null = pas de changement, fichier = nouveau upload)
+    public $photo             = null;
+    public $identity_document = null;
+    public array $diploma_files = [];
+    public $cv_file           = null;
     public array  $need_employment_types = [];
     public array  $need_formation_types  = [];
     public bool   $need_financing        = false;
@@ -160,29 +169,36 @@ class CandidateEdit extends Component
 
     public function save(): void
     {
+        $maxBirthDate = now()->subYears(16)->format('Y-m-d');
+
         $this->validate([
-            'first_name'      => 'required|string|min:2|max:100',
-            'last_name'       => 'required|string|min:2|max:100',
-            'gender'          => 'required|in:M,F',
-            'birth_date'      => 'required|date|before:today',
-            'commune_id'      => 'required|uuid|exists:referentials_communes,id',
-            'nationality'     => 'required|string|max:100',
-            'phone'           => 'required|string|max:30',
-            'language_ids'    => 'required|array|min:1',
-            'education_level' => 'required|exists:referentials_education_levels,code',
+            'first_name'       => 'required|string|min:2|max:100',
+            'last_name'        => 'required|string|min:2|max:100',
+            'gender'           => 'required|in:M,F',
+            'birth_date'       => "required|date|before_or_equal:{$maxBirthDate}",
+            'commune_id'       => 'required|uuid|exists:referentials_communes,id',
+            'nationality'      => 'required|string|max:100',
+            'phone'            => 'required|string|max:30',
+            'language_ids'     => 'required|array|min:1',
+            'education_level'  => 'required|exists:referentials_education_levels,code',
+            'photo'            => 'nullable|image|max:2048',
+            'identity_document'=> 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'diploma_files.*'  => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240',
+            'cv_file'          => 'nullable|file|mimes:pdf,doc,docx|max:5120',
         ], [
-            'first_name.required'    => 'Le prénom est obligatoire.',
-            'last_name.required'     => 'Le nom est obligatoire.',
-            'gender.required'        => 'Le sexe est obligatoire.',
-            'birth_date.required'    => 'La date de naissance est obligatoire.',
-            'commune_id.required'    => 'La commune est obligatoire.',
-            'phone.required'         => 'Le téléphone est obligatoire.',
-            'language_ids.required'  => 'Au moins une langue est requise.',
-            'education_level.required' => "Le niveau d'étude est obligatoire.",
+            'first_name.required'        => 'Le prénom est obligatoire.',
+            'last_name.required'         => 'Le nom est obligatoire.',
+            'gender.required'            => 'Le sexe est obligatoire.',
+            'birth_date.required'        => 'La date de naissance est obligatoire.',
+            'birth_date.before_or_equal' => 'Le candidat doit avoir au moins 16 ans.',
+            'commune_id.required'        => 'La ville est obligatoire.',
+            'phone.required'             => 'Le téléphone est obligatoire.',
+            'language_ids.required'      => 'Au moins une langue est requise.',
+            'education_level.required'   => "Le niveau d'étude est obligatoire.",
         ]);
 
         DB::transaction(function () {
-            $this->candidate->update([
+            $updates = [
                 'first_name'          => $this->first_name,
                 'last_name'           => $this->last_name,
                 'gender'              => $this->gender,
@@ -207,8 +223,30 @@ class CandidateEdit extends Component
                 'need_financing'         => $this->need_financing,
                 'need_cv_support'        => $this->need_cv_support,
                 'operator_notes'         => $this->operator_notes ?: null,
-                'updated_by'          => Auth::id(),
-            ]);
+                'updated_by'             => Auth::id(),
+            ];
+
+            // Fichiers — uniquement si un nouveau fichier est sélectionné
+            if ($this->photo) {
+                if ($this->candidate->photo_path) Storage::disk('public')->delete($this->candidate->photo_path);
+                $updates['photo_path'] = $this->photo->store('candidates/photos', 'public');
+            }
+            if ($this->identity_document) {
+                if ($this->candidate->identity_document_path) Storage::disk('public')->delete($this->candidate->identity_document_path);
+                $updates['identity_document_path'] = $this->identity_document->store('candidates/documents', 'public');
+            }
+            if (!empty($this->diploma_files)) {
+                if (!empty($this->candidate->diploma_paths)) {
+                    foreach ($this->candidate->diploma_paths as $p) Storage::disk('public')->delete($p);
+                }
+                $updates['diploma_paths'] = collect($this->diploma_files)->map(fn($f) => $f->store('candidates/diplomas', 'public'))->toArray();
+            }
+            if ($this->cv_file) {
+                if ($this->candidate->cv_path) Storage::disk('public')->delete($this->candidate->cv_path);
+                $updates['cv_path'] = $this->cv_file->store('candidates/cvs', 'public');
+            }
+
+            $this->candidate->update($updates);
 
             $this->candidate->languages()->sync($this->language_ids);
             $this->candidate->licenses()->sync($this->license_ids);

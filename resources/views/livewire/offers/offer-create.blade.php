@@ -77,7 +77,7 @@
                 @foreach($skills as $skill)
                     <label class="flex items-center gap-1.5 cursor-pointer px-2.5 py-1.5 rounded-lg border transition-all
                         {{ in_array($skill->id, $skill_ids) ? 'border-[#615c47] bg-[#ebe2c8]/30 text-[#615c47]' : 'border-[#c1c9b6] bg-white text-[#41493b] hover:border-[#615c47]/50' }}">
-                        <input type="checkbox" wire:model="skill_ids" value="{{ $skill->id }}" class="sr-only" />
+                        <input type="checkbox" wire:model.live="skill_ids" value="{{ $skill->id }}" class="sr-only" />
                         <span class="text-xs font-semibold">{{ $skill->name }}</span>
                     </label>
                 @endforeach
@@ -112,8 +112,8 @@
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
-                            <x-form.select wire:model="locations.{{ $i }}.commune_id" label="Commune *" :error="$errors->first('locations.'.$i.'.commune_id')">
-                                <option value="">Sélectionner...</option>
+                            <x-form.select wire:model="locations.{{ $i }}.commune_id" label="Ville *" :error="$errors->first('locations.'.$i.'.commune_id')">
+                                <option value="">Sélectionner une ville...</option>
                                 @foreach($communes as $commune)
                                     <option value="{{ $commune->id }}">{{ $commune->name }}</option>
                                 @endforeach

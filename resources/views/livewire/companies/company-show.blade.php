@@ -7,8 +7,12 @@
                class="p-2 text-[#41493b] hover:bg-[#f5ece7] rounded-xl transition-colors">
                 <span class="material-symbols-outlined text-lg">arrow_back</span>
             </a>
-            <div class="w-12 h-12 rounded-2xl bg-[#ffdcbd]/40 border border-[#c1c9b6] flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined text-xl text-[#875212]">domain</span>
+            <div class="w-12 h-12 rounded-2xl bg-[#ffdcbd]/40 border border-[#c1c9b6] flex items-center justify-center flex-shrink-0 overflow-hidden">
+                @if($company->logo_path)
+                    <img src="{{ Storage::url($company->logo_path) }}" alt="Logo" class="w-full h-full object-contain p-1" />
+                @else
+                    <span class="material-symbols-outlined text-xl text-[#875212]">domain</span>
+                @endif
             </div>
             <div>
                 <h1 class="font-sora text-xl font-bold text-[#1e1b18] leading-tight">{{ $company->name }}</h1>

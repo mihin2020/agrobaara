@@ -52,8 +52,12 @@
                         <tr class="hover:bg-[#fbf2ed]/50 transition-colors">
                             <td class="px-4 py-3.5">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-xl bg-[#ffdcbd]/40 border border-[#c1c9b6] flex items-center justify-center flex-shrink-0">
-                                        <span class="material-symbols-outlined text-base text-[#875212]">domain</span>
+                                    <div class="w-9 h-9 rounded-xl bg-[#ffdcbd]/40 border border-[#c1c9b6] flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                        @if($company->logo_path)
+                                            <img src="{{ Storage::url($company->logo_path) }}" alt="" class="w-full h-full object-contain p-0.5" />
+                                        @else
+                                            <span class="material-symbols-outlined text-base text-[#875212]">domain</span>
+                                        @endif
                                     </div>
                                     <div>
                                         <p class="font-semibold text-sm text-[#1e1b18]">{{ $company->name }}</p>

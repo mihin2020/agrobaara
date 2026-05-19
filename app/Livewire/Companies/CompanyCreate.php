@@ -14,12 +14,16 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 #[Layout('components.layouts.app')]
 #[Title('Nouvelle entreprise — Agro Eco BAARA')]
 class CompanyCreate extends Component
 {
-    public string $name                 = '';
+    use WithFileUploads;
+
+    public $logo                    = null;
+    public string $name             = '';
     public string $status               = '';
     public string $legal_rep_first_name = '';
     public string $legal_rep_last_name  = '';
@@ -99,6 +103,7 @@ class CompanyCreate extends Component
     {
         $this->validate([
             'name'               => 'required|string|min:2|max:200',
+            'logo'               => 'nullable|image|max:2048',
             'status'             => 'required|in:' . implode(',', array_column(CompanyStatus::cases(), 'value')),
             'activity_types'     => 'required|array|min:1',
             'phone'              => 'required|string|max:30',
@@ -120,6 +125,7 @@ class CompanyCreate extends Component
             $company = Company::create([
                 'reference'             => $referenceService->generateCompanyReference(),
                 'name'                  => $this->name,
+                'logo_path'             => $this->logo ? $this->logo->store('companies/logos', 'public') : null,
                 'status'                => $this->status,
                 'legal_rep_first_name'  => $this->legal_rep_first_name ?: null,
                 'legal_rep_last_name'   => $this->legal_rep_last_name ?: null,

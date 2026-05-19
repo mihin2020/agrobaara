@@ -146,8 +146,8 @@
                         @error('nationality') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
 
-                    <x-form.select wire:model="commune_id" label="Commune de résidence *" :error="$errors->first('commune_id')">
-                        <option value="">Sélectionner une commune...</option>
+                    <x-form.select wire:model="commune_id" label="Ville de résidence *" :error="$errors->first('commune_id')">
+                        <option value="">Sélectionner une ville...</option>
                         @foreach($communes as $commune)
                             <option value="{{ $commune->id }}">{{ $commune->name }}</option>
                         @endforeach
@@ -170,6 +170,70 @@
                                 </label>
                             @endforeach
                         </div>
+                    </div>
+                </div>
+
+                {{-- ── Uploads identité ── --}}
+                <div class="border-t border-[#c1c9b6]/50 pt-5 space-y-4">
+                    <p class="text-xs font-bold text-[#41493b] uppercase tracking-widest">Documents d'identité</p>
+
+                    {{-- Photo --}}
+                    <div>
+                        <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">
+                            Photo d'identité professionnelle
+                            <span class="text-xs font-normal text-[#717a69] ml-1">JPG/PNG · max 2 Mo</span>
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <label class="flex-1 flex items-center gap-4 px-4 py-3.5 bg-[#fbf2ed] border-2 border-dashed {{ $errors->has('photo') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl cursor-pointer hover:border-[#2c6904]/60 transition-colors">
+                                <span class="material-symbols-outlined text-[#2c6904] text-2xl flex-shrink-0">portrait</span>
+                                <div class="min-w-0">
+                                    @if($photo)
+                                        <p class="text-sm font-semibold text-[#2c6904] truncate">{{ $photo->getClientOriginalName() }}</p>
+                                        <p class="text-xs text-[#717a69]">Nouveau fichier sélectionné</p>
+                                    @elseif($candidate->photo_path)
+                                        <p class="text-sm font-medium text-[#1e1b18]">Photo actuelle enregistrée</p>
+                                        <p class="text-xs text-[#717a69]">Cliquer pour remplacer</p>
+                                    @else
+                                        <p class="text-sm text-[#717a69]">Aucune photo — cliquer pour téléverser</p>
+                                    @endif
+                                </div>
+                                <input type="file" wire:model="photo" accept="image/*" class="sr-only" />
+                            </label>
+                            @if($photo)
+                                <img src="{{ $photo->temporaryUrl() }}" alt="Aperçu" class="w-14 h-14 object-cover rounded-xl border border-[#c1c9b6] flex-shrink-0" />
+                            @elseif($candidate->photo_path)
+                                <img src="{{ Storage::url($candidate->photo_path) }}" alt="Photo actuelle" class="w-14 h-14 object-cover rounded-xl border border-[#c1c9b6] flex-shrink-0" />
+                            @endif
+                        </div>
+                        @error('photo') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+
+                    {{-- Document d'identité --}}
+                    <div>
+                        <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">
+                            Document d'identité
+                            <span class="text-xs font-normal text-[#717a69] ml-1">Recto/verso · JPG/PNG/PDF · max 5 Mo</span>
+                        </label>
+                        <label class="flex items-center gap-4 px-4 py-4 bg-[#fbf2ed] border-2 border-dashed {{ $errors->has('identity_document') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl cursor-pointer hover:border-[#2c6904]/60 transition-colors">
+                            <span class="material-symbols-outlined text-[#2c6904] text-2xl flex-shrink-0">contact_page</span>
+                            <div class="min-w-0 flex-1">
+                                @if($identity_document)
+                                    <p class="text-sm font-semibold text-[#2c6904] truncate">{{ $identity_document->getClientOriginalName() }}</p>
+                                    <p class="text-xs text-[#717a69]">{{ round($identity_document->getSize() / 1024) }} Ko · Nouveau fichier</p>
+                                @elseif($candidate->identity_document_path)
+                                    <p class="text-sm font-medium text-[#1e1b18]">Document actuel enregistré</p>
+                                    <p class="text-xs text-[#2c6904] hover:underline">
+                                        <a href="{{ Storage::url($candidate->identity_document_path) }}" target="_blank" onclick="event.stopPropagation()">Voir le document ↗</a>
+                                        · Cliquer sur la zone pour remplacer
+                                    </p>
+                                @else
+                                    <p class="text-sm text-[#1e1b18] font-medium">Téléverser le document d'identité</p>
+                                    <p class="text-xs text-[#717a69]">Scan recto/verso (JPG, PNG ou PDF)</p>
+                                @endif
+                            </div>
+                            <input type="file" wire:model="identity_document" accept=".jpg,.jpeg,.png,.pdf" class="sr-only" />
+                        </label>
+                        @error('identity_document') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
                 </div>
             </div>
@@ -220,6 +284,42 @@
                     <x-form.input wire:model="agro_training_place" label="Lieu de formation agroécologique" placeholder="Ex: ENEF, Dindéresso" />
                 </div>
                 <x-form.textarea wire:model="agro_training_text" label="Formation agroécologique reçue" placeholder="Décrivez les formations reçues en lien avec l'agroécologie..." rows="4" />
+
+                {{-- Diplômes multiples --}}
+                <div>
+                    <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">
+                        Diplômes ou attestations en agroécologie
+                        <span class="text-xs font-normal text-[#717a69] ml-1">Plusieurs fichiers · PDF/JPG/PNG · max 10 Mo/fichier</span>
+                    </label>
+                    @if(!empty($candidate->diploma_paths) && empty($diploma_files))
+                        <div class="mb-2 flex flex-wrap gap-2">
+                            @foreach($candidate->diploma_paths as $i => $path)
+                                <a href="{{ Storage::url($path) }}" target="_blank"
+                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#aef585]/20 border border-[#2c6904]/20 rounded-lg text-xs font-semibold text-[#2c6904] hover:bg-[#aef585]/40">
+                                    <span class="material-symbols-outlined text-sm">workspace_premium</span>
+                                    Diplôme {{ count($candidate->diploma_paths) > 1 ? ($i+1) : '' }} ↗
+                                </a>
+                            @endforeach
+                            <span class="text-xs text-[#717a69] self-center">· Sélectionner de nouveaux fichiers pour remplacer</span>
+                        </div>
+                    @endif
+                    <label class="flex items-center gap-4 px-4 py-4 bg-[#fbf2ed] border-2 border-dashed {{ $errors->has('diploma_files.*') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl cursor-pointer hover:border-[#2c6904]/60 transition-colors">
+                        <span class="material-symbols-outlined text-[#2c6904] text-2xl flex-shrink-0">workspace_premium</span>
+                        <div class="min-w-0 flex-1">
+                            @if(!empty($diploma_files))
+                                <p class="text-sm font-semibold text-[#2c6904]">{{ count($diploma_files) }} fichier(s) sélectionné(s)</p>
+                                @foreach($diploma_files as $df)
+                                    <p class="text-xs text-[#717a69] truncate">{{ $df->getClientOriginalName() }}</p>
+                                @endforeach
+                            @else
+                                <p class="text-sm text-[#1e1b18] font-medium">Ajouter / remplacer les diplômes</p>
+                                <p class="text-xs text-[#717a69]">Sélectionnez un ou plusieurs fichiers (PDF, JPG, PNG)</p>
+                            @endif
+                        </div>
+                        <input type="file" wire:model="diploma_files" accept=".pdf,.jpg,.jpeg,.png" multiple class="sr-only" />
+                    </label>
+                    @error('diploma_files.*') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
             </div>
         @endif
 
@@ -242,6 +342,35 @@
                     </div>
                 </div>
                 <x-form.textarea wire:model="other_skills_text" label="Autres compétences" placeholder="Mentionner d'autres compétences non listées..." rows="3" />
+
+                {{-- CV --}}
+                <div>
+                    <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">
+                        CV
+                        <span class="text-xs font-normal text-[#717a69] ml-1">PDF/DOC/DOCX · max 5 Mo</span>
+                    </label>
+                    <label class="flex items-center gap-4 px-4 py-4 bg-[#fbf2ed] border-2 border-dashed {{ $errors->has('cv_file') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl cursor-pointer hover:border-[#2c6904]/60 transition-colors">
+                        <span class="material-symbols-outlined text-[#2c6904] text-2xl flex-shrink-0">description</span>
+                        <div class="min-w-0 flex-1">
+                            @if($cv_file)
+                                <p class="text-sm font-semibold text-[#2c6904] truncate">{{ $cv_file->getClientOriginalName() }}</p>
+                                <p class="text-xs text-[#717a69]">{{ round($cv_file->getSize() / 1024) }} Ko · Nouveau fichier</p>
+                            @elseif($candidate->cv_path)
+                                <p class="text-sm font-medium text-[#1e1b18]">CV actuel enregistré</p>
+                                <p class="text-xs text-[#717a69]">
+                                    <a href="{{ Storage::url($candidate->cv_path) }}" target="_blank" onclick="event.stopPropagation()" class="text-[#2c6904] hover:underline">Voir le CV ↗</a>
+                                    · Cliquer sur la zone pour remplacer
+                                </p>
+                            @else
+                                <p class="text-sm text-[#1e1b18] font-medium">Téléverser le CV</p>
+                                <p class="text-xs text-[#717a69]">PDF, DOC ou DOCX</p>
+                            @endif
+                        </div>
+                        <input type="file" wire:model="cv_file" accept=".pdf,.doc,.docx" class="sr-only" />
+                    </label>
+                    @error('cv_file') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
+
                 <div>
                     <div class="flex items-center justify-between mb-3">
                         <label class="text-sm font-semibold text-[#1e1b18]">Expériences professionnelles</label>

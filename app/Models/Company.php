@@ -15,7 +15,7 @@ class Company extends Model
     use HasFactory, HasUuids, SoftDeletes;
 
     protected $fillable = [
-        'reference', 'name', 'status', 'legal_rep_first_name', 'legal_rep_last_name',
+        'reference', 'name', 'logo_path', 'status', 'legal_rep_first_name', 'legal_rep_last_name',
         'activity_types', 'description', 'phone', 'email', 'website', 'social_links',
         'need_training', 'need_financing', 'need_contract_support', 'operator_notes',
         'created_by', 'updated_by',

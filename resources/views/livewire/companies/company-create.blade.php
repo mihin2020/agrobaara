@@ -23,6 +23,34 @@
                 <div class="md:col-span-2">
                     <x-form.input wire:model="name" label="Nom de l'entreprise *" placeholder="Ex: GIE Yennega Agroécologie" :error="$errors->first('name')" />
                 </div>
+
+                {{-- Logo --}}
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">
+                        Logo de l'entreprise
+                        <span class="text-xs font-normal text-[#717a69] ml-1">JPG/PNG · max 2 Mo</span>
+                    </label>
+                    <div class="flex items-center gap-4">
+                        <label class="relative flex-1 flex items-center gap-4 px-4 py-4 bg-[#fbf2ed] border-2 border-dashed {{ $errors->has('logo') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl cursor-pointer hover:border-[#875212]/60 transition-colors overflow-hidden">
+                            <span class="material-symbols-outlined text-[#875212] text-3xl flex-shrink-0">image</span>
+                            <div class="min-w-0">
+                                @if($logo)
+                                    <p class="text-sm font-semibold text-[#875212] truncate">{{ $logo->getClientOriginalName() }}</p>
+                                    <p class="text-xs text-[#717a69]">{{ round($logo->getSize() / 1024) }} Ko · Cliquer pour changer</p>
+                                @else
+                                    <p class="text-sm text-[#1e1b18] font-medium">Téléverser le logo</p>
+                                    <p class="text-xs text-[#717a69]">JPG ou PNG, fond transparent recommandé</p>
+                                @endif
+                            </div>
+                            <input type="file" wire:model="logo" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                        </label>
+                        @if($logo)
+                            <img src="{{ $logo->temporaryUrl() }}" alt="Aperçu logo" class="w-16 h-16 object-contain rounded-xl border border-[#c1c9b6] bg-white p-1 flex-shrink-0" />
+                        @endif
+                    </div>
+                    @error('logo') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
+
                 <div>
                     <x-form.select wire:model="status" label="Statut juridique *" :error="$errors->first('status')">
                         <option value="">Sélectionner...</option>
@@ -46,7 +74,7 @@
                     @foreach($activityTypesList as $type)
                         <label class="flex items-center gap-1.5 cursor-pointer px-2.5 py-1.5 rounded-lg border transition-all
                             {{ in_array($type, $activity_types) ? 'border-[#875212] bg-[#ffdcbd]/20 text-[#875212]' : 'border-[#c1c9b6] bg-white text-[#41493b] hover:border-[#875212]/50' }}">
-                            <input type="checkbox" wire:model="activity_types" value="{{ $type }}" class="sr-only" />
+                            <input type="checkbox" wire:model.live="activity_types" value="{{ $type }}" class="sr-only" />
                             <span class="text-xs font-semibold">{{ $type }}</span>
                         </label>
                     @endforeach
@@ -90,8 +118,8 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <x-form.input wire:model="sites.{{ $i }}.label" label="Intitulé du site *" placeholder="Ex: Siège social, Site de production" :error="$errors->first('sites.'.$i.'.label')" />
                         <div>
-                            <x-form.select wire:model="sites.{{ $i }}.commune_id" label="Commune *" :error="$errors->first('sites.'.$i.'.commune_id')">
-                                <option value="">Sélectionner une commune...</option>
+                            <x-form.select wire:model="sites.{{ $i }}.commune_id" label="Ville *" :error="$errors->first('sites.'.$i.'.commune_id')">
+                                <option value="">Sélectionner une ville...</option>
                                 @foreach($communes as $commune)
                                     <option value="{{ $commune->id }}">{{ $commune->name }}</option>
                                 @endforeach

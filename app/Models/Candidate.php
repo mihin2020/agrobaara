@@ -19,8 +19,9 @@ class Candidate extends Model
     protected $fillable = [
         'reference', 'first_name', 'last_name', 'gender', 'marital_status',
         'birth_date', 'birth_place', 'nationality', 'commune_id', 'address',
+        'photo_path', 'identity_document_path',
         'transport_mode', 'phone', 'phone_secondary', 'email', 'education_level',
-        'agro_training_text', 'agro_training_place', 'other_skills_text',
+        'agro_training_text', 'agro_training_place', 'diploma_paths', 'cv_path', 'other_skills_text',
         'has_previous_jobs', 'need_types', 'need_employment_types', 'need_formation_types',
         'need_training', 'need_financing', 'need_cv_support', 'operator_notes',
         'created_by', 'updated_by',
@@ -39,6 +40,7 @@ class Candidate extends Model
             'need_types'             => 'array',
             'need_employment_types'  => 'array',
             'need_formation_types'   => 'array',
+            'diploma_paths'          => 'array',
         ];
     }
 
@@ -53,7 +55,7 @@ class Candidate extends Model
 
     public function getAgeAttribute(): int
     {
-        return $this->birth_date ? now()->diffInYears($this->birth_date) : 0;
+        return $this->birth_date ? (int) $this->birth_date->diffInYears(now()) : 0;
     }
 
     // -----------------------------------------------------------------

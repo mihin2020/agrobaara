@@ -3,8 +3,10 @@
 namespace App\Livewire\Admin\Users;
 
 use App\Enums\UserStatus;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -17,15 +19,32 @@ class UserIndex extends Component
     use WithPagination;
 
     public string $search = '';
-    public bool   $confirmingDelete = false;
-    public ?string $deleteUserId = null;
+
+    // Suppression
+    public bool    $confirmingDelete = false;
+    public ?string $deleteUserId     = null;
+
+    // Changement de rôle
+    public bool    $showRoleModal      = false;
+    public ?string $roleModalUserId    = null;
+    public string  $roleModalUserName  = '';
+    public string  $selectedRoleId     = '';
+
+    // Changement de mot de passe
+    public bool    $showPasswordModal     = false;
+    public ?string $passwordModalUserId   = null;
+    public string  $passwordModalUserName = '';
+    public string  $newPassword           = '';
+    public string  $newPasswordConfirm    = '';
 
     public function updatedSearch(): void { $this->resetPage(); }
+
+    // ── Suppression ──────────────────────────────────────────────────
 
     public function confirmDelete(string $userId): void
     {
         $this->authorize('delete', User::findOrFail($userId));
-        $this->deleteUserId    = $userId;
+        $this->deleteUserId     = $userId;
         $this->confirmingDelete = true;
     }
 
@@ -48,6 +67,8 @@ class UserIndex extends Component
         $this->reset(['confirmingDelete', 'deleteUserId']);
         session()->flash('success', 'Utilisateur supprimé.');
     }
+
+    // ── Statut ───────────────────────────────────────────────────────
 
     public function toggleStatus(string $userId): void
     {
@@ -74,6 +95,117 @@ class UserIndex extends Component
         activity()->causedBy(Auth::user())->performedOn($user)->log('user_unlocked');
     }
 
+    // ── Changement de rôle ───────────────────────────────────────────
+
+    public function openRoleModal(string $userId): void
+    {
+        $me = Auth::user();
+        if (!$me->hasPermission('roles.manage')) {
+            abort(403);
+        }
+
+        $user = User::with('roles')->findOrFail($userId);
+
+        // Un non-super-admin ne peut pas modifier le rôle d'un super admin
+        if ($user->isSuperAdmin() && !$me->isSuperAdmin()) {
+            session()->flash('error', 'Vous ne pouvez pas modifier le rôle d\'un super administrateur.');
+            return;
+        }
+
+        $this->roleModalUserId   = $userId;
+        $this->roleModalUserName = $user->full_name;
+        $this->selectedRoleId   = $user->roles->first()?->id ?? '';
+        $this->showRoleModal     = true;
+    }
+
+    public function saveRole(): void
+    {
+        $me = Auth::user();
+        if (!$me->hasPermission('roles.manage')) abort(403);
+
+        $this->validate([
+            'selectedRoleId' => 'required|uuid|exists:roles,id',
+        ], [
+            'selectedRoleId.required' => 'Veuillez sélectionner un rôle.',
+        ]);
+
+        $user = User::findOrFail($this->roleModalUserId);
+
+        if ($user->isSuperAdmin() && !$me->isSuperAdmin()) {
+            abort(403);
+        }
+
+        $role = Role::findOrFail($this->selectedRoleId);
+
+        // Garde : on ne peut pas se retirer le rôle super_admin à soi-même
+        if ($user->id === $me->id && $me->isSuperAdmin() && $role->slug !== 'super_admin') {
+            session()->flash('error', 'Vous ne pouvez pas retirer votre propre rôle super administrateur.');
+            $this->showRoleModal = false;
+            return;
+        }
+
+        $user->roles()->sync([$role->id]);
+
+        activity()
+            ->causedBy($me)
+            ->performedOn($user)
+            ->withProperties(['new_role' => $role->name])
+            ->log('user_role_changed');
+
+        $this->reset(['showRoleModal', 'roleModalUserId', 'roleModalUserName', 'selectedRoleId']);
+        session()->flash('success', "Rôle de {$user->full_name} mis à jour : {$role->name}.");
+    }
+
+    // ── Changement de mot de passe ───────────────────────────────────
+
+    public function openPasswordModal(string $userId): void
+    {
+        if (!Auth::user()->isSuperAdmin()) {
+            abort(403);
+        }
+
+        $user = User::findOrFail($userId);
+        $this->passwordModalUserId   = $userId;
+        $this->passwordModalUserName = $user->full_name;
+        $this->newPassword           = '';
+        $this->newPasswordConfirm    = '';
+        $this->resetValidation(['newPassword', 'newPasswordConfirm']);
+        $this->showPasswordModal = true;
+    }
+
+    public function savePassword(): void
+    {
+        if (!Auth::user()->isSuperAdmin()) abort(403);
+
+        $this->validate([
+            'newPassword'        => 'required|string|min:8',
+            'newPasswordConfirm' => 'required|same:newPassword',
+        ], [
+            'newPassword.required'        => 'Le mot de passe est obligatoire.',
+            'newPassword.min'             => 'Minimum 8 caractères.',
+            'newPasswordConfirm.required' => 'La confirmation est obligatoire.',
+            'newPasswordConfirm.same'     => 'Les mots de passe ne correspondent pas.',
+        ]);
+
+        $user = User::findOrFail($this->passwordModalUserId);
+        $user->update(['password' => Hash::make($this->newPassword)]);
+
+        // Si le compte était en attente de mot de passe, on l'active
+        if ($user->status === UserStatus::PendingPassword) {
+            $user->update(['status' => UserStatus::Active]);
+        }
+
+        activity()
+            ->causedBy(Auth::user())
+            ->performedOn($user)
+            ->log('user_password_reset');
+
+        $this->reset(['showPasswordModal', 'passwordModalUserId', 'passwordModalUserName', 'newPassword', 'newPasswordConfirm']);
+        session()->flash('success', "Mot de passe de {$user->full_name} modifié avec succès.");
+    }
+
+    // ── Render ───────────────────────────────────────────────────────
+
     public function render()
     {
         $users = User::with('roles')
@@ -85,6 +217,8 @@ class UserIndex extends Component
             ->latest()
             ->paginate(10);
 
-        return view('livewire.admin.users.user-index', compact('users'));
+        $roles = Role::orderBy('name')->get();
+
+        return view('livewire.admin.users.user-index', compact('users', 'roles'));
     }
 }

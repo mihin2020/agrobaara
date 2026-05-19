@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" class="h-full">
+<html lang="fr" class="h-full overflow-hidden">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -15,7 +15,7 @@
         [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="h-full bg-[#fff8f5] font-inter antialiased text-[#1e1b18]">
+<body class="h-full overflow-hidden bg-[#fff8f5] font-inter antialiased text-[#1e1b18]">
 
 {{-- Barre de chargement globale --}}
 <div wire:loading.delay wire:loading.attr="aria-busy"
@@ -45,16 +45,8 @@
            class="fixed inset-y-0 left-0 z-40 w-64 flex-shrink-0 flex flex-col bg-[#f5ece7] border-r border-[#c1c9b6] transform transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0">
 
         {{-- Logo --}}
-        <div class="px-6 py-5 border-b border-[#c1c9b6]">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-[#2c6904] rounded-lg flex items-center justify-center">
-                    <span class="material-symbols-outlined text-white text-lg">eco</span>
-                </div>
-                <div>
-                    <h1 class="font-sora text-base font-bold text-[#2c6904] leading-none">BAARA Ops</h1>
-                    <p class="text-[10px] text-[#41493b] uppercase tracking-wider font-medium mt-0.5">Gestion des talents</p>
-                </div>
-            </div>
+        <div class="px-6 py-5 border-b border-[#c1c9b6] flex justify-center">
+            <img src="{{ asset('images/logo.jpeg') }}" alt="Logo" class="h-14 w-auto object-contain" />
         </div>
 
         {{-- Navigation --}}
@@ -232,7 +224,7 @@
         </header>
 
         {{-- Contenu de la page --}}
-        <main class="flex-1 overflow-y-auto">
+        <main class="flex-1 overflow-y-auto overflow-x-hidden">
             <div class="max-w-[1280px] mx-auto px-4 md:px-8 py-6 md:py-8">
                 {{ $slot }}
             </div>

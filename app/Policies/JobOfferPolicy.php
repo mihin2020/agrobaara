@@ -50,6 +50,11 @@ class JobOfferPolicy
         return $user->hasPermission('offers.archive');
     }
 
+    public function unarchive(User $user): bool
+    {
+        return $user->hasPermission('offers.archive') && !$user->isOperator();
+    }
+
     public function delete(User $user): bool
     {
         return $user->hasPermission('offers.delete');

@@ -127,11 +127,12 @@
         </div>
     @endif
 
-    {{-- Toutes les sections (toujours dans le DOM, visibilité CSS) --}}
+    {{-- Toutes les sections (visibilité gérée par Alpine pour éviter le flash sur re-render Livewire) --}}
     <div class="bg-white rounded-2xl border border-[#c1c9b6] shadow-sm">
 
         {{-- ── Section 1 — Identité ── --}}
-        <div class="{{ $currentSection !== 1 ? 'hidden' : '' }} p-6 space-y-5">
+        @if($currentSection === 1)
+        <div class="p-6 space-y-5">
             <h3 class="font-sora font-bold text-base text-[#1e1b18] flex items-center gap-2">
                 <span class="material-symbols-outlined text-[#2c6904]">badge</span>
                 Section A — Identité & Localisation
@@ -173,7 +174,9 @@
                 <div>
                     <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">Date de naissance *</label>
                     <input wire:model="birth_date" type="date"
+                           max="{{ now()->subYears(16)->format('Y-m-d') }}"
                            class="w-full px-4 py-2.5 bg-[#fbf2ed] border {{ $errors->has('birth_date') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904]" />
+                    <p class="mt-1 text-[11px] text-[#717a69]">Âge minimum : 16 ans</p>
                     @error('birth_date') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
@@ -201,10 +204,10 @@
                     @error('nationality') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">Commune de résidence *</label>
+                    <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">Ville de résidence *</label>
                     <select wire:model="commune_id"
                             class="w-full px-4 py-2.5 bg-[#fbf2ed] border {{ $errors->has('commune_id') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904]">
-                        <option value="">Sélectionner une commune...</option>
+                        <option value="">Sélectionner une ville...</option>
                         @foreach($communes as $commune)
                             <option value="{{ $commune->id }}">{{ $commune->name }}</option>
                         @endforeach
@@ -239,10 +242,62 @@
                     </div>
                 </div>
             </div>
+
+            {{-- ── Uploads identité ── --}}
+            <div class="border-t border-[#c1c9b6]/50 pt-5 space-y-4">
+                <p class="text-xs font-bold text-[#41493b] uppercase tracking-widest">Documents d'identité</p>
+
+                {{-- Photo d'identité --}}
+                <div>
+                    <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">
+                        Photo d'identité professionnelle
+                        <span class="text-xs font-normal text-[#717a69] ml-1">JPG/PNG · max 2 Mo</span>
+                    </label>
+                    <div class="flex items-center gap-4">
+                        <label class="relative flex-1 flex flex-col items-center justify-center gap-2 px-4 py-5 bg-[#fbf2ed] border-2 border-dashed {{ $errors->has('photo') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl cursor-pointer hover:border-[#2c6904]/60 transition-colors overflow-hidden">
+                            <span class="material-symbols-outlined text-[#2c6904] text-3xl">portrait</span>
+                            @if($photo)
+                                <span class="text-xs font-semibold text-[#2c6904]">{{ $photo->getClientOriginalName() }}</span>
+                            @else
+                                <span class="text-xs text-[#717a69]">Cliquer pour téléverser</span>
+                            @endif
+                            <input type="file" wire:model="photo" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                        </label>
+                        @if($photo)
+                            <img src="{{ $photo->temporaryUrl() }}" alt="Aperçu" class="w-16 h-16 object-cover rounded-xl border border-[#c1c9b6]" />
+                        @endif
+                    </div>
+                    @error('photo') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
+
+                {{-- Document d'identité (recto/verso) --}}
+                <div>
+                    <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">
+                        Document d'identité
+                        <span class="text-xs font-normal text-[#717a69] ml-1">Recto/verso · JPG/PNG/PDF · max 5 Mo</span>
+                    </label>
+                    <label class="relative flex items-center gap-4 px-4 py-4 bg-[#fbf2ed] border-2 border-dashed {{ $errors->has('identity_document') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl cursor-pointer hover:border-[#2c6904]/60 transition-colors overflow-hidden">
+                        <span class="material-symbols-outlined text-[#2c6904] text-3xl flex-shrink-0">contact_page</span>
+                        <div class="min-w-0">
+                            @if($identity_document)
+                                <p class="text-sm font-semibold text-[#2c6904] truncate">{{ $identity_document->getClientOriginalName() }}</p>
+                                <p class="text-xs text-[#717a69]">{{ round($identity_document->getSize() / 1024) }} Ko · Cliquer pour changer</p>
+                            @else
+                                <p class="text-sm text-[#1e1b18] font-medium">Téléverser le document d'identité</p>
+                                <p class="text-xs text-[#717a69]">Scan recto/verso en un fichier (JPG, PNG ou PDF)</p>
+                            @endif
+                        </div>
+                        <input type="file" wire:model="identity_document" accept=".jpg,.jpeg,.png,.pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                    </label>
+                    @error('identity_document') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
+            </div>
         </div>
+        @endif
 
         {{-- ── Section 2 — Contacts & Langues ── --}}
-        <div class="{{ $currentSection !== 2 ? 'hidden' : '' }} p-6 space-y-5">
+        @if($currentSection === 2)
+        <div class="p-6 space-y-5">
             <h3 class="font-sora font-bold text-base text-[#1e1b18] flex items-center gap-2">
                 <span class="material-symbols-outlined text-[#2c6904]">contact_phone</span>
                 Section B — Contacts & Langues
@@ -282,9 +337,11 @@
                 </div>
             </div>
         </div>
+        @endif
 
         {{-- ── Section 3 — Formation ── --}}
-        <div class="{{ $currentSection !== 3 ? 'hidden' : '' }} p-6 space-y-5">
+        @if($currentSection === 3)
+        <div class="p-6 space-y-5">
             <h3 class="font-sora font-bold text-base text-[#1e1b18] flex items-center gap-2">
                 <span class="material-symbols-outlined text-[#2c6904]">school</span>
                 Section C — Formation & Éducation
@@ -313,10 +370,36 @@
                           placeholder="Décrivez les formations reçues en lien avec l'agroécologie..."
                           class="w-full px-4 py-2.5 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904] resize-none"></textarea>
             </div>
+            <div>
+                <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">
+                    Diplômes ou attestations en agroécologie
+                    <span class="text-xs font-normal text-[#717a69] ml-1">Plusieurs fichiers possibles · PDF/JPG/PNG · max 10 Mo/fichier</span>
+                </label>
+                <label class="relative flex items-center gap-4 px-4 py-4 bg-[#fbf2ed] border-2 border-dashed {{ $errors->has('diploma_files.*') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl cursor-pointer hover:border-[#2c6904]/60 transition-colors overflow-hidden">
+                    <span class="material-symbols-outlined text-[#2c6904] text-3xl flex-shrink-0">workspace_premium</span>
+                    <div class="min-w-0 flex-1">
+                        @if(!empty($diploma_files))
+                            <p class="text-sm font-semibold text-[#2c6904]">{{ count($diploma_files) }} fichier(s) sélectionné(s)</p>
+                            <div class="mt-1 space-y-0.5">
+                                @foreach($diploma_files as $df)
+                                    <p class="text-xs text-[#717a69] truncate">{{ $df->getClientOriginalName() }} — {{ round($df->getSize() / 1024) }} Ko</p>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-sm text-[#1e1b18] font-medium">Téléverser les diplômes ou attestations</p>
+                            <p class="text-xs text-[#717a69]">Sélectionnez un ou plusieurs fichiers (PDF, JPG, PNG)</p>
+                        @endif
+                    </div>
+                    <input type="file" wire:model="diploma_files" accept=".pdf,.jpg,.jpeg,.png" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                </label>
+                @error('diploma_files.*') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+            </div>
         </div>
+        @endif
 
         {{-- ── Section 4 — Compétences & Expériences ── --}}
-        <div class="{{ $currentSection !== 4 ? 'hidden' : '' }} p-6 space-y-6">
+        @if($currentSection === 4)
+        <div class="p-6 space-y-6">
             <h3 class="font-sora font-bold text-base text-[#1e1b18] flex items-center gap-2">
                 <span class="material-symbols-outlined text-[#2c6904]">work_history</span>
                 Section D — Compétences & Expériences
@@ -338,6 +421,24 @@
                 <textarea wire:model="other_skills_text" rows="3"
                           placeholder="Mentionner d'autres compétences non listées..."
                           class="w-full px-4 py-2.5 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904] resize-none"></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">
+                    CV
+                    <span class="text-xs font-normal text-[#717a69] ml-1">PDF/DOC/DOCX · max 5 Mo</span>
+                </label>
+                <label class="relative flex flex-col items-center justify-center gap-2 px-4 py-6 bg-[#fbf2ed] border-2 border-dashed {{ $errors->has('cv_file') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl cursor-pointer hover:border-[#2c6904]/60 transition-colors overflow-hidden">
+                    <span class="material-symbols-outlined text-[#2c6904] text-3xl">description</span>
+                    @if($cv_file)
+                        <span class="text-sm font-semibold text-[#2c6904]">{{ $cv_file->getClientOriginalName() }}</span>
+                        <span class="text-xs text-[#717a69]">{{ round($cv_file->getSize() / 1024) }} Ko</span>
+                    @else
+                        <span class="text-sm text-[#717a69]">Cliquer pour téléverser le CV</span>
+                        <span class="text-xs text-[#717a69]">PDF, DOC ou DOCX</span>
+                    @endif
+                    <input type="file" wire:model="cv_file" accept=".pdf,.doc,.docx" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                </label>
+                @error('cv_file') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
             </div>
             <div>
                 <div class="flex items-center justify-between mb-3">
@@ -391,9 +492,11 @@
                 @endif
             </div>
         </div>
+        @endif
 
         {{-- ── Section 5 — Besoins internes ── --}}
-        <div class="{{ $currentSection !== 5 ? 'hidden' : '' }} p-6 space-y-5">
+        @if($currentSection === 5)
+        <div class="p-6 space-y-5">
             <div class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-amber-600">admin_panel_settings</span>
                 <h3 class="font-sora font-bold text-base text-[#1e1b18]">Section E — Besoins exprimés</h3>
@@ -592,6 +695,7 @@
                           class="w-full px-4 py-2.5 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904] resize-none"></textarea>
             </div>
         </div>
+        @endif
 
         {{-- Navigation --}}
         <div class="px-6 pb-6 flex justify-between items-center border-t border-[#c1c9b6]/50 pt-5">

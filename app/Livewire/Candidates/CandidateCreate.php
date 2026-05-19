@@ -17,11 +17,14 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 #[Layout('components.layouts.app')]
 #[Title('Nouveau candidat — Agro Eco BAARA')]
 class CandidateCreate extends Component
 {
+    use WithFileUploads;
+
     // Section A — Identité
     public string $first_name    = '';
     public string $last_name     = '';
@@ -36,6 +39,8 @@ class CandidateCreate extends Component
     public string $address       = '';
     public string $transport_mode = '';
     public array  $license_ids   = [];
+    public $photo                    = null;
+    public $identity_document        = null;
 
     // Section B — Contacts
     public string $phone           = '';
@@ -47,12 +52,14 @@ class CandidateCreate extends Component
     public string $education_level     = '';
     public string $agro_training_text  = '';
     public string $agro_training_place = '';
+    public array $diploma_files        = [];
 
     // Section D — Expériences
     public array  $skill_ids         = [];
     public string $other_skills_text = '';
     public bool   $has_previous_jobs = false;
     public array  $experiences       = [];
+    public $cv_file                  = null;
 
     // Section E — Besoins internes
     public array  $need_employment_types = [];
@@ -153,6 +160,8 @@ class CandidateCreate extends Component
                 'nationality'         => $this->nationality,
                 'commune_id'          => $this->commune_id,
                 'address'             => $this->address ?: null,
+                'photo_path'             => $this->photo ? $this->photo->store('candidates/photos', 'public') : null,
+                'identity_document_path' => $this->identity_document ? $this->identity_document->store('candidates/documents', 'public') : null,
                 'transport_mode'      => $this->transport_mode ?: null,
                 'phone'               => $this->phone,
                 'phone_secondary'     => $this->phone_secondary ?: null,
@@ -160,6 +169,8 @@ class CandidateCreate extends Component
                 'education_level'     => $this->education_level,
                 'agro_training_text'  => $this->agro_training_text ?: null,
                 'agro_training_place' => $this->agro_training_place ?: null,
+                'diploma_paths'       => !empty($this->diploma_files) ? collect($this->diploma_files)->map(fn($f) => $f->store('candidates/diplomas', 'public'))->toArray() : null,
+                'cv_path'             => $this->cv_file ? $this->cv_file->store('candidates/cvs', 'public') : null,
                 'other_skills_text'   => $this->other_skills_text ?: null,
                 'has_previous_jobs'      => $this->has_previous_jobs,
                 'need_employment_types'  => $this->need_employment_types ?: null,
@@ -222,18 +233,30 @@ class CandidateCreate extends Component
             $this->sectionARules(),
             $this->sectionBRules(),
             $this->sectionCRules(),
+            $this->sectionDRules(),
         ), $this->validationMessages());
+    }
+
+    private function sectionDRules(): array
+    {
+        return [
+            'cv_file' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+        ];
     }
 
     private function sectionARules(): array
     {
+        $maxBirthDate = now()->subYears(16)->format('Y-m-d');
+
         return [
-            'first_name'  => 'required|string|min:2|max:100',
-            'last_name'   => 'required|string|min:2|max:100',
-            'gender'      => 'required|in:M,F',
-            'birth_date'  => 'required|date|before:today',
-            'commune_id'  => 'required|exists:referentials_communes,id',
-            'nationality' => 'required|string|max:100',
+            'first_name'               => 'required|string|min:2|max:100',
+            'last_name'                => 'required|string|min:2|max:100',
+            'gender'                   => 'required|in:M,F',
+            'birth_date'               => "required|date|before_or_equal:{$maxBirthDate}",
+            'commune_id'               => 'required|exists:referentials_communes,id',
+            'nationality'              => 'required|string|max:100',
+            'photo'                    => 'nullable|image|max:2048',
+            'identity_document'        => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ];
     }
 
@@ -250,6 +273,7 @@ class CandidateCreate extends Component
     {
         return [
             'education_level' => 'required|exists:referentials_education_levels,code',
+            'diploma_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240',
         ];
     }
 
@@ -262,9 +286,15 @@ class CandidateCreate extends Component
             'last_name.min'            => 'Le nom doit contenir au moins 2 caractères.',
             'gender.required'          => 'Le sexe est obligatoire.',
             'gender.in'                => 'Le sexe sélectionné est invalide.',
-            'birth_date.required'      => 'La date de naissance est obligatoire.',
-            'birth_date.date'          => 'La date de naissance est invalide.',
-            'birth_date.before'        => 'La date de naissance doit être dans le passé.',
+            'birth_date.required'          => 'La date de naissance est obligatoire.',
+            'birth_date.date'              => 'La date de naissance est invalide.',
+            'birth_date.before_or_equal'   => 'Le candidat doit avoir au moins 16 ans.',
+            'photo.image'                  => 'La photo doit être une image (JPG, PNG).',
+            'photo.max'                    => 'La photo ne doit pas dépasser 2 Mo.',
+            'identity_document_recto.max'  => 'Le document recto ne doit pas dépasser 5 Mo.',
+            'identity_document_verso.max'  => 'Le document verso ne doit pas dépasser 5 Mo.',
+            'diploma_file.max'             => 'Le diplôme ne doit pas dépasser 10 Mo.',
+            'cv_file.max'                  => 'Le CV ne doit pas dépasser 5 Mo.',
             'commune_id.required'      => 'La commune de résidence est obligatoire.',
             'commune_id.exists'        => 'La commune sélectionnée est invalide.',
             'nationality.required'     => 'La nationalité est obligatoire.',

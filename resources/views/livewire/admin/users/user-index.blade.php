@@ -91,6 +91,25 @@
                             </td>
                             <td class="px-4 py-3.5 text-right">
                                 <div class="flex items-center justify-end gap-1">
+
+                                    {{-- Changer le rôle --}}
+                                    @if(auth()->user()->hasPermission('roles.manage') && $user->id !== auth()->id())
+                                        <button wire:click="openRoleModal('{{ $user->id }}')"
+                                                class="p-1.5 text-[#41493b] hover:bg-purple-50 hover:text-purple-700 rounded-lg transition-colors"
+                                                title="Changer le rôle">
+                                            <span class="material-symbols-outlined text-lg">manage_accounts</span>
+                                        </button>
+                                    @endif
+
+                                    {{-- Changer le mot de passe (super admin seulement) --}}
+                                    @if(auth()->user()->isSuperAdmin())
+                                        <button wire:click="openPasswordModal('{{ $user->id }}')"
+                                                class="p-1.5 text-[#41493b] hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors"
+                                                title="Changer le mot de passe">
+                                            <span class="material-symbols-outlined text-lg">key</span>
+                                        </button>
+                                    @endif
+
                                     {{-- Toggle actif/inactif --}}
                                     @if($user->id !== auth()->id())
                                         <button wire:click="toggleStatus('{{ $user->id }}')"
@@ -101,6 +120,7 @@
                                             </span>
                                         </button>
                                     @endif
+
                                     {{-- Déverrouiller --}}
                                     @if($user->status->value === 'locked')
                                         <button wire:click="unlockUser('{{ $user->id }}')"
@@ -109,6 +129,7 @@
                                             <span class="material-symbols-outlined text-lg">lock_open</span>
                                         </button>
                                     @endif
+
                                     {{-- Supprimer --}}
                                     @if($user->id !== auth()->id())
                                         <button wire:click="confirmDelete('{{ $user->id }}')"
@@ -134,15 +155,136 @@
 
         @if($users->hasPages())
             <div class="px-4 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#fbf2ed] border-t border-[#c1c9b6]">
-                <p class="text-xs text-[#41493b]">
-                    {{ $users->total() }} utilisateur(s) au total
-                </p>
+                <p class="text-xs text-[#41493b]">{{ $users->total() }} utilisateur(s) au total</p>
                 {{ $users->links('livewire.partials.pagination') }}
             </div>
         @endif
     </div>
 
-    {{-- Modal confirmation suppression --}}
+    {{-- ── Modale : Changer le rôle ── --}}
+    @if($showRoleModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+             x-data x-init="$el.focus()" @keydown.escape.window="$wire.set('showRoleModal', false)">
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                 wire:click="$set('showRoleModal', false)"></div>
+            <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-5"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100">
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined text-purple-600 text-lg">manage_accounts</span>
+                        </div>
+                        <div>
+                            <h3 class="font-sora font-bold text-base text-[#1e1b18]">Changer le rôle</h3>
+                            <p class="text-xs text-[#717a69]">{{ $roleModalUserName }}</p>
+                        </div>
+                    </div>
+                    <button wire:click="$set('showRoleModal', false)"
+                            class="p-1.5 text-[#717a69] hover:text-[#1e1b18] hover:bg-[#f5ece7] rounded-lg transition-colors">
+                        <span class="material-symbols-outlined text-lg">close</span>
+                    </button>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">Nouveau rôle *</label>
+                    <select wire:model="selectedRoleId"
+                            class="w-full px-4 py-2.5 bg-[#fbf2ed] border {{ $errors->has('selectedRoleId') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400/20 focus:border-purple-400">
+                        <option value="">Sélectionner un rôle...</option>
+                        @foreach($roles as $role)
+                            @if(auth()->user()->isSuperAdmin() || $role->slug !== 'super_admin')
+                                <option value="{{ $role->id }}">{{ $role->name }}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                    @error('selectedRoleId') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    <p class="mt-1.5 text-[11px] text-[#717a69]">
+                        <span class="material-symbols-outlined text-[11px] align-middle">info</span>
+                        Ce changement prend effet immédiatement à la prochaine connexion.
+                    </p>
+                </div>
+
+                <div class="flex gap-3 pt-1">
+                    <button wire:click="$set('showRoleModal', false)"
+                            class="flex-1 px-4 py-2.5 border border-[#c1c9b6] text-[#41493b] font-semibold text-sm rounded-xl hover:bg-[#f5ece7] transition-colors">
+                        Annuler
+                    </button>
+                    <button wire:click="saveRole"
+                            wire:loading.attr="disabled" wire:target="saveRole"
+                            class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 text-white font-semibold text-sm rounded-xl hover:bg-purple-700 transition-colors disabled:opacity-60">
+                        <span wire:loading wire:target="saveRole" class="material-symbols-outlined animate-spin text-base">progress_activity</span>
+                        Appliquer
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- ── Modale : Changer le mot de passe ── --}}
+    @if($showPasswordModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+             x-data @keydown.escape.window="$wire.set('showPasswordModal', false)">
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                 wire:click="$set('showPasswordModal', false)"></div>
+            <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-5"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100">
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined text-blue-600 text-lg">key</span>
+                        </div>
+                        <div>
+                            <h3 class="font-sora font-bold text-base text-[#1e1b18]">Nouveau mot de passe</h3>
+                            <p class="text-xs text-[#717a69]">{{ $passwordModalUserName }}</p>
+                        </div>
+                    </div>
+                    <button wire:click="$set('showPasswordModal', false)"
+                            class="p-1.5 text-[#717a69] hover:text-[#1e1b18] hover:bg-[#f5ece7] rounded-lg transition-colors">
+                        <span class="material-symbols-outlined text-lg">close</span>
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">Nouveau mot de passe *</label>
+                        <input wire:model="newPassword" type="password" placeholder="Min. 8 caractères"
+                               class="w-full px-4 py-2.5 bg-[#fbf2ed] border {{ $errors->has('newPassword') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/20 focus:border-blue-400" />
+                        @error('newPassword') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">Confirmer le mot de passe *</label>
+                        <input wire:model="newPasswordConfirm" type="password" placeholder="Répéter le mot de passe"
+                               class="w-full px-4 py-2.5 bg-[#fbf2ed] border {{ $errors->has('newPasswordConfirm') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/20 focus:border-blue-400" />
+                        @error('newPasswordConfirm') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <p class="text-[11px] text-[#717a69]">
+                        <span class="material-symbols-outlined text-[11px] align-middle">info</span>
+                        Le mot de passe sera immédiatement actif. Si le compte était en attente, il sera automatiquement activé.
+                    </p>
+                </div>
+
+                <div class="flex gap-3 pt-1">
+                    <button wire:click="$set('showPasswordModal', false)"
+                            class="flex-1 px-4 py-2.5 border border-[#c1c9b6] text-[#41493b] font-semibold text-sm rounded-xl hover:bg-[#f5ece7] transition-colors">
+                        Annuler
+                    </button>
+                    <button wire:click="savePassword"
+                            wire:loading.attr="disabled" wire:target="savePassword"
+                            class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white font-semibold text-sm rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60">
+                        <span wire:loading wire:target="savePassword" class="material-symbols-outlined animate-spin text-base">progress_activity</span>
+                        Enregistrer
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- ── Modale : Confirmer la suppression ── --}}
     @if($confirmingDelete)
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
              x-data x-init="$el.focus()" @keydown.escape.window="$wire.set('confirmingDelete', false)">

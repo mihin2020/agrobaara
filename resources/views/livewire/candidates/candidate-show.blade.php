@@ -15,8 +15,12 @@
                class="p-2 text-[#41493b] hover:bg-[#f5ece7] rounded-xl transition-colors">
                 <span class="material-symbols-outlined text-lg">arrow_back</span>
             </a>
-            <div class="w-12 h-12 rounded-2xl bg-[#2c6904] flex items-center justify-center text-white font-bold text-base flex-shrink-0">
-                {{ strtoupper(substr($candidate->first_name, 0, 1) . substr($candidate->last_name, 0, 1)) }}
+            <div class="w-14 h-14 rounded-2xl bg-[#2c6904] flex items-center justify-center text-white font-bold text-base flex-shrink-0 overflow-hidden border-2 border-[#93d86c]/40">
+                @if($candidate->photo_path)
+                    <img src="{{ Storage::url($candidate->photo_path) }}" alt="{{ $candidate->full_name }}" class="w-full h-full object-cover" />
+                @else
+                    {{ strtoupper(substr($candidate->first_name, 0, 1) . substr($candidate->last_name, 0, 1)) }}
+                @endif
             </div>
             <div>
                 <h1 class="font-sora text-xl font-bold text-[#1e1b18] leading-tight">{{ $candidate->full_name }}</h1>
@@ -106,7 +110,7 @@
                         <p class="text-sm font-semibold text-[#1e1b18] mt-0.5">{{ $candidate->nationality }}</p>
                     </div>
                     <div>
-                        <p class="text-[11px] text-[#717a69] uppercase font-bold tracking-wide">Commune</p>
+                        <p class="text-[11px] text-[#717a69] uppercase font-bold tracking-wide">Ville</p>
                         <p class="text-sm font-semibold text-[#1e1b18] mt-0.5">{{ $candidate->commune?->name ?? '—' }}</p>
                     </div>
                     <div>
@@ -131,6 +135,52 @@
                     @endif
                 </div>
             </div>
+
+            {{-- Documents (photo + pièce d'identité + diplômes + CV) --}}
+            @if($candidate->photo_path || $candidate->identity_document_path || !empty($candidate->diploma_paths) || $candidate->cv_path)
+            <div class="bg-white rounded-2xl border border-[#c1c9b6] overflow-hidden">
+                <div class="px-5 py-3.5 border-b border-[#c1c9b6] bg-[#fbf2ed] flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base text-[#2c6904]">folder_open</span>
+                    <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Documents</h3>
+                </div>
+                <div class="p-5 flex flex-wrap gap-3">
+                    @if($candidate->photo_path)
+                        <a href="{{ Storage::url($candidate->photo_path) }}" target="_blank"
+                           class="flex items-center gap-2.5 px-3 py-2.5 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl hover:border-[#2c6904]/50 transition-colors group">
+                            <span class="material-symbols-outlined text-[#2c6904] text-lg">portrait</span>
+                            <span class="text-xs font-semibold text-[#1e1b18] group-hover:text-[#2c6904]">Photo d'identité</span>
+                            <span class="material-symbols-outlined text-[#717a69] text-sm">open_in_new</span>
+                        </a>
+                    @endif
+                    @if($candidate->identity_document_path)
+                        <a href="{{ Storage::url($candidate->identity_document_path) }}" target="_blank"
+                           class="flex items-center gap-2.5 px-3 py-2.5 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl hover:border-[#2c6904]/50 transition-colors group">
+                            <span class="material-symbols-outlined text-[#2c6904] text-lg">contact_page</span>
+                            <span class="text-xs font-semibold text-[#1e1b18] group-hover:text-[#2c6904]">Pièce d'identité</span>
+                            <span class="material-symbols-outlined text-[#717a69] text-sm">open_in_new</span>
+                        </a>
+                    @endif
+                    @if(!empty($candidate->diploma_paths))
+                        @foreach($candidate->diploma_paths as $i => $path)
+                            <a href="{{ Storage::url($path) }}" target="_blank"
+                               class="flex items-center gap-2.5 px-3 py-2.5 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl hover:border-[#2c6904]/50 transition-colors group">
+                                <span class="material-symbols-outlined text-[#2c6904] text-lg">workspace_premium</span>
+                                <span class="text-xs font-semibold text-[#1e1b18] group-hover:text-[#2c6904]">Diplôme {{ count($candidate->diploma_paths) > 1 ? ($i+1) : '' }}</span>
+                                <span class="material-symbols-outlined text-[#717a69] text-sm">open_in_new</span>
+                            </a>
+                        @endforeach
+                    @endif
+                    @if($candidate->cv_path)
+                        <a href="{{ Storage::url($candidate->cv_path) }}" target="_blank"
+                           class="flex items-center gap-2.5 px-3 py-2.5 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl hover:border-[#2c6904]/50 transition-colors group">
+                            <span class="material-symbols-outlined text-[#2c6904] text-lg">description</span>
+                            <span class="text-xs font-semibold text-[#1e1b18] group-hover:text-[#2c6904]">CV</span>
+                            <span class="material-symbols-outlined text-[#717a69] text-sm">open_in_new</span>
+                        </a>
+                    @endif
+                </div>
+            </div>
+            @endif
 
             {{-- Section B — Contacts --}}
             <div class="bg-white rounded-2xl border border-[#c1c9b6] overflow-hidden">

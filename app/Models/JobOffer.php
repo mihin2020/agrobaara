@@ -128,6 +128,14 @@ class JobOffer extends Model
         ]);
     }
 
+    public function unarchive(): void
+    {
+        $this->update([
+            'status'      => OfferStatus::Brouillon,
+            'archived_at' => null,
+        ]);
+    }
+
     public function isDraft(): bool
     {
         return $this->status === OfferStatus::Brouillon;
@@ -136,5 +144,10 @@ class JobOffer extends Model
     public function isPublished(): bool
     {
         return $this->status === OfferStatus::Publiee;
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->status === OfferStatus::Archivee;
     }
 }

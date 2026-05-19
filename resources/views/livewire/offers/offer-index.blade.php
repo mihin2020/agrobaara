@@ -1,4 +1,43 @@
-<div class="space-y-6">
+<div class="space-y-6" x-data="{
+    archiveModal: false,
+    archiveId: null,
+    openArchive(id) { this.archiveId = id; this.archiveModal = true; },
+    confirmArchive() { $wire.archiveOffer(this.archiveId); this.archiveModal = false; }
+}">
+
+    {{-- Modal confirmation archivage --}}
+    <div x-show="archiveModal" x-cloak
+         class="fixed inset-0 z-50 flex items-center justify-center p-4"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="archiveModal = false"></div>
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-4"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined text-gray-500">archive</span>
+                </div>
+                <div>
+                    <h3 class="font-sora font-bold text-base text-[#1e1b18]">Archiver cette offre ?</h3>
+                    <p class="text-xs text-[#717a69] mt-0.5">Cette action peut être annulée par un administrateur.</p>
+                </div>
+            </div>
+            <p class="text-sm text-[#41493b]">L'offre sera retirée de la liste active et ne sera plus visible pour le matching. Vous pourrez la désarchiver en cas d'erreur.</p>
+            <div class="flex gap-3 pt-1">
+                <button @click="archiveModal = false"
+                        class="flex-1 px-4 py-2.5 border border-[#c1c9b6] text-[#41493b] font-semibold text-sm rounded-xl hover:bg-[#f5ece7] transition-colors">
+                    Annuler
+                </button>
+                <button @click="confirmArchive()"
+                        class="flex-1 px-4 py-2.5 bg-gray-600 text-white font-semibold text-sm rounded-xl hover:bg-gray-700 transition-colors">
+                    Archiver
+                </button>
+            </div>
+        </div>
+    </div>
 
     @if(session('success'))
         <div class="bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3 text-sm flex items-center gap-2">
@@ -117,9 +156,18 @@
                                     @endcan
                                     @can('archive', $offer)
                                         @if($offer->isPublished())
-                                            <button wire:click="archiveOffer('{{ $offer->id }}')"
+                                            <button @click="openArchive('{{ $offer->id }}')"
                                                     class="p-1.5 text-[#41493b] hover:bg-gray-50 hover:text-gray-600 rounded-lg transition-colors" title="Archiver">
                                                 <span class="material-symbols-outlined text-lg">archive</span>
+                                            </button>
+                                        @endif
+                                    @endcan
+                                    @can('unarchive', $offer)
+                                        @if($offer->isArchived())
+                                            <button wire:click="unarchiveOffer('{{ $offer->id }}')"
+                                                    wire:confirm="Remettre cette offre en brouillon ?"
+                                                    class="p-1.5 text-[#41493b] hover:bg-amber-50 hover:text-amber-700 rounded-lg transition-colors" title="Désarchiver">
+                                                <span class="material-symbols-outlined text-lg">unarchive</span>
                                             </button>
                                         @endif
                                     @endcan

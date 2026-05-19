@@ -46,6 +46,16 @@ class OfferIndex extends Component
         session()->flash('success', 'Offre archivée.');
     }
 
+    public function unarchiveOffer(string $offerId): void
+    {
+        $offer = JobOffer::findOrFail($offerId);
+        $this->authorize('unarchive', $offer);
+        $offer->unarchive();
+
+        activity()->causedBy(Auth::user())->performedOn($offer)->log('offer_unarchived');
+        session()->flash('success', 'Offre remise en brouillon.');
+    }
+
     public function render()
     {
         $this->authorize('viewAny', JobOffer::class);

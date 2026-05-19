@@ -11,22 +11,27 @@ use App\Models\ReferentialSkill;
 use App\Services\ReferenceService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 #[Layout('components.layouts.app')]
 #[Title('Modifier entreprise — Agro Eco BAARA')]
 class CompanyEdit extends Component
 {
+    use WithFileUploads;
+
     #[Locked]
     public string $companyId = '';
 
     public Company $company;
 
-    public string $name                 = '';
-    public string $status               = '';
+    public $logo                    = null;
+    public string $name             = '';
+    public string $status           = '';
     public string $legal_rep_first_name = '';
     public string $legal_rep_last_name  = '';
     public array  $activity_types       = [];
@@ -96,6 +101,7 @@ class CompanyEdit extends Component
     {
         $this->validate([
             'name'               => 'required|string|min:2|max:200',
+            'logo'               => 'nullable|image|max:2048',
             'status'             => 'required|in:' . implode(',', array_column(CompanyStatus::cases(), 'value')),
             'activity_types'     => 'required|array|min:1',
             'phone'              => 'required|string|max:30',
@@ -114,7 +120,7 @@ class CompanyEdit extends Component
         ]);
 
         DB::transaction(function () {
-            $this->company->update([
+            $updates = [
                 'name'                  => $this->name,
                 'status'                => $this->status,
                 'legal_rep_first_name'  => $this->legal_rep_first_name ?: null,
@@ -134,7 +140,14 @@ class CompanyEdit extends Component
                 'need_contract_support' => $this->need_contract_support,
                 'operator_notes'        => $this->operator_notes ?: null,
                 'updated_by'            => Auth::id(),
-            ]);
+            ];
+
+            if ($this->logo) {
+                if ($this->company->logo_path) Storage::disk('public')->delete($this->company->logo_path);
+                $updates['logo_path'] = $this->logo->store('companies/logos', 'public');
+            }
+
+            $this->company->update($updates);
 
             $this->company->sites()->delete();
             foreach ($this->sites as $site) {
