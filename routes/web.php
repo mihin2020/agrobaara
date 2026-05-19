@@ -28,6 +28,7 @@ use App\Livewire\Landing\Mediatheque;
 use App\Livewire\Admin\Landing\LandingConfigurator;
 use App\Livewire\Admin\Audit\AuditLog;
 use App\Livewire\Admin\Settings\SettingsIndex;
+use App\Livewire\Admin\Library\LibraryIndex;
 use App\Livewire\Profile\UserProfile;
 use Illuminate\Support\Facades\Route;
 
@@ -105,6 +106,14 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::get('/', MatchIndex::class)->name('index');
         Route::get('/{match}', MatchShow::class)->name('show');
     });
+
+    // ── Bibliothèque (super admin) ─────────────────────────────────────────
+    Route::middleware('role:super_admin')
+        ->prefix('bibliotheque')
+        ->name('library.')
+        ->group(function () {
+            Route::get('/', LibraryIndex::class)->name('index');
+        });
 
     // ── Administration (Super-admin + Modérateur) ──────────────────────────
     Route::middleware('role:super_admin,moderateur')->prefix('administration')->name('admin.')->group(function () {

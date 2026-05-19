@@ -691,20 +691,7 @@ function filterMedia(cat, btn) {
 
     {{-- Barre de copyright --}}
     <div class="border-t border-outline-variant/30 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-        <p class="text-body-sm text-on-surface-variant">© {{ date('Y') }} Agro Eco BAARA. Tous droits réservés.</p>
-        <div class="flex gap-6">
-            @if($autresFbLink && $autresFbLink !== '#')
-            <a class="text-on-surface-variant hover:text-primary" href="{{ $autresFbLink }}" target="_blank">
-                <span class="material-symbols-outlined">facebook</span>
-            </a>
-            @endif
-            <a class="text-on-surface-variant hover:text-primary" href="#">
-                <span class="material-symbols-outlined">linked_camera</span>
-            </a>
-            <a class="text-on-surface-variant hover:text-primary" href="#">
-                <span class="material-symbols-outlined">share</span>
-            </a>
-        </div>
+        <p class="text-body-sm text-on-surface-variant">Copyright © 2020 Yam-Pukri. Tous Droits Réservés.</p>
     </div>
 
 </div>

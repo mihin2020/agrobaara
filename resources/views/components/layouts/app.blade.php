@@ -71,6 +71,12 @@
                 Matching
             </x-nav-link>
 
+            @if(auth()->user()->isSuperAdmin())
+                <x-nav-link href="{{ route('admin.library.index') }}" icon="menu_book" :active="request()->routeIs('admin.library.*')">
+                    Bibliothèque
+                </x-nav-link>
+            @endif
+
             @php
                 $user = auth()->user();
                 $hasAdminSection = $user->hasAnyPermission(['users.view', 'roles.manage', 'audit.view', 'settings.view']);
@@ -143,12 +149,6 @@
                         <span class="hidden md:inline">Nouveau Dossier</span>
                     </a>
 
-                    {{-- Notifications --}}
-                    <button class="relative p-2 text-[#41493b] hover:bg-[#f5ece7] rounded-full transition-colors">
-                        <span class="material-symbols-outlined">notifications</span>
-                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
-                    </button>
-
                     <div class="h-6 w-px bg-[#c1c9b6] mx-1 hidden sm:block"></div>
 
                     {{-- Profil dropdown --}}
@@ -168,9 +168,6 @@
                                     {{ strtoupper(substr(auth()->user()->first_name, 0, 1) . substr(auth()->user()->last_name, 0, 1)) }}
                                 @endif
                             </div>
-                            <span class="material-symbols-outlined text-base text-[#717a69] hidden sm:inline"
-                                  :class="profileOpen ? 'rotate-180' : ''"
-                                  style="transition: transform .2s">expand_more</span>
                         </button>
 
                         {{-- Dropdown menu --}}

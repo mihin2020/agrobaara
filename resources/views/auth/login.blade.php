@@ -18,49 +18,38 @@
         <div class="absolute inset-0 opacity-10"
              style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');">
         </div>
-        <div class="relative z-10 flex flex-col justify-center px-16 text-white">
-            <div class="mb-12">
-                <img src="{{ asset('images/logo.jpeg') }}" alt="Agro Eco BAARA" class="h-16 w-auto mb-8 rounded-xl">
-                <h1 class="font-sora text-4xl font-bold leading-tight mb-4">
-                    Agro Eco<br/><span class="text-[#93d86c]">BAARA</span>
-                </h1>
-                <p class="text-lg opacity-80 leading-relaxed">
-                    Connecter les talents et les opportunités en agroécologie au Burkina Faso.
-                </p>
+        <div class="relative z-10 flex flex-col items-center justify-center px-16 text-white w-full">
+            <div class="mb-12 w-full flex justify-center">
+                <img src="{{ asset('images/logo.jpeg') }}" alt="Agro Eco BAARA" class="w-auto rounded-2xl" style="height: 9.5rem;">
             </div>
-            <div class="space-y-6">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                        <span class="material-symbols-outlined text-[#93d86c]">person_search</span>
+            <div class="space-y-8 w-full">
+                <div class="flex items-center gap-5">
+                    <div class="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-3xl text-[#93d86c]">person_search</span>
                     </div>
                     <div>
-                        <p class="font-semibold">Gestion des candidats</p>
-                        <p class="text-sm opacity-70">Suivi complet des profils agroécologiques</p>
+                        <p class="text-lg font-bold">Gestion des candidats</p>
+                        <p class="text-base opacity-70 mt-0.5">Suivi complet des profils agroécologiques</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                        <span class="material-symbols-outlined text-[#ffb870]">handshake</span>
+                <div class="flex items-center gap-5">
+                    <div class="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-3xl text-[#ffb870]">handshake</span>
                     </div>
                     <div>
-                        <p class="font-semibold">Mise en relation</p>
-                        <p class="text-sm opacity-70">Matching assisté candidats / offres</p>
+                        <p class="text-lg font-bold">Mise en relation</p>
+                        <p class="text-base opacity-70 mt-0.5">Matching assisté candidats / offres</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                        <span class="material-symbols-outlined text-[#93d86c]">bar_chart</span>
+                <div class="flex items-center gap-5">
+                    <div class="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-3xl text-[#93d86c]">bar_chart</span>
                     </div>
                     <div>
-                        <p class="font-semibold">Tableau de bord</p>
-                        <p class="text-sm opacity-70">Indicateurs en temps réel</p>
+                        <p class="text-lg font-bold">Tableau de bord</p>
+                        <p class="text-base opacity-70 mt-0.5">Indicateurs en temps réel</p>
                     </div>
                 </div>
-            </div>
-            <div class="mt-auto pt-16">
-                <p class="text-sm opacity-50">
-                    Association Yelemani · Partenaire CRIC · Financement Min. Intérieur Italien
-                </p>
             </div>
         </div>
     </div>
@@ -70,9 +59,8 @@
         <div class="mx-auto w-full max-w-md">
 
             {{-- Logo mobile --}}
-            <div class="lg:hidden mb-10 text-center">
-                <img src="{{ asset('images/logo.jpeg') }}" alt="Logo" class="h-12 w-auto mx-auto mb-3">
-                <span class="font-sora text-2xl font-bold text-[#2c6904]">Agro Eco BAARA</span>
+            <div class="lg:hidden mt-10 mb-8 flex justify-center">
+                <img src="{{ asset('images/logo.jpeg') }}" alt="Logo" class="h-14 w-auto mx-auto">
             </div>
 
             {{-- Message succès --}}
