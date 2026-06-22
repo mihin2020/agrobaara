@@ -3,7 +3,7 @@
     {{-- Inputs fichier hors @teleport (wire:model fonctionne uniquement dans le DOM Livewire normal) --}}
     <input type="file" id="global-image-upload" wire:model="imageUploadFile" accept="image/*" class="hidden" />
     <input type="file" id="global-photo-upload" wire:model="photoUploadFile" accept="image/*" class="hidden" />
-    <input type="file" id="global-video-upload" wire:model="videoUploadFile" accept="video/mp4,video/webm,video/quicktime,.mov" class="hidden" />
+    <input type="file" id="global-video-upload" wire:model="videoUploadFile" accept="video/*,.mp4,.mov,.webm,.m4v" class="hidden" />
     <input type="file" id="guichet-file-upload" wire:model="guichetImageFile" accept="image/*" class="hidden"
            x-on:change="
                const f = $event.target.files[0];
@@ -38,7 +38,7 @@
 
     {{-- Toast enregistrement (fixe, visible même dans le modal) --}}
     @if($saveNotice)
-    <div class="fixed bottom-4 right-4 z-[300] flex items-center gap-2.5 px-4 py-3 bg-[#2c6904] text-white text-sm font-semibold rounded-xl shadow-2xl shadow-[#2c6904]/30"
+    <div class="fixed bottom-4 right-4 z-[10050] flex items-center gap-2.5 px-4 py-3 bg-[#2c6904] text-white text-sm font-semibold rounded-xl shadow-2xl shadow-[#2c6904]/30"
          x-data="{ show: true }"
          x-init="setTimeout(() => { show = false; $wire.set('saveNotice', ''); }, 4000)"
          x-show="show"
@@ -821,16 +821,9 @@
                             ? ($p['type'] ?? 'image') === 'video'
                             : ($p['type'] ?? 'image') !== 'video');
                     @endphp
-                    @if($filteredMediaPreview->isNotEmpty())
+                    @if($filteredMediaPreview->isNotEmpty() && $mediaTab === 'video')
                     <div class="flex flex-wrap gap-2 mb-4">
-                        @if($mediaTab === 'photo')
-                        <button type="button" wire:click="addPhoto"
-                                class="inline-flex items-center gap-1.5 py-2 px-3 rounded-lg border border-[#2c6904]/30 bg-[#aef585]/15 hover:bg-[#aef585]/30 text-xs font-semibold text-[#2c6904] transition-colors">
-                            <span class="material-symbols-outlined text-base">add_photo_alternate</span>
-                            Ajouter une photo
-                        </button>
-                        @else
-                        <button type="button" wire:click="addVideo"
+                        <button type="button" onclick="pickMediaUpload('video')"
                                 class="inline-flex items-center gap-1.5 py-2 px-3 rounded-lg border border-[#283593]/30 bg-[#e8eaf6]/60 hover:bg-[#e8eaf6] text-xs font-semibold text-[#283593] transition-colors">
                             <span class="material-symbols-outlined text-base">videocam</span>
                             Importer une vidéo
@@ -840,7 +833,6 @@
                             <span class="material-symbols-outlined text-base">link</span>
                             Lien vidéo
                         </button>
-                        @endif
                     </div>
                     @endif
 
@@ -866,6 +858,10 @@
                         @enderror
                     </div>
                     @endif
+
+                    @error('videoUploadFile')
+                        <p class="text-xs text-red-600 mb-3">{{ $message }}</p>
+                    @enderror
 
                     {{-- Catégories (état conservé après Livewire) --}}
                     <div class="mb-4 rounded-xl border border-[#e9e1dc] bg-[#fbf2ed]/60 overflow-hidden" wire:key="media-categories-panel">
@@ -933,7 +929,7 @@
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 pt-2">
                                 {{-- Carte import fichier --}}
-                                <button type="button" wire:click="addVideo"
+                                <button type="button" onclick="pickMediaUpload('video')"
                                         class="group text-left p-4 rounded-xl border-2 border-dashed border-[#283593]/25 bg-white hover:border-[#283593]/50 hover:bg-[#e8eaf6]/20 transition-all">
                                     <div class="flex items-start gap-3">
                                         <div class="w-10 h-10 rounded-xl bg-[#283593] text-white flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
@@ -999,7 +995,7 @@
                         </div>
                         @else
                         {{-- État vide photos --}}
-                        <button type="button" wire:click="addPhoto"
+                        <button type="button" onclick="pickMediaUpload('photo')"
                                 class="group w-full text-left rounded-2xl border-2 border-dashed border-[#2c6904]/25 bg-gradient-to-b from-[#aef585]/10 to-white hover:border-[#2c6904]/45 hover:bg-[#aef585]/15 transition-all p-8">
                             <div class="flex flex-col items-center text-center max-w-xs mx-auto">
                                 <div class="w-14 h-14 rounded-2xl bg-[#2c6904]/10 text-[#2c6904] flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
@@ -1048,6 +1044,16 @@
                                 </button>
                             </div>
                             @endforeach
+                            {{-- Bouton + pour ajouter photo / vidéo --}}
+                            <button type="button"
+                                    onclick="pickMediaUpload('{{ $mediaTab === 'video' ? 'video' : 'photo' }}')"
+                                    title="{{ $mediaTab === 'video' ? 'Importer une vidéo' : 'Ajouter une photo' }}"
+                                    class="w-14 h-14 flex-shrink-0 rounded-lg border-2 border-dashed flex items-center justify-center transition-all
+                                        {{ $mediaTab === 'video'
+                                            ? 'border-[#283593]/35 bg-[#e8eaf6]/30 hover:border-[#283593]/60 hover:bg-[#e8eaf6]/60 text-[#283593]'
+                                            : 'border-[#2c6904]/35 bg-[#aef585]/10 hover:border-[#2c6904]/60 hover:bg-[#aef585]/25 text-[#2c6904]' }}">
+                                <span class="material-symbols-outlined text-2xl">add</span>
+                            </button>
                         </div>
                     @endif
 
@@ -1099,7 +1105,7 @@
                                                class="{{ $inputCls }} text-xs py-1.5 mt-0.5"
                                                placeholder="https://…" />
                                     </div>
-                                    <button type="button" wire:click="replaceMediaFile({{ $mi }}, 'video')"
+                                    <button type="button" onclick="replaceMediaUpload({{ $mi }}, 'video')"
                                             class="text-[10px] text-[#283593] font-semibold hover:underline flex items-center gap-1">
                                         <span class="material-symbols-outlined text-sm">upload_file</span>
                                         Remplacer par un fichier importé
@@ -1107,7 +1113,7 @@
                                     @else
                                     <div class="flex gap-1.5">
                                         <input type="text" wire:model.blur="mediaPhotos.{{ $mi }}.src" class="{{ $inputCls }} flex-1 text-xs py-1.5" readonly />
-                                        <button type="button" wire:click="replaceMediaFile({{ $mi }}, '{{ $isVideo ? 'video' : 'image' }}')"
+                                        <button type="button" onclick="replaceMediaUpload({{ $mi }}, '{{ $isVideo ? 'video' : 'photo' }}')"
                                                 class="flex-shrink-0 px-2 py-1.5 bg-[#2c6904] text-white text-[10px] font-semibold rounded-lg hover:bg-[#448322]">
                                             Remplacer
                                         </button>
@@ -1173,7 +1179,7 @@
                             class="flex items-center gap-2 px-6 py-2.5 bg-[#2c6904] text-white font-bold rounded-xl hover:bg-[#448322] transition-colors text-sm shadow-sm shadow-[#2c6904]/30 disabled:opacity-60">
                         <span wire:loading.remove wire:target="saveSection" class="material-symbols-outlined text-base">save</span>
                         <span wire:loading wire:target="saveSection" class="material-symbols-outlined text-base animate-spin">progress_activity</span>
-                        <span wire:loading.remove wire:target="saveSection">Enregistrer</span>
+                        <span wire:loading.remove wire:target="saveSection">Enregistrer et fermer</span>
                         <span wire:loading wire:target="saveSection">Enregistrement...</span>
                     </button>
                 </div>
@@ -1198,11 +1204,41 @@
 
 @script
 <script>
-Livewire.on('pick-photo-file', () => {
-    document.getElementById('global-photo-upload')?.click();
-});
-Livewire.on('pick-video-file', () => {
-    document.getElementById('global-video-upload')?.click();
-});
+function pickMediaUpload(type) {
+    const inputId = type === 'video' ? 'global-video-upload' : 'global-photo-upload';
+    $wire.set('mediaUploadSlot', 'media.new')
+        .then(function () {
+            return $wire.set('pendingMediaType', type);
+        })
+        .then(function () {
+            $wire.set('mediaTab', type === 'video' ? 'video' : 'photo');
+            $wire.set('editingMediaIndex', null);
+            if (type === 'video') {
+                $wire.set('videoLinkFormOpen', false);
+            }
+            setTimeout(function () {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.value = '';
+                    input.click();
+                }
+            }, 80);
+        });
+}
+
+function replaceMediaUpload(index, type) {
+    const inputId = type === 'video' ? 'global-video-upload' : 'global-photo-upload';
+    $wire.set('mediaUploadSlot', 'media.' + index);
+    setTimeout(function () {
+        const input = document.getElementById(inputId);
+        if (input) {
+            input.value = '';
+            input.click();
+        }
+    }, 50);
+}
+
+window.pickMediaUpload = pickMediaUpload;
+window.replaceMediaUpload = replaceMediaUpload;
 </script>
 @endscript

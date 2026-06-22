@@ -137,17 +137,26 @@ class LandingConfigurator extends Component
 
     private function processMediaUpload($file, string $type): void
     {
-        if (!$file || !$this->mediaUploadSlot) return;
+        if (!$file) return;
+
+        if (!$this->mediaUploadSlot) {
+            $this->mediaUploadSlot = 'media.new';
+        }
 
         Validator::make(
             ['file' => $file],
             ['file' => $type === 'video'
-                ? 'required|file|mimes:mp4,webm,mov|max:51200'
+                ? ['required', 'file', 'max:204800', function ($attribute, $value, $fail) {
+                    $ext = strtolower($value->getClientOriginalExtension() ?: '');
+                    $allowed = ['mp4', 'webm', 'mov', 'm4v', 'avi', 'mkv'];
+                    if (! in_array($ext, $allowed, true)) {
+                        $fail('Formats vidéo acceptés : mp4, webm, mov, m4v, avi, mkv.');
+                    }
+                }]
                 : 'required|image|max:10240'],
             [
                 'file.image' => 'Le fichier doit être une image.',
-                'file.max'   => $type === 'video' ? 'La vidéo ne doit pas dépasser 50 Mo.' : 'L\'image ne doit pas dépasser 10 Mo.',
-                'file.mimes' => 'Formats vidéo acceptés : mp4, webm, mov.',
+                'file.max'   => $type === 'video' ? 'La vidéo ne doit pas dépasser 200 Mo.' : 'L\'image ne doit pas dépasser 10 Mo.',
             ]
         )->validate();
 
@@ -235,11 +244,14 @@ class LandingConfigurator extends Component
             ->withProperties(['slug' => $this->editingSlug])
             ->log('landing_section_updated');
 
-        $this->saved = true;
-        $this->saveNotice = match ($this->editingSlug) {
+        $notice = match ($this->editingSlug) {
             'mediatheque' => 'Médiathèque enregistrée avec succès.',
             default       => 'Section enregistrée avec succès.',
         };
+
+        $this->cancelEdit();
+        $this->saveNotice = $notice;
+        session()->flash('upload_success', $notice);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -428,7 +440,25 @@ class LandingConfigurator extends Component
         $this->mediaUploadSlot   = 'media.new';
         $this->mediaTab          = $type === 'video' ? 'video' : 'photo';
         $this->editingMediaIndex = null;
-        $this->dispatch('pick-' . ($type === 'video' ? 'video' : 'photo') . '-file');
+        if ($type === 'video') {
+            $this->videoLinkFormOpen = false;
+        }
+
+        $this->openMediaFilePicker($type);
+    }
+
+    private function openMediaFilePicker(string $type): void
+    {
+        $inputId = $type === 'video' ? 'global-video-upload' : 'global-photo-upload';
+        $this->js(<<<JS
+            setTimeout(function () {
+                var input = document.getElementById('{$inputId}');
+                if (input) {
+                    input.value = '';
+                    input.click();
+                }
+            }, 50);
+        JS);
     }
 
     public function editMediaItem(int $i): void
@@ -447,7 +477,7 @@ class LandingConfigurator extends Component
     {
         if (!isset($this->mediaPhotos[$i])) return;
         $this->mediaUploadSlot = "media.{$i}";
-        $this->dispatch('pick-' . ($type === 'video' ? 'video' : 'photo') . '-file');
+        $this->openMediaFilePicker($type === 'video' ? 'video' : 'photo');
     }
 
     public function addMediaCategory(): void
@@ -523,14 +553,32 @@ class LandingConfigurator extends Component
 
     private function storePublicUpload($file): string
     {
-        $destDir = $this->ensureUploadsDir();
-        $ext     = strtolower($file->getClientOriginalExtension() ?: 'bin');
-        $name    = uniqid('upload_') . '.' . $ext;
+        $destDir  = $this->ensureUploadsDir();
+        $ext      = strtolower($file->getClientOriginalExtension() ?: 'bin');
+        $name     = uniqid('upload_') . '.' . $ext;
         $destPath = $destDir . DIRECTORY_SEPARATOR . $name;
+        $source   = $file->getRealPath();
 
-        if (!copy($file->getRealPath(), $destPath)) {
-            throw new \RuntimeException('Impossible de copier le fichier vers le dossier public.');
+        if (! $source || ! is_readable($source)) {
+            throw new \RuntimeException('Fichier temporaire illisible.');
         }
+
+        if (@rename($source, $destPath)) {
+            return '/images/uploads/' . $name;
+        }
+
+        $in = fopen($source, 'rb');
+        if ($in === false) {
+            throw new \RuntimeException('Impossible de lire le fichier source.');
+        }
+        $out = fopen($destPath, 'wb');
+        if ($out === false) {
+            fclose($in);
+            throw new \RuntimeException('Impossible d\'écrire dans le dossier public.');
+        }
+        stream_copy_to_stream($in, $out);
+        fclose($in);
+        fclose($out);
 
         return '/images/uploads/' . $name;
     }

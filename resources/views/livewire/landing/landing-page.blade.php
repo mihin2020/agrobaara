@@ -570,147 +570,100 @@
         <p class="font-body-lg text-on-surface-variant mt-6 max-w-xl mx-auto">{{ $mediaDesc }}</p>
     </div>
 
-    @if($hasMediaPhotos && $hasMediaVideos)
-    <div class="flex justify-center gap-2 mb-4 flex-wrap" data-animate="fade-up" data-delay="50">
-        <button type="button" onclick="filterMediaType('all', this)" class="media-type-tab px-5 py-2 rounded-full font-label-bold text-sm bg-primary text-on-primary transition-all">Tout</button>
-        <button type="button" onclick="filterMediaType('photo', this)" class="media-type-tab px-5 py-2 rounded-full font-label-bold text-sm bg-surface border border-outline-variant text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all">
-            <span class="material-symbols-outlined text-sm align-middle mr-0.5">photo_library</span>Photos
-        </button>
-        <button type="button" onclick="filterMediaType('video', this)" class="media-type-tab px-5 py-2 rounded-full font-label-bold text-sm bg-surface border border-outline-variant text-on-surface-variant hover:bg-[#283593] hover:text-white transition-all">
-            <span class="material-symbols-outlined text-sm align-middle mr-0.5">smart_display</span>Vidéos
-        </button>
-    </div>
-    @endif
-
-    @if($hasMediaPhotos)
-    <div id="media-cat-filters" class="flex justify-center gap-2 mb-8 flex-wrap">
+    {{-- Filtres : catégories + Vidéos en dernier --}}
+    <div class="flex justify-center gap-2 mb-8 flex-wrap" data-animate="fade-up" data-delay="50">
         <button type="button" onclick="filterMedia('all', this)" class="media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-primary text-on-primary transition-all">Tout</button>
         @foreach($mediaCategories as $cat)
         <button type="button" onclick="filterMedia('{{ $cat['key'] }}', this)" class="media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-surface border border-outline-variant text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all">{{ $cat['label'] }}</button>
         @endforeach
-    </div>
-    @endif
-
-    @if($hasMediaPhotos)
-    <div id="media-photos-block">
         @if($hasMediaVideos)
-        <div class="flex items-center gap-2 mb-4">
-            <span class="material-symbols-outlined text-primary text-xl">photo_library</span>
-            <h3 class="font-label-bold text-on-surface text-lg">Photos</h3>
-        </div>
+        <button type="button" onclick="filterMedia('__videos__', this)" class="media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-surface border border-outline-variant text-on-surface-variant hover:bg-[#283593] hover:text-white transition-all">
+            <span class="material-symbols-outlined text-sm align-middle mr-0.5">smart_display</span>Vidéos
+        </button>
         @endif
-        <div id="media-photos-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            @foreach($mediaImages as $photo)
-            <div class="media-item media-photo" data-cat="{{ $photo['category'] ?? 'terrain' }}" data-animate="zoom-in" data-delay="{{ ($loop->index % 4) * 100 }}">
-                <div class="relative overflow-hidden rounded-2xl aspect-square bg-surface-container-high group cursor-pointer"
-                     @if(!empty($photo['src'])) onclick="openMediaLightbox('{{ $photo['src'] }}', '{{ addslashes($photo['alt'] ?? '') }}')" @endif>
-                    @if(!empty($photo['src']))
-                    <img src="{{ $photo['src'] }}" alt="{{ $photo['alt'] ?? '' }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center pointer-events-none">
-                        <span class="material-symbols-outlined text-white text-4xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">zoom_in</span>
-                    </div>
-                    @else
-                    <div class="w-full h-full flex items-center justify-center">
-                        <span class="material-symbols-outlined text-outline-variant text-4xl">broken_image</span>
-                    </div>
-                    @endif
-                    <span class="absolute bottom-2 left-2 {{ $catColors[$photo['category'] ?? 'terrain'] ?? 'bg-primary text-on-primary' }} text-xs px-2 py-1 rounded-full font-label-bold">
-                        {{ $catLabels[$photo['category'] ?? 'terrain'] ?? 'Photo' }}
-                    </span>
-                </div>
-                @if(!empty($photo['alt']))
-                <p class="mt-2 text-xs text-on-surface-variant line-clamp-2 px-0.5">{{ $photo['alt'] }}</p>
-                @endif
-            </div>
-            @endforeach
-        </div>
     </div>
-    @endif
 
-    @if($hasMediaVideos)
-    <div id="media-videos-block" class="{{ $hasMediaPhotos ? 'mt-14 pt-10 border-t border-outline-variant/40' : '' }}">
-        <div class="flex items-center justify-center gap-2 mb-6">
-            <span class="material-symbols-outlined text-[#283593] text-xl">smart_display</span>
-            <h3 class="font-label-bold text-on-surface text-lg">Vidéos</h3>
-        </div>
-        <div id="media-videos-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-            @foreach($mediaVideos as $video)
-            @php
-                $videoSrc = $video['src'] ?? '';
-                $isEmbedVideo = $videoSrc && \App\Support\MediaVideoUrl::isEmbeddable($videoSrc);
-                $embedSrc = $isEmbedVideo ? \App\Support\MediaVideoUrl::embedUrl($videoSrc) : '';
-                $thumbSrc = \App\Support\MediaVideoUrl::thumbnailUrl($videoSrc);
-            @endphp
-            <div class="media-item media-video" data-cat="{{ $video['category'] ?? 'terrain' }}" data-animate="fade-up" data-delay="{{ ($loop->index % 2) * 100 }}">
-                <button type="button"
-                        onclick="openVideoModal({{ $isEmbedVideo ? 'true' : 'false' }}, @js($isEmbedVideo ? $embedSrc : $videoSrc), @js($video['alt'] ?? 'Vidéo'))"
-                        class="w-full text-left group">
-                    <div class="relative overflow-hidden rounded-2xl aspect-video bg-[#1e1b18] shadow-md">
-                        @if($thumbSrc)
-                        <img src="{{ $thumbSrc }}" alt="" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-                        @elseif(!$isEmbedVideo && $videoSrc)
-                        <video src="{{ $videoSrc }}" class="w-full h-full object-cover" muted preload="metadata"></video>
-                        @else
-                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#283593]/20 to-[#1e1b18]">
-                            <span class="material-symbols-outlined text-white/40 text-5xl">play_circle</span>
-                        </div>
-                        @endif
-                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                            <span class="w-14 h-14 rounded-full bg-white/95 text-[#283593] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                                <span class="material-symbols-outlined text-3xl ml-0.5" style="font-variation-settings:'FILL' 1">play_arrow</span>
-                            </span>
-                        </div>
-                        <span class="absolute top-3 left-3 bg-[#283593] text-white text-xs px-2.5 py-1 rounded-full font-label-bold flex items-center gap-1">
-                            <span class="material-symbols-outlined text-sm">smart_display</span>
-                            {{ \App\Support\MediaVideoUrl::previewLabel($videoSrc) }}
+    {{-- Grille unifiée photos + vidéos --}}
+    <div id="media-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        @foreach($mediaPhotos as $item)
+        @php
+            $isVideo = ($item['type'] ?? 'image') === 'video';
+            $itemSrc = $item['src'] ?? '';
+            $isEmbedVideo = $isVideo && $itemSrc && \App\Support\MediaVideoUrl::isEmbeddable($itemSrc);
+            $embedSrc = $isEmbedVideo ? \App\Support\MediaVideoUrl::embedUrl($itemSrc) : '';
+            $thumbSrc = $isVideo ? \App\Support\MediaVideoUrl::thumbnailUrl($itemSrc) : '';
+            $playSrc = $isEmbedVideo ? $embedSrc : $itemSrc;
+        @endphp
+        <div class="media-item" data-cat="{{ $item['category'] ?? 'terrain' }}" data-type="{{ $isVideo ? 'video' : 'photo' }}" data-animate="zoom-in" data-delay="{{ ($loop->index % 4) * 100 }}">
+            @if($isVideo && !empty($itemSrc))
+            <button type="button"
+                    class="media-video-trigger w-full text-left group"
+                    data-embed="{{ $isEmbedVideo ? '1' : '0' }}"
+                    data-src="{{ $playSrc }}"
+                    data-title="{{ $item['alt'] ?? 'Vidéo' }}">
+                <div class="relative overflow-hidden rounded-2xl aspect-square bg-[#1e1b18] shadow-sm">
+                    @if($thumbSrc)
+                    <img src="{{ $thumbSrc }}" alt="" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                    @else
+                    <video src="{{ $itemSrc }}#t=0.1" class="w-full h-full object-cover pointer-events-none" muted playsinline preload="metadata"></video>
+                    @endif
+                    <div class="absolute inset-0 bg-black/25 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                        <span class="w-12 h-12 rounded-full bg-white/95 text-[#283593] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-2xl ml-0.5" style="font-variation-settings:'FILL' 1">play_arrow</span>
                         </span>
                     </div>
-                    @if(!empty($video['alt']))
-                    <p class="mt-3 text-sm font-label-bold text-on-surface group-hover:text-[#283593] transition-colors">{{ $video['alt'] }}</p>
-                    @endif
-                </button>
+                    <span class="absolute bottom-2 left-2 bg-[#283593] text-white text-xs px-2 py-1 rounded-full font-label-bold">Vidéo</span>
+                </div>
+                @if(!empty($item['alt']))
+                <p class="mt-2 text-xs text-on-surface-variant line-clamp-2 px-0.5">{{ $item['alt'] }}</p>
+                @endif
+            </button>
+            @else
+            <div class="relative overflow-hidden rounded-2xl aspect-square bg-surface-container-high group cursor-pointer"
+                 @if(!empty($itemSrc)) onclick="openMediaLightbox('{{ $itemSrc }}', '{{ addslashes($item['alt'] ?? '') }}')" @endif>
+                @if(!empty($itemSrc))
+                <img src="{{ $itemSrc }}" alt="{{ $item['alt'] ?? '' }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center pointer-events-none">
+                    <span class="material-symbols-outlined text-white text-4xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">zoom_in</span>
+                </div>
+                @else
+                <div class="w-full h-full flex items-center justify-center">
+                    <span class="material-symbols-outlined text-outline-variant text-4xl">broken_image</span>
+                </div>
+                @endif
+                <span class="absolute bottom-2 left-2 {{ $catColors[$item['category'] ?? 'terrain'] ?? 'bg-primary text-on-primary' }} text-xs px-2 py-1 rounded-full font-label-bold">
+                    {{ $catLabels[$item['category'] ?? 'terrain'] ?? 'Photo' }}
+                </span>
             </div>
-            @endforeach
+            @if(!empty($item['alt']))
+            <p class="mt-2 text-xs text-on-surface-variant line-clamp-2 px-0.5">{{ $item['alt'] }}</p>
+            @endif
+            @endif
         </div>
+        @endforeach
     </div>
-    @endif
 </div>
 </section>
 @endif
 
 @script
 <script>
-var activeMediaType = 'all';
-
-function filterMediaType(type, btn) {
-    activeMediaType = type;
-    document.querySelectorAll('.media-type-tab').forEach(function(t) {
-        t.className = 'media-type-tab px-5 py-2 rounded-full font-label-bold text-sm bg-surface border border-outline-variant text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all';
-    });
-    if (btn) {
-        btn.className = type === 'video'
-            ? 'media-type-tab px-5 py-2 rounded-full font-label-bold text-sm bg-[#283593] text-white transition-all'
-            : 'media-type-tab px-5 py-2 rounded-full font-label-bold text-sm bg-primary text-on-primary transition-all';
-    }
-    var photosBlock = document.getElementById('media-photos-block');
-    var videosBlock = document.getElementById('media-videos-block');
-    var catFilters  = document.getElementById('media-cat-filters');
-    if (photosBlock) photosBlock.style.display = (type === 'video') ? 'none' : '';
-    if (videosBlock) videosBlock.style.display = (type === 'photo') ? 'none' : '';
-    if (catFilters)  catFilters.style.display  = (type === 'video') ? 'none' : '';
-}
-
 function filterMedia(cat, btn) {
     document.querySelectorAll('.media-tab').forEach(function(t) {
         t.className = 'media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-surface border border-outline-variant text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all';
     });
-    if (btn) btn.className = 'media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-primary text-on-primary transition-all';
-    document.querySelectorAll('.media-photo').forEach(function(item) {
-        if (cat === 'all' || item.getAttribute('data-cat') === cat) {
-            item.style.display = '';
-        } else {
-            item.style.display = 'none';
-        }
+    if (btn) {
+        btn.className = cat === '__videos__'
+            ? 'media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-[#283593] text-white transition-all'
+            : 'media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-primary text-on-primary transition-all';
+    }
+    document.querySelectorAll('#mediatheque .media-item').forEach(function(item) {
+        var type = item.getAttribute('data-type');
+        var itemCat = item.getAttribute('data-cat');
+        var show = cat === 'all'
+            || (cat === '__videos__' && type === 'video')
+            || (cat !== '__videos__' && itemCat === cat);
+        item.style.display = show ? '' : 'none';
     });
 }
 
@@ -735,13 +688,13 @@ function openVideoModal(isEmbed, src, title) {
     var overlay = document.getElementById('video-modal');
     var content = document.getElementById('video-modal-content');
     var titleEl = document.getElementById('video-modal-title');
-    if (!overlay || !content) return;
+    if (!overlay || !content || !src) return;
     content.innerHTML = '';
     if (isEmbed) {
         var iframe = document.createElement('iframe');
         iframe.src = src + (src.indexOf('?') >= 0 ? '&' : '?') + 'autoplay=1';
         iframe.className = 'w-full h-full border-0 rounded-xl';
-        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
         iframe.allowFullscreen = true;
         iframe.title = title || 'Vidéo';
         content.appendChild(iframe);
@@ -751,8 +704,10 @@ function openVideoModal(isEmbed, src, title) {
         video.controls = true;
         video.autoplay = true;
         video.playsInline = true;
+        video.preload = 'auto';
         video.className = 'w-full h-full object-contain rounded-xl bg-black';
         content.appendChild(video);
+        video.play().catch(function() {});
     }
     if (titleEl) titleEl.textContent = title || '';
     overlay.classList.remove('hidden');
@@ -767,17 +722,38 @@ function closeVideoModal() {
     if (content) content.innerHTML = '';
     document.body.style.overflow = '';
 }
+
+function initMediaVideoTriggers() {
+    document.querySelectorAll('.media-video-trigger').forEach(function(btn) {
+        if (btn.dataset.bound) return;
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            openVideoModal(btn.dataset.embed === '1', btn.dataset.src || '', btn.dataset.title || 'Vidéo');
+        });
+    });
+}
+
+window.filterMedia = filterMedia;
+window.openMediaLightbox = openMediaLightbox;
+window.closeMediaLightbox = closeMediaLightbox;
+window.openVideoModal = openVideoModal;
+window.closeVideoModal = closeVideoModal;
+
+initMediaVideoTriggers();
+document.addEventListener('livewire:navigated', initMediaVideoTriggers);
+document.addEventListener('livewire:updated', initMediaVideoTriggers);
 </script>
 @endscript
 
-<div id="media-lightbox" class="hidden fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4" onclick="closeMediaLightbox()">
+<div id="media-lightbox" class="hidden fixed inset-0 z-[200] bg-black/90 flex items-center justify-center p-4" onclick="closeMediaLightbox()">
     <button type="button" onclick="closeMediaLightbox()" class="absolute top-4 right-4 text-white p-2 rounded-full hover:bg-white/10">
         <span class="material-symbols-outlined text-3xl">close</span>
     </button>
     <img id="media-lightbox-img" src="" alt="" class="max-w-full max-h-[90vh] object-contain rounded-lg" onclick="event.stopPropagation()" />
 </div>
 
-<div id="video-modal" class="hidden fixed inset-0 z-[100] bg-black/92 flex flex-col items-center justify-center p-4 md:p-8" onclick="closeVideoModal()">
+<div id="video-modal" class="hidden fixed inset-0 z-[200] bg-black/92 flex flex-col items-center justify-center p-4 md:p-8" onclick="closeVideoModal()">
     <button type="button" onclick="closeVideoModal()" class="absolute top-4 right-4 text-white p-2 rounded-full hover:bg-white/10 z-10">
         <span class="material-symbols-outlined text-3xl">close</span>
     </button>
