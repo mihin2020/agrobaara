@@ -2,6 +2,8 @@
 
     {{-- Inputs fichier hors @teleport (wire:model fonctionne uniquement dans le DOM Livewire normal) --}}
     <input type="file" id="global-image-upload" wire:model="imageUploadFile" accept="image/*" class="hidden" />
+    <input type="file" id="global-photo-upload" wire:model="photoUploadFile" accept="image/*" class="hidden" />
+    <input type="file" id="global-video-upload" wire:model="videoUploadFile" accept="video/mp4,video/webm,video/quicktime,.mov" class="hidden" />
     <input type="file" id="guichet-file-upload" wire:model="guichetImageFile" accept="image/*" class="hidden"
            x-on:change="
                const f = $event.target.files[0];
@@ -15,7 +17,41 @@
         <span class="material-symbols-outlined text-base animate-spin">progress_activity</span> Image guichet en cours…
     </div>
 
+    <div wire:loading wire:target="photoUploadFile" class="fixed bottom-4 right-4 z-50 flex items-center gap-2 px-4 py-3 bg-[#2c6904] text-white text-sm font-semibold rounded-xl shadow-xl">
+        <span class="material-symbols-outlined text-base animate-spin">progress_activity</span> Import photo…
+    </div>
+    <div wire:loading wire:target="videoUploadFile" class="fixed bottom-4 right-4 z-50 flex items-center gap-2 px-4 py-3 bg-[#283593] text-white text-sm font-semibold rounded-xl shadow-xl">
+        <span class="material-symbols-outlined text-base animate-spin">progress_activity</span> Import vidéo…
+    </div>
+
     {{-- Flash --}}
+    @if(session('upload_error'))
+        <div class="flex items-center gap-3 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+            <span class="material-symbols-outlined text-base flex-shrink-0">error</span>{{ session('upload_error') }}
+        </div>
+    @endif
+    @if(session('upload_success'))
+        <div class="flex items-center gap-3 px-4 py-3 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">
+            <span class="material-symbols-outlined text-base flex-shrink-0">check_circle</span>{{ session('upload_success') }}
+        </div>
+    @endif
+
+    {{-- Toast enregistrement (fixe, visible même dans le modal) --}}
+    @if($saveNotice)
+    <div class="fixed bottom-4 right-4 z-[300] flex items-center gap-2.5 px-4 py-3 bg-[#2c6904] text-white text-sm font-semibold rounded-xl shadow-2xl shadow-[#2c6904]/30"
+         x-data="{ show: true }"
+         x-init="setTimeout(() => { show = false; $wire.set('saveNotice', ''); }, 4000)"
+         x-show="show"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 translate-y-2"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+        <span class="material-symbols-outlined text-lg" style="font-variation-settings:'FILL' 1">check_circle</span>
+        {{ $saveNotice }}
+    </div>
+    @endif
     @if(session('error'))
         <div class="flex items-center gap-3 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
             <span class="material-symbols-outlined text-base flex-shrink-0">error</span>{{ session('error') }}
@@ -61,7 +97,7 @@
         'autres_services'            => ['icon' => 'widgets',        'color' => 'bg-[#fbe9e7] text-[#bf360c]',   'border' => 'border-[#ff7043]', 'label' => 'Ateliers & événements'],
         'partenaires'                => ['icon' => 'handshake',      'color' => 'bg-[#fff8e1] text-[#f57f17]',   'border' => 'border-[#ffca28]', 'label' => '8 logos partenaires'],
         'temoignages'                => ['icon' => 'format_quote',   'color' => 'bg-[#fce4ec] text-[#880e4f]',   'border' => 'border-[#f48fb1]', 'label' => 'Avis & citations'],
-        'mediatheque'                => ['icon' => 'photo_library',  'color' => 'bg-[#e8eaf6] text-[#283593]',   'border' => 'border-[#5c6bc0]', 'label' => 'Photos & médias'],
+        'mediatheque'                => ['icon' => 'photo_library',  'color' => 'bg-[#e8eaf6] text-[#283593]',   'border' => 'border-[#5c6bc0]', 'label' => 'Photos, vidéos & médias'],
         'contact'                    => ['icon' => 'mail',           'color' => 'bg-[#e8f5e9] text-[#2c6904]',   'border' => 'border-[#66bb6a]', 'label' => 'Coordonnées'],
     ];
     @endphp
@@ -197,6 +233,18 @@
                     <div class="flex items-center gap-2 px-4 py-3 bg-green-50 border border-green-200 rounded-xl text-sm text-green-800 font-medium mb-5">
                         <span class="material-symbols-outlined text-base text-green-600" style="font-variation-settings:'FILL' 1">check_circle</span>
                         Section enregistrée avec succès.
+                    </div>
+                @endif
+                @if(session('upload_success'))
+                    <div class="flex items-center gap-2 px-4 py-3 bg-green-50 border border-green-200 rounded-xl text-sm text-green-800 font-medium mb-5">
+                        <span class="material-symbols-outlined text-base text-green-600">check_circle</span>
+                        {{ session('upload_success') }}
+                    </div>
+                @endif
+                @if(session('upload_error'))
+                    <div class="flex items-center gap-2 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800 font-medium mb-5">
+                        <span class="material-symbols-outlined text-base text-red-600">error</span>
+                        {{ session('upload_error') }}
                     </div>
                 @endif
 
@@ -759,70 +807,323 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
                         <div>
                             <label class="{{ $labelCls }}">Titre</label>
-                            <input type="text" wire:model="formData.title" class="{{ $inputCls }}" />
+                            <input type="text" wire:model.blur="formData.title" class="{{ $inputCls }}" />
                         </div>
                         <div>
                             <label class="{{ $labelCls }}">Description</label>
-                            <textarea wire:model="formData.description" rows="1" class="{{ $taCls }}"></textarea>
+                            <textarea wire:model.blur="formData.description" rows="1" class="{{ $taCls }}"></textarea>
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-between mb-4">
-                        <p class="text-sm text-[#41493b]"><span class="font-semibold">{{ count($mediaPhotos) }}</span> photo(s)</p>
+                    {{-- Actions rapides (masquées si liste vide — voir état vide ci-dessous) --}}
+                    @php
+                        $filteredMediaPreview = collect($mediaPhotos)->filter(fn($p) => $mediaTab === 'video'
+                            ? ($p['type'] ?? 'image') === 'video'
+                            : ($p['type'] ?? 'image') !== 'video');
+                    @endphp
+                    @if($filteredMediaPreview->isNotEmpty())
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        @if($mediaTab === 'photo')
                         <button type="button" wire:click="addPhoto"
-                                class="flex items-center gap-1.5 px-3.5 py-2 bg-[#2c6904] text-white text-xs font-bold rounded-xl hover:bg-[#448322]">
-                            <span class="material-symbols-outlined text-sm">add_photo_alternate</span> Ajouter une photo
+                                class="inline-flex items-center gap-1.5 py-2 px-3 rounded-lg border border-[#2c6904]/30 bg-[#aef585]/15 hover:bg-[#aef585]/30 text-xs font-semibold text-[#2c6904] transition-colors">
+                            <span class="material-symbols-outlined text-base">add_photo_alternate</span>
+                            Ajouter une photo
+                        </button>
+                        @else
+                        <button type="button" wire:click="addVideo"
+                                class="inline-flex items-center gap-1.5 py-2 px-3 rounded-lg border border-[#283593]/30 bg-[#e8eaf6]/60 hover:bg-[#e8eaf6] text-xs font-semibold text-[#283593] transition-colors">
+                            <span class="material-symbols-outlined text-base">videocam</span>
+                            Importer une vidéo
+                        </button>
+                        <button type="button" wire:click="openVideoLinkForm"
+                                class="inline-flex items-center gap-1.5 py-2 px-3 rounded-lg border border-[#283593]/20 bg-white hover:bg-[#e8eaf6]/30 text-xs font-semibold text-[#283593] transition-colors">
+                            <span class="material-symbols-outlined text-base">link</span>
+                            Lien vidéo
+                        </button>
+                        @endif
+                    </div>
+                    @endif
+
+                    @if($videoLinkFormOpen && $filteredMediaPreview->isNotEmpty())
+                    <div class="mb-4 p-3 rounded-xl border border-[#283593]/25 bg-gradient-to-br from-[#e8eaf6]/80 to-white space-y-2">
+                        <p class="text-xs font-semibold text-[#283593]">Coller un lien YouTube, Vimeo ou MP4</p>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="url" wire:model="videoLinkInput"
+                                   wire:keydown.enter="addVideoFromLink"
+                                   class="{{ $inputCls }} flex-1 text-sm"
+                                   placeholder="https://www.youtube.com/watch?v=…" />
+                            <button type="button" wire:click="addVideoFromLink"
+                                    class="flex-shrink-0 px-4 py-2 bg-[#283593] text-white text-sm font-semibold rounded-xl hover:bg-[#3949ab]">
+                                Ajouter
+                            </button>
+                            <button type="button" wire:click="cancelVideoLinkForm"
+                                    class="flex-shrink-0 px-3 py-2 text-sm text-[#717a69] hover:bg-white rounded-xl">
+                                Annuler
+                            </button>
+                        </div>
+                        @error('videoLinkInput')
+                            <p class="text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    @endif
+
+                    {{-- Catégories (état conservé après Livewire) --}}
+                    <div class="mb-4 rounded-xl border border-[#e9e1dc] bg-[#fbf2ed]/60 overflow-hidden" wire:key="media-categories-panel">
+                        <button type="button" wire:click="toggleCategoriesPanel"
+                                class="w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left hover:bg-[#f5ece7]/50 transition-colors">
+                            <div>
+                                <p class="{{ $subLbl }}">Catégories de filtre</p>
+                                <p class="text-[10px] text-[#717a69] mt-0.5">{{ count($mediaCategories) }} catégorie(s)</p>
+                            </div>
+                            <span class="material-symbols-outlined text-[#717a69] text-lg transition-transform {{ $categoriesPanelOpen ? 'rotate-180' : '' }}">expand_more</span>
+                        </button>
+                        @if($categoriesPanelOpen)
+                        <div class="px-3 pb-3 pt-1 space-y-2 border-t border-[#e9e1dc]">
+                            @foreach($mediaCategories as $ci => $cat)
+                            <div class="flex items-center gap-2" wire:key="media-cat-{{ $ci }}">
+                                <input type="text" wire:model.blur="mediaCategories.{{ $ci }}.label"
+                                       class="flex-1 px-2.5 py-1.5 bg-white border border-[#e9e1dc] rounded-lg text-xs focus:outline-none focus:border-[#2c6904]"
+                                       placeholder="Ex: Ateliers" />
+                                <button type="button" wire:click="removeMediaCategory({{ $ci }})"
+                                        class="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg {{ count($mediaCategories) <= 1 ? 'opacity-30 pointer-events-none' : '' }}">
+                                    <span class="material-symbols-outlined text-sm">delete</span>
+                                </button>
+                            </div>
+                            @endforeach
+                            <button type="button" wire:click="addMediaCategory"
+                                    class="flex items-center gap-1 text-xs text-[#2c6904] font-semibold hover:underline pt-1">
+                                <span class="material-symbols-outlined text-sm">add_circle</span> Ajouter une catégorie
+                            </button>
+                        </div>
+                        @endif
+                    </div>
+
+                    {{-- Onglets Photos / Vidéos --}}
+                    <div class="flex items-center gap-1 mb-3 border-b border-[#e9e1dc]">
+                        <button type="button" wire:click="$set('mediaTab', 'photo')"
+                                class="px-3 py-1.5 text-xs font-semibold border-b-2 -mb-px transition-colors {{ $mediaTab === 'photo' ? 'border-[#2c6904] text-[#2c6904]' : 'border-transparent text-[#717a69] hover:text-[#41493b]' }}">
+                            <span class="material-symbols-outlined text-sm align-middle mr-0.5">photo_library</span>
+                            Photos ({{ $mediaPhotoCount }})
+                        </button>
+                        <button type="button" wire:click="$set('mediaTab', 'video')"
+                                class="px-3 py-1.5 text-xs font-semibold border-b-2 -mb-px transition-colors {{ $mediaTab === 'video' ? 'border-[#283593] text-[#283593]' : 'border-transparent text-[#717a69] hover:text-[#41493b]' }}">
+                            <span class="material-symbols-outlined text-sm align-middle mr-0.5">smart_display</span>
+                            Vidéos ({{ $mediaVideoCount }})
                         </button>
                     </div>
 
-                    {{-- Grille photos --}}
-                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                        @foreach($mediaPhotos as $mi => $photo)
-                        <div class="relative group rounded-2xl overflow-hidden border border-[#e9e1dc] bg-[#fbf2ed]">
-                            {{-- Aperçu --}}
-                            <div class="h-24 bg-gray-100">
-                                @if(!empty($photo['src']))
-                                <img src="{{ $photo['src'] }}" alt="{{ $photo['alt'] ?? '' }}"
-                                     class="w-full h-full object-cover" onerror="this.parentElement.style.background='#f5ece7'" />
-                                @else
-                                <div class="w-full h-full flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-[#c1c9b6] text-3xl">image</span>
+                    @php
+                        $filteredMedia = collect($mediaPhotos)->map(fn($p, $i) => array_merge($p, ['_idx' => $i]))
+                            ->filter(fn($p) => $mediaTab === 'video'
+                                ? ($p['type'] ?? 'image') === 'video'
+                                : ($p['type'] ?? 'image') !== 'video');
+                    @endphp
+
+                    @if($filteredMedia->isEmpty())
+                        @if($mediaTab === 'video')
+                        {{-- État vide vidéos : deux cartes d'action --}}
+                        <div class="rounded-2xl border border-[#e9e1dc] bg-gradient-to-b from-[#faf8f6] to-white overflow-hidden">
+                            <div class="px-5 pt-6 pb-2 text-center">
+                                <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#283593]/10 text-[#283593] mb-3">
+                                    <span class="material-symbols-outlined text-2xl">smart_display</span>
                                 </div>
-                                @endif
+                                <h3 class="font-sora font-bold text-[#1e1b18] text-base">Ajoutez votre première vidéo</h3>
+                                <p class="text-xs text-[#717a69] mt-1 max-w-sm mx-auto">Choisissez comment alimenter la médiathèque : fichier local ou lien en ligne.</p>
                             </div>
-                            {{-- Badge catégorie --}}
-                            @php $catC=['terrain'=>'bg-[#2c6904] text-white','formation'=>'bg-[#875212] text-white','evenement'=>'bg-[#615c47] text-white']; @endphp
-                            <span class="absolute top-1.5 left-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full {{ $catC[$photo['category']??'terrain'] ?? 'bg-gray-500 text-white' }}">
-                                {{ ucfirst($photo['category'] ?? 'terrain') }}
-                            </span>
-                            {{-- Supprimer --}}
-                            <button type="button" wire:click="removePhoto({{ $mi }})"
-                                    class="absolute top-1.5 right-1.5 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <span class="material-symbols-outlined text-xs">close</span>
-                            </button>
-                            {{-- Champs --}}
-                            <div class="p-2 space-y-1.5">
-                                <div class="flex gap-1">
-                                    <input type="text" wire:model="mediaPhotos.{{ $mi }}.src"
-                                           class="flex-1 w-0 px-2 py-1.5 bg-white border border-[#e9e1dc] rounded-lg text-[10px] focus:outline-none focus:border-[#2c6904]"
-                                           placeholder="/images/medias/..." />
-                                    <button type="button"
-                                            x-on:click="$wire.set('imageUploadSlot', 'media.{{ $mi }}').then(() => document.getElementById('global-image-upload').click())"
-                                            title="Importer une image"
-                                            class="flex-shrink-0 p-1.5 bg-[#2c6904] text-white rounded-lg hover:bg-[#448322] transition-colors">
-                                        <span class="material-symbols-outlined text-xs leading-none" style="font-size:14px">upload_file</span>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 pt-2">
+                                {{-- Carte import fichier --}}
+                                <button type="button" wire:click="addVideo"
+                                        class="group text-left p-4 rounded-xl border-2 border-dashed border-[#283593]/25 bg-white hover:border-[#283593]/50 hover:bg-[#e8eaf6]/20 transition-all">
+                                    <div class="flex items-start gap-3">
+                                        <div class="w-10 h-10 rounded-xl bg-[#283593] text-white flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                                            <span class="material-symbols-outlined text-xl">upload_file</span>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="font-semibold text-sm text-[#1e1b18]">Importer un fichier</p>
+                                            <p class="text-[11px] text-[#717a69] mt-0.5 leading-relaxed">MP4, WebM ou MOV depuis votre ordinateur</p>
+                                            <span class="inline-flex items-center gap-1 mt-2.5 text-[11px] font-bold text-[#283593] group-hover:underline">
+                                                Parcourir
+                                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </button>
+
+                                {{-- Carte lien externe --}}
+                                <div class="p-4 rounded-xl border-2 {{ $videoLinkFormOpen ? 'border-[#283593]/50 bg-[#e8eaf6]/15' : 'border-dashed border-[#283593]/25 bg-white' }} transition-all">
+                                    <div class="flex items-start gap-3 mb-3">
+                                        <div class="w-10 h-10 rounded-xl bg-[#e8eaf6] text-[#283593] flex items-center justify-center flex-shrink-0">
+                                            <span class="material-symbols-outlined text-xl">link</span>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="font-semibold text-sm text-[#1e1b18]">Lien en ligne</p>
+                                            <p class="text-[11px] text-[#717a69] mt-0.5 leading-relaxed">YouTube, Vimeo ou URL directe MP4</p>
+                                        </div>
+                                    </div>
+
+                                    @if($videoLinkFormOpen)
+                                    <div class="space-y-2">
+                                        <input type="url" wire:model="videoLinkInput"
+                                               wire:keydown.enter="addVideoFromLink"
+                                               class="{{ $inputCls }} text-sm py-2"
+                                               placeholder="https://youtu.be/…" autofocus />
+                                        @error('videoLinkInput')
+                                            <p class="text-[11px] text-red-600">{{ $message }}</p>
+                                        @enderror
+                                        <div class="flex gap-2">
+                                            <button type="button" wire:click="addVideoFromLink"
+                                                    class="flex-1 py-2 bg-[#283593] text-white text-xs font-bold rounded-lg hover:bg-[#3949ab]">
+                                                Valider le lien
+                                            </button>
+                                            <button type="button" wire:click="cancelVideoLinkForm"
+                                                    class="px-3 py-2 text-xs text-[#717a69] hover:bg-white rounded-lg">
+                                                Annuler
+                                            </button>
+                                        </div>
+                                    </div>
+                                    @else
+                                    <button type="button" wire:click="openVideoLinkForm"
+                                            class="w-full py-2 px-3 rounded-lg border border-[#283593]/30 text-xs font-bold text-[#283593] hover:bg-[#e8eaf6]/40 transition-colors">
+                                        Coller un lien
                                     </button>
+                                    @endif
                                 </div>
-                                <select wire:model="mediaPhotos.{{ $mi }}.category"
-                                        class="w-full px-2 py-1.5 bg-white border border-[#e9e1dc] rounded-lg text-[10px] focus:outline-none focus:border-[#2c6904]">
-                                    <option value="terrain">Terrain</option>
-                                    <option value="formation">Formation</option>
-                                    <option value="evenement">Événement</option>
-                                </select>
+                            </div>
+
+                            <div class="px-4 pb-4 flex flex-wrap items-center justify-center gap-3 text-[10px] text-[#717a69]">
+                                <span class="inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> YouTube</span>
+                                <span class="inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#1ab7ea]"></span> Vimeo</span>
+                                <span class="inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#283593]"></span> MP4 direct</span>
                             </div>
                         </div>
-                        @endforeach
-                    </div>
+                        @else
+                        {{-- État vide photos --}}
+                        <button type="button" wire:click="addPhoto"
+                                class="group w-full text-left rounded-2xl border-2 border-dashed border-[#2c6904]/25 bg-gradient-to-b from-[#aef585]/10 to-white hover:border-[#2c6904]/45 hover:bg-[#aef585]/15 transition-all p-8">
+                            <div class="flex flex-col items-center text-center max-w-xs mx-auto">
+                                <div class="w-14 h-14 rounded-2xl bg-[#2c6904]/10 text-[#2c6904] flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                                    <span class="material-symbols-outlined text-3xl">add_photo_alternate</span>
+                                </div>
+                                <p class="font-sora font-bold text-[#1e1b18] text-base">Aucune photo pour l'instant</p>
+                                <p class="text-xs text-[#717a69] mt-1.5">JPG, PNG ou WebP — cliquez pour importer depuis votre ordinateur.</p>
+                                <span class="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-xl bg-[#2c6904] text-white text-xs font-bold group-hover:bg-[#448322] transition-colors">
+                                    <span class="material-symbols-outlined text-base">upload_file</span>
+                                    Choisir une photo
+                                </span>
+                            </div>
+                        </button>
+                        @endif
+                    @else
+                        <div class="flex flex-wrap gap-1.5 mb-3 max-h-48 overflow-y-auto p-1">
+                            @foreach($filteredMedia as $photo)
+                            @php $mi = $photo['_idx']; $isVideo = ($photo['type'] ?? 'image') === 'video'; @endphp
+                            <div wire:key="media-thumb-{{ $mi }}"
+                                 class="relative group w-14 h-14 flex-shrink-0 rounded-lg overflow-hidden border transition-all cursor-pointer bg-[#f5ece7]
+                                    {{ $editingMediaIndex === $mi ? 'border-[#2c6904] ring-2 ring-[#2c6904]/20' : 'border-[#e9e1dc] hover:border-[#2c6904]/50' }}"
+                                 wire:click="editMediaItem({{ $mi }})"
+                                 title="{{ $photo['alt'] ?? ($isVideo ? 'Vidéo' : 'Photo') }}">
+                                @if(!empty($photo['src']))
+                                    @if($isVideo)
+                                    @php
+                                        $isExtVideo = \App\Support\MediaVideoUrl::isExternal($photo['src']);
+                                        $videoLabel = $isExtVideo ? \App\Support\MediaVideoUrl::previewLabel($photo['src']) : 'Fichier';
+                                    @endphp
+                                    <div class="w-full h-full flex flex-col items-center justify-center bg-[#283593]/10 text-[#283593]">
+                                        <span class="material-symbols-outlined text-lg leading-none">{{ $isExtVideo ? 'link' : 'play_circle' }}</span>
+                                        <span class="text-[8px] font-bold mt-0.5 leading-none">{{ $videoLabel }}</span>
+                                    </div>
+                                    @else
+                                    <img src="{{ $photo['src'] }}" alt="" loading="lazy" decoding="async"
+                                         class="w-full h-full object-cover" />
+                                    @endif
+                                @else
+                                    <div class="w-full h-full flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-lg text-[#c1c9b6]">{{ $isVideo ? 'videocam' : 'image' }}</span>
+                                    </div>
+                                @endif
+                                <button type="button" wire:click.stop="removePhoto({{ $mi }})"
+                                        class="absolute top-0.5 right-0.5 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+                                    <span class="material-symbols-outlined text-[10px] leading-none">close</span>
+                                </button>
+                            </div>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    {{-- Panneau d'édition (un seul média à la fois) --}}
+                    @if($editingMediaIndex !== null && isset($mediaPhotos[$editingMediaIndex]))
+                        @php
+                            $mi = $editingMediaIndex;
+                            $item = $mediaPhotos[$mi];
+                            $isVideo = ($item['type'] ?? 'image') === 'video';
+                            $isVideoLink = $isVideo && (
+                                ($item['source'] ?? '') === 'url'
+                                || \App\Support\MediaVideoUrl::isExternal($item['src'] ?? '')
+                            );
+                        @endphp
+                        <div class="p-3 bg-white border border-[#2c6904]/30 rounded-xl space-y-3 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <p class="font-bold text-xs text-[#1e1b18] flex items-center gap-1.5">
+                                    <span class="material-symbols-outlined text-sm text-[#2c6904]">edit</span>
+                                    Modifier {{ $isVideo ? 'la vidéo' : 'la photo' }}
+                                    @if($isVideoLink)
+                                        <span class="text-[10px] font-normal text-[#283593] bg-[#e8eaf6] px-1.5 py-0.5 rounded">Lien externe</span>
+                                    @endif
+                                </p>
+                                <button type="button" wire:click="closeMediaEdit" class="p-1 text-[#717a69] hover:bg-[#f5ece7] rounded-lg">
+                                    <span class="material-symbols-outlined text-base">close</span>
+                                </button>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <div class="w-16 h-16 rounded-lg overflow-hidden bg-[#f5ece7] flex-shrink-0 flex items-center justify-center">
+                                    @if(!empty($item['src']))
+                                        @if($isVideo && $isVideoLink && \App\Support\MediaVideoUrl::isEmbeddable($item['src']))
+                                        <iframe src="{{ \App\Support\MediaVideoUrl::embedUrl($item['src']) }}"
+                                                class="w-full h-full pointer-events-none" title="Aperçu"></iframe>
+                                        @elseif($isVideo)
+                                        <video src="{{ $item['src'] }}" class="w-full h-full object-cover" controls preload="metadata"></video>
+                                        @else
+                                        <img src="{{ $item['src'] }}" alt="" class="w-full h-full object-cover" />
+                                        @endif
+                                    @else
+                                        <span class="material-symbols-outlined text-2xl text-[#c1c9b6]">broken_image</span>
+                                    @endif
+                                </div>
+                                <div class="flex-1 space-y-2 min-w-0">
+                                    @if($isVideoLink)
+                                    <div>
+                                        <label class="text-[10px] font-semibold text-[#717a69] uppercase tracking-wide">Lien vidéo</label>
+                                        <input type="url" wire:model.blur="mediaPhotos.{{ $mi }}.src"
+                                               class="{{ $inputCls }} text-xs py-1.5 mt-0.5"
+                                               placeholder="https://…" />
+                                    </div>
+                                    <button type="button" wire:click="replaceMediaFile({{ $mi }}, 'video')"
+                                            class="text-[10px] text-[#283593] font-semibold hover:underline flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-sm">upload_file</span>
+                                        Remplacer par un fichier importé
+                                    </button>
+                                    @else
+                                    <div class="flex gap-1.5">
+                                        <input type="text" wire:model.blur="mediaPhotos.{{ $mi }}.src" class="{{ $inputCls }} flex-1 text-xs py-1.5" readonly />
+                                        <button type="button" wire:click="replaceMediaFile({{ $mi }}, '{{ $isVideo ? 'video' : 'image' }}')"
+                                                class="flex-shrink-0 px-2 py-1.5 bg-[#2c6904] text-white text-[10px] font-semibold rounded-lg hover:bg-[#448322]">
+                                            Remplacer
+                                        </button>
+                                    </div>
+                                    @endif
+                                    <input type="text" wire:model.blur="mediaPhotos.{{ $mi }}.alt"
+                                           class="{{ $inputCls }} text-xs py-1.5" placeholder="Légende (optionnel)" />
+                                    <select wire:model.blur="mediaPhotos.{{ $mi }}.category" class="{{ $inputCls }} text-xs py-1.5">
+                                        @foreach($mediaCategories as $cat)
+                                            <option value="{{ $cat['key'] }}">{{ $cat['label'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 @endif
 
                 {{-- ════════════════════ CONTACT ════════════════════ --}}
@@ -894,3 +1195,14 @@
     @endif
 
 </div>
+
+@script
+<script>
+Livewire.on('pick-photo-file', () => {
+    document.getElementById('global-photo-upload')?.click();
+});
+Livewire.on('pick-video-file', () => {
+    document.getElementById('global-video-upload')?.click();
+});
+</script>
+@endscript

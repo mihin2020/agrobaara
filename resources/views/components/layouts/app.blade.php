@@ -46,7 +46,11 @@
 
         {{-- Logo --}}
         <div class="px-6 py-5 border-b border-[#c1c9b6] flex justify-center">
-            <img src="{{ asset('images/logo.jpeg') }}" alt="Logo" class="h-14 w-auto object-contain" />
+            <a href="{{ route('home') }}" target="_blank" rel="noopener noreferrer"
+               title="Voir le site public"
+               class="block rounded-lg hover:opacity-80 transition-opacity">
+                <img src="{{ asset('images/logo.jpeg') }}" alt="Logo" class="h-14 w-auto object-contain" />
+            </a>
         </div>
 
         {{-- Navigation --}}
@@ -147,6 +151,12 @@
                        class="hidden sm:flex items-center gap-1.5 px-4 py-2 bg-[#2c6904] text-white text-sm font-semibold rounded-xl hover:bg-[#448322] transition-colors">
                         <span class="material-symbols-outlined text-base">add</span>
                         <span class="hidden md:inline">Nouveau Dossier</span>
+                    </a>
+
+                    <a href="{{ route('home') }}" target="_blank" rel="noopener noreferrer"
+                       class="hidden sm:flex items-center gap-1.5 px-4 py-2 bg-white border border-[#c1c9b6] text-[#41493b] text-sm font-semibold rounded-xl hover:bg-[#f5ece7] transition-colors">
+                        <span class="material-symbols-outlined text-base">open_in_new</span>
+                        <span class="hidden md:inline">Voir le site</span>
                     </a>
 
                     <div class="h-6 w-px bg-[#c1c9b6] mx-1 hidden sm:block"></div>

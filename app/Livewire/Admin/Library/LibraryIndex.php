@@ -18,6 +18,7 @@ class LibraryIndex extends Component
     use WithFileUploads, WithPagination;
 
     public string $search = '';
+    public string $typeFilter = '';
 
     // Modal ajout / modification
     public bool    $showModal        = false;
@@ -26,6 +27,9 @@ class LibraryIndex extends Component
     public string  $title            = '';
     public string  $description      = '';
     public         $file             = null;
+    public         $cover            = null;
+    public bool    $removeCover      = false;
+    public string  $currentCoverPath = '';
     public string  $external_url     = '';
     public string  $currentFileName  = '';
     public string  $currentFilePath  = '';
@@ -36,10 +40,11 @@ class LibraryIndex extends Component
     public ?string $deleteId         = null;
 
     public function updatedSearch(): void { $this->resetPage(); }
+    public function updatedTypeFilter(): void { $this->resetPage(); }
 
     public function openModal(): void
     {
-        $this->reset(['editingId', 'type', 'title', 'description', 'file', 'external_url']);
+        $this->reset(['editingId', 'type', 'title', 'description', 'file', 'cover', 'external_url', 'removeCover', 'currentCoverPath']);
         $this->type      = 'file';
         $this->showModal = true;
         $this->resetValidation();
@@ -55,6 +60,9 @@ class LibraryIndex extends Component
         $this->description     = $doc->description ?? '';
         $this->external_url    = $doc->external_url ?? '';
         $this->file            = null;
+        $this->cover           = null;
+        $this->removeCover     = false;
+        $this->currentCoverPath = $doc->cover_path ?? '';
         $this->currentFileName = $doc->original_name ?? '';
         $this->currentFilePath = $doc->file_path ?? '';
         $this->currentFileSize = $doc->fileSizeForHumans();
@@ -78,10 +86,14 @@ class LibraryIndex extends Component
             $rules['external_url'] = 'required|url|max:500';
         }
 
+        $rules['cover'] = 'nullable|image|max:5120';
+
         $this->validate($rules, [
             'title.required'        => 'Le titre est obligatoire.',
             'file.required'         => 'Veuillez sélectionner un fichier.',
             'file.max'              => 'Le fichier ne doit pas dépasser 10 Mo.',
+            'cover.image'           => 'La couverture doit être une image.',
+            'cover.max'             => 'La couverture ne doit pas dépasser 5 Mo.',
             'external_url.required' => 'Le lien est obligatoire.',
             'external_url.url'      => 'Le lien n\'est pas valide.',
         ]);
@@ -111,7 +123,8 @@ class LibraryIndex extends Component
                 }
             }
 
-            $doc->update($data);
+            $doc->update(array_merge($data, $this->coverPayload($doc)));
+
             $message = 'Document mis à jour avec succès.';
         } else {
             $data = [
@@ -130,12 +143,16 @@ class LibraryIndex extends Component
                 $data['external_url'] = $this->external_url;
             }
 
-            LibraryDocument::create($data);
+            $doc = LibraryDocument::create($data);
+            if ($this->cover) {
+                $doc->update($this->coverPayload($doc));
+            }
+
             $message = 'Document ajouté avec succès.';
         }
 
         $this->showModal = false;
-        $this->reset(['editingId', 'title', 'description', 'file', 'external_url']);
+        $this->reset(['editingId', 'title', 'description', 'file', 'cover', 'external_url', 'removeCover', 'currentCoverPath']);
         session()->flash('success', $message);
     }
 
@@ -154,6 +171,9 @@ class LibraryIndex extends Component
         if ($doc->file_path) {
             Storage::disk('public')->delete($doc->file_path);
         }
+        if ($doc->cover_path) {
+            Storage::disk('public')->delete($doc->cover_path);
+        }
 
         $doc->delete();
 
@@ -163,12 +183,41 @@ class LibraryIndex extends Component
 
     public function render()
     {
-        $documents = LibraryDocument::with('creator')
-            ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%")
-                ->orWhere('description', 'like', "%{$this->search}%"))
+        $baseQuery = LibraryDocument::query()
+            ->when($this->search, fn ($q) => $q->where(function ($q) {
+                $q->where('title', 'like', "%{$this->search}%")
+                    ->orWhere('description', 'like', "%{$this->search}%");
+            }));
+
+        $documents = (clone $baseQuery)
+            ->with('creator')
+            ->when($this->typeFilter, fn ($q) => $q->where('type', $this->typeFilter))
             ->latest()
             ->paginate(12);
 
-        return view('livewire.admin.library.library-index', compact('documents'));
+        $statsTotal = (clone $baseQuery)->count();
+        $statsFiles = (clone $baseQuery)->where('type', 'file')->count();
+        $statsLinks = (clone $baseQuery)->where('type', 'link')->count();
+
+        return view('livewire.admin.library.library-index', compact('documents', 'statsTotal', 'statsFiles', 'statsLinks'));
+    }
+
+    private function coverPayload(LibraryDocument $doc): array
+    {
+        $data = [];
+
+        if ($this->removeCover && $doc->cover_path) {
+            Storage::disk('public')->delete($doc->cover_path);
+            $data['cover_path'] = null;
+        }
+
+        if ($this->cover) {
+            if ($doc->cover_path) {
+                Storage::disk('public')->delete($doc->cover_path);
+            }
+            $data['cover_path'] = $this->cover->store('library/covers', 'public');
+        }
+
+        return $data;
     }
 }

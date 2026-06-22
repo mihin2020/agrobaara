@@ -4,9 +4,10 @@ namespace App\Livewire\Admin\Landing;
 
 use App\Models\LandingSection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -19,6 +20,7 @@ class LandingConfigurator extends Component
     public ?string $editingSlug = null;
     public array   $formData    = [];
     public bool    $saved       = false;
+    public string  $saveNotice  = '';
 
     // Listes dynamiques par section
     public array $heroSlides     = [];
@@ -28,14 +30,22 @@ class LandingConfigurator extends Component
     public array $autresServices = [];
     public array $partnerItems   = [];
     public array $temoItems      = [];
-    public array $mediaPhotos    = [];
+    public array $mediaPhotos     = [];
+    public array $mediaCategories = [];
+    public string $mediaTab       = 'photo';
+    public ?int   $editingMediaIndex = null;
+    public string $pendingMediaType  = 'image';
+    public bool   $categoriesPanelOpen = true;
+    public bool   $videoLinkFormOpen   = false;
+    public string $videoLinkInput      = '';
 
-    // ── Upload d'image ────────────────────────────────────────────────────────
-    #[Validate('image|max:5120')]
+    // ── Upload d'image / média ───────────────────────────────────────────────
     public $imageUploadFile = null;
-    public string $imageUploadSlot = ''; // format: "hero.0" | "partner.2" | "media.5"
+    public $photoUploadFile  = null;
+    public $videoUploadFile  = null;
+    public string $imageUploadSlot = '';
+    public string $mediaUploadSlot  = '';
 
-    #[Validate('image|max:5120')]
     public $guichetImageFile = null;
 
     public function mount(): void
@@ -66,17 +76,23 @@ class LandingConfigurator extends Component
         $this->autresServices = $content['services'] ?? [];
         $this->partnerItems   = $content['items']    ?? [];
         $this->temoItems      = $content['items']    ?? [];
-        $this->mediaPhotos    = $content['photos']   ?? [];
+        $this->mediaPhotos     = $content['photos']     ?? [];
+        $this->mediaCategories = $content['categories'] ?? self::defaultMediaCategories();
+        $this->mediaTab        = 'photo';
+        $this->editingMediaIndex = null;
+        $this->categoriesPanelOpen = true;
 
         $this->saved = false;
+        $this->saveNotice = '';
     }
 
     public function cancelEdit(): void
     {
-        $this->reset(['editingSlug','formData','saved',
+        $this->reset(['editingSlug','formData','saved','saveNotice',
             'heroSlides','audCards','ceQueColumns','commentSteps',
-            'autresServices','partnerItems','temoItems','mediaPhotos',
-            'imageUploadFile','imageUploadSlot']);
+            'autresServices','partnerItems','temoItems','mediaPhotos','mediaCategories',
+            'mediaTab','editingMediaIndex','categoriesPanelOpen','videoLinkFormOpen','videoLinkInput',
+            'imageUploadFile','imageUploadSlot','photoUploadFile','videoUploadFile','mediaUploadSlot']);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -87,45 +103,106 @@ class LandingConfigurator extends Component
     {
         if (!$this->imageUploadFile || !$this->imageUploadSlot) return;
 
-        $this->validateOnly('imageUploadFile');
+        $this->validate([
+            'imageUploadFile' => 'required|image|max:10240',
+        ], [
+            'imageUploadFile.image' => 'Le fichier doit être une image.',
+            'imageUploadFile.max'   => 'L\'image ne doit pas dépasser 10 Mo.',
+        ]);
 
-        $destDir = $this->ensureUploadsDir();
-        $ext     = $this->imageUploadFile->getClientOriginalExtension() ?: 'jpg';
-        $name    = uniqid('upload_') . '.' . $ext;
-        rename($this->imageUploadFile->getRealPath(), $destDir . DIRECTORY_SEPARATOR . $name);
-        $url = '/images/uploads/' . $name;
+        try {
+            $url = $this->storePublicUpload($this->imageUploadFile);
+            $this->applyUploadToSlot($this->imageUploadSlot, $url);
+            $this->imageUploadFile = null;
+            $this->imageUploadSlot = '';
+            session()->flash('upload_success', 'Fichier téléversé avec succès.');
+        } catch (\Throwable $e) {
+            $this->imageUploadFile = null;
+            $this->imageUploadSlot = '';
+            session()->flash('upload_error', 'Échec du téléversement : ' . $e->getMessage());
+        }
+    }
 
-        [$type, $index] = array_pad(explode('.', $this->imageUploadSlot, 2), 2, '0');
-        $idx = (int) $index;
+    public function updatedPhotoUploadFile(): void
+    {
+        $this->processMediaUpload($this->photoUploadFile, 'image');
+        $this->photoUploadFile = null;
+    }
 
-        match ($type) {
-            'hero'        => $this->heroSlides[$idx]['image_url'] = $url,
-            'partner'     => $this->partnerItems[$idx]['logo']    = $url,
-            'media'       => $this->mediaPhotos[$idx]['src']      = $url,
-            'guichet'     => $this->formData['image_url']         = $url,
-            'header_logo' => $this->formData['logo_url']          = $url,
-            'projet'      => $this->formData['image_url']         = $url,
-            default       => null,
-        };
+    public function updatedVideoUploadFile(): void
+    {
+        $this->processMediaUpload($this->videoUploadFile, 'video');
+        $this->videoUploadFile = null;
+    }
 
-        $this->imageUploadFile  = null;
-        $this->imageUploadSlot  = '';
+    private function processMediaUpload($file, string $type): void
+    {
+        if (!$file || !$this->mediaUploadSlot) return;
+
+        Validator::make(
+            ['file' => $file],
+            ['file' => $type === 'video'
+                ? 'required|file|mimes:mp4,webm,mov|max:51200'
+                : 'required|image|max:10240'],
+            [
+                'file.image' => 'Le fichier doit être une image.',
+                'file.max'   => $type === 'video' ? 'La vidéo ne doit pas dépasser 50 Mo.' : 'L\'image ne doit pas dépasser 10 Mo.',
+                'file.mimes' => 'Formats vidéo acceptés : mp4, webm, mov.',
+            ]
+        )->validate();
+
+        try {
+            $url = $this->storePublicUpload($file);
+            [$slotType, $index] = array_pad(explode('.', $this->mediaUploadSlot, 2), 2, '0');
+            $idx = (int) $index;
+
+            if ($slotType === 'media') {
+                if ($index === 'new') {
+                    $this->mediaPhotos[] = [
+                        'type'     => $type,
+                        'src'      => $url,
+                        'source'   => 'upload',
+                        'alt'      => '',
+                        'category' => $this->defaultMediaCategoryKey(),
+                    ];
+                    $this->editingMediaIndex = count($this->mediaPhotos) - 1;
+                } elseif (isset($this->mediaPhotos[$idx])) {
+                    $this->mediaPhotos[$idx]['src']    = $url;
+                    $this->mediaPhotos[$idx]['type']   = $type;
+                    $this->mediaPhotos[$idx]['source'] = 'upload';
+                    $this->editingMediaIndex = $idx;
+                }
+                $this->mediaTab = $type === 'video' ? 'video' : 'photo';
+                $this->persistSection('mediatheque');
+            }
+
+            $this->mediaUploadSlot = '';
+            session()->flash('upload_success', $type === 'video'
+                ? 'Vidéo importée avec succès.'
+                : 'Photo importée avec succès.');
+        } catch (\Throwable $e) {
+            $this->mediaUploadSlot = '';
+            session()->flash('upload_error', 'Échec du téléversement : ' . $e->getMessage());
+        }
     }
 
     public function updatedGuichetImageFile(): void
     {
         if (!$this->guichetImageFile) return;
 
-        $this->validateOnly('guichetImageFile');
+        $this->validate([
+            'guichetImageFile' => 'required|image|max:10240',
+        ]);
 
-        $destDir = $this->ensureUploadsDir();
-        $ext     = $this->guichetImageFile->getClientOriginalExtension() ?: 'jpg';
-        $name    = uniqid('upload_') . '.' . $ext;
-        rename($this->guichetImageFile->getRealPath(), $destDir . DIRECTORY_SEPARATOR . $name);
-
-        $this->formData['image_url'] = '/images/uploads/' . $name;
-        $this->guichetImageFile = null;
-        $this->dispatch('guichetUploaded', url: '/images/uploads/' . $name);
+        try {
+            $url = $this->storePublicUpload($this->guichetImageFile);
+            $this->formData['image_url'] = $url;
+            $this->guichetImageFile = null;
+            $this->dispatch('guichetUploaded', url: $url);
+        } catch (\Throwable $e) {
+            $this->guichetImageFile = null;
+            session()->flash('upload_error', 'Échec du téléversement guichet : ' . $e->getMessage());
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -146,7 +223,7 @@ class LandingConfigurator extends Component
             'autres_services'              => $this->formData['services'] = $this->autresServices,
             'partenaires'                  => $this->formData['items']    = $this->partnerItems,
             'temoignages'                  => $this->formData['items']    = $this->temoItems,
-            'mediatheque'                  => $this->formData['photos']   = $this->mediaPhotos,
+            'mediatheque'                  => $this->syncMediathequeFormData(),
             default                        => null,
         };
 
@@ -159,6 +236,10 @@ class LandingConfigurator extends Component
             ->log('landing_section_updated');
 
         $this->saved = true;
+        $this->saveNotice = match ($this->editingSlug) {
+            'mediatheque' => 'Médiathèque enregistrée avec succès.',
+            default       => 'Section enregistrée avec succès.',
+        };
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -291,13 +372,125 @@ class LandingConfigurator extends Component
 
     public function addPhoto(): void
     {
-        $this->mediaPhotos[] = ['src' => '', 'alt' => '', 'category' => 'terrain'];
+        $this->startMediaUpload('image');
+    }
+
+    public function addVideo(): void
+    {
+        $this->videoLinkFormOpen = false;
+        $this->startMediaUpload('video');
+    }
+
+    public function openVideoLinkForm(): void
+    {
+        $this->videoLinkFormOpen = true;
+        $this->videoLinkInput    = '';
+        $this->mediaTab          = 'video';
+        $this->editingMediaIndex = null;
+    }
+
+    public function cancelVideoLinkForm(): void
+    {
+        $this->videoLinkFormOpen = false;
+        $this->videoLinkInput    = '';
+        $this->resetValidation(['videoLinkInput']);
+    }
+
+    public function addVideoFromLink(): void
+    {
+        $this->validate([
+            'videoLinkInput' => 'required|url|max:500',
+        ], [
+            'videoLinkInput.required' => 'Collez un lien vidéo (YouTube, Vimeo ou MP4).',
+            'videoLinkInput.url'      => 'Le lien n\'est pas valide.',
+        ]);
+
+        $this->mediaPhotos[] = [
+            'type'     => 'video',
+            'src'      => trim($this->videoLinkInput),
+            'source'   => 'url',
+            'alt'      => '',
+            'category' => $this->defaultMediaCategoryKey(),
+        ];
+
+        $this->editingMediaIndex = count($this->mediaPhotos) - 1;
+        $this->mediaTab          = 'video';
+        $this->videoLinkFormOpen = false;
+        $this->videoLinkInput    = '';
+        $this->persistSection('mediatheque');
+
+        session()->flash('upload_success', 'Vidéo ajoutée via lien.');
+    }
+
+    public function startMediaUpload(string $type): void
+    {
+        $this->pendingMediaType  = $type;
+        $this->mediaUploadSlot   = 'media.new';
+        $this->mediaTab          = $type === 'video' ? 'video' : 'photo';
+        $this->editingMediaIndex = null;
+        $this->dispatch('pick-' . ($type === 'video' ? 'video' : 'photo') . '-file');
+    }
+
+    public function editMediaItem(int $i): void
+    {
+        $this->editingMediaIndex = $i;
+        $type = $this->mediaPhotos[$i]['type'] ?? 'image';
+        $this->mediaTab = ($type === 'video') ? 'video' : 'photo';
+    }
+
+    public function closeMediaEdit(): void
+    {
+        $this->editingMediaIndex = null;
+    }
+
+    public function replaceMediaFile(int $i, string $type): void
+    {
+        if (!isset($this->mediaPhotos[$i])) return;
+        $this->mediaUploadSlot = "media.{$i}";
+        $this->dispatch('pick-' . ($type === 'video' ? 'video' : 'photo') . '-file');
+    }
+
+    public function addMediaCategory(): void
+    {
+        $n = count($this->mediaCategories) + 1;
+        $this->mediaCategories[] = [
+            'key'   => 'categorie_' . $n,
+            'label' => 'Nouvelle catégorie',
+        ];
+        $this->categoriesPanelOpen = true;
+    }
+
+    public function toggleCategoriesPanel(): void
+    {
+        $this->categoriesPanelOpen = !$this->categoriesPanelOpen;
+    }
+
+    public function removeMediaCategory(int $i): void
+    {
+        if (count($this->mediaCategories) <= 1) return;
+
+        $removedKey = $this->mediaCategories[$i]['key'] ?? '';
+        array_splice($this->mediaCategories, $i, 1);
+        $this->mediaCategories = array_values($this->mediaCategories);
+
+        $fallback = $this->defaultMediaCategoryKey();
+        foreach ($this->mediaPhotos as $idx => $photo) {
+            if (($photo['category'] ?? '') === $removedKey) {
+                $this->mediaPhotos[$idx]['category'] = $fallback;
+            }
+        }
     }
 
     public function removePhoto(int $i): void
     {
         array_splice($this->mediaPhotos, $i, 1);
         $this->mediaPhotos = array_values($this->mediaPhotos);
+
+        if ($this->editingMediaIndex === $i) {
+            $this->editingMediaIndex = null;
+        } elseif ($this->editingMediaIndex !== null && $this->editingMediaIndex > $i) {
+            $this->editingMediaIndex--;
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -325,7 +518,107 @@ class LandingConfigurator extends Component
         if (!is_dir($dir)) {
             mkdir($dir, 0755, true);
         }
-        return realpath($dir);
+        return realpath($dir) ?: $dir;
+    }
+
+    private function storePublicUpload($file): string
+    {
+        $destDir = $this->ensureUploadsDir();
+        $ext     = strtolower($file->getClientOriginalExtension() ?: 'bin');
+        $name    = uniqid('upload_') . '.' . $ext;
+        $destPath = $destDir . DIRECTORY_SEPARATOR . $name;
+
+        if (!copy($file->getRealPath(), $destPath)) {
+            throw new \RuntimeException('Impossible de copier le fichier vers le dossier public.');
+        }
+
+        return '/images/uploads/' . $name;
+    }
+
+    private function applyUploadToSlot(string $slot, string $url): void
+    {
+        [$type, $index] = array_pad(explode('.', $slot, 2), 2, '0');
+        $idx = (int) $index;
+
+        match ($type) {
+            'hero'        => $this->heroSlides[$idx]['image_url'] = $url,
+            'partner'     => $this->partnerItems[$idx]['logo']    = $url,
+            'media'       => $this->mediaPhotos[$idx]['src']      = $url,
+            'guichet'     => $this->formData['image_url']         = $url,
+            'header_logo' => $this->formData['logo_url']          = $url,
+            'projet'      => $this->formData['image_url']         = $url,
+            default       => null,
+        };
+
+        if ($type === 'media' && isset($this->mediaPhotos[$idx])) {
+            $this->mediaPhotos[$idx]['type'] = 'image';
+            $this->persistSection('mediatheque');
+        }
+    }
+
+    private function syncMediathequeFormData(): void
+    {
+        $this->normalizeMediaCategoryKeys();
+        $this->formData['photos']     = $this->mediaPhotos;
+        $this->formData['categories'] = $this->mediaCategories;
+    }
+
+    private function normalizeMediaCategoryKeys(): void
+    {
+        $used = [];
+        foreach ($this->mediaCategories as $i => &$cat) {
+            $label = trim($cat['label'] ?? '');
+            $key   = trim($cat['key'] ?? '');
+
+            if ($label !== '' && ($key === '' || str_starts_with($key, 'categorie_'))) {
+                $key = Str::slug($label, '_');
+            }
+
+            if ($key === '') {
+                $key = 'categorie_' . ($i + 1);
+            }
+
+            $base = $key;
+            $n    = 2;
+            while (in_array($key, $used, true)) {
+                $key = $base . '_' . $n++;
+            }
+
+            $cat['key']   = $key;
+            $cat['label'] = $label !== '' ? $label : ucfirst(str_replace('_', ' ', $key));
+            $used[]       = $key;
+        }
+        unset($cat);
+    }
+
+    private function defaultMediaCategoryKey(): string
+    {
+        return $this->mediaCategories[0]['key'] ?? 'terrain';
+    }
+
+    public static function defaultMediaCategories(): array
+    {
+        return [
+            ['key' => 'terrain',   'label' => 'Terrain'],
+            ['key' => 'formation', 'label' => 'Formation'],
+            ['key' => 'evenement', 'label' => 'Événement'],
+        ];
+    }
+
+    private function persistSection(string $slug): void
+    {
+        if ($this->editingSlug !== $slug) return;
+
+        $section = LandingSection::forSlug($slug);
+        if (!$section) return;
+
+        match ($slug) {
+            'mediatheque' => $this->syncMediathequeFormData(),
+            default       => null,
+        };
+
+        $section->update(['content' => $this->formData]);
+        $this->saved = true;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -335,6 +628,9 @@ class LandingConfigurator extends Component
     public function render()
     {
         $sections = LandingSection::allOrdered();
-        return view('livewire.admin.landing.landing-configurator', compact('sections'));
+        $mediaPhotoCount = collect($this->mediaPhotos)->where(fn ($m) => ($m['type'] ?? 'image') !== 'video')->count();
+        $mediaVideoCount = collect($this->mediaPhotos)->where(fn ($m) => ($m['type'] ?? 'image') === 'video')->count();
+
+        return view('livewire.admin.landing.landing-configurator', compact('sections', 'mediaPhotoCount', 'mediaVideoCount'));
     }
 }

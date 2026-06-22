@@ -25,6 +25,7 @@ use App\Livewire\Matching\MatchShow;
 use App\Livewire\Landing\ContactForm;
 use App\Livewire\Landing\LandingPage;
 use App\Livewire\Landing\Mediatheque;
+use App\Livewire\Landing\Bibliotheque;
 use App\Livewire\Admin\Landing\LandingConfigurator;
 use App\Livewire\Admin\Audit\AuditLog;
 use App\Livewire\Admin\Settings\SettingsIndex;
@@ -37,6 +38,7 @@ use Illuminate\Support\Facades\Route;
 // ─────────────────────────────────────────────────────────────────────────────
 Route::get('/', LandingPage::class)->name('home');
 Route::get('/mediatheque', Mediatheque::class)->name('mediatheque');
+Route::get('/bibliotheque', Bibliotheque::class)->name('bibliotheque');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // AUTHENTIFICATION (invités seulement)

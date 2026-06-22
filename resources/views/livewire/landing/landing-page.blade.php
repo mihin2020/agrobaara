@@ -70,10 +70,29 @@
     $mediaContent  = $mediaSection?->content ?? [];
     $mediaTitle    = $mediaContent['title']       ?? 'MÉDIATHÈQUE';
     $mediaDesc     = $mediaContent['description'] ?? 'Découvrez nos activités à travers les photos du terrain.';
-    $mediaPhotos   = $mediaContent['photos']      ?? [];
-
-
-    // ── Contact ───────────────────────────────────────────────────────────────
+    $mediaPhotos      = $mediaContent['photos']      ?? [];
+    $mediaCategories  = $mediaContent['categories'] ?? [
+        ['key' => 'terrain',   'label' => 'Terrain'],
+        ['key' => 'formation', 'label' => 'Formation'],
+        ['key' => 'evenement', 'label' => 'Événement'],
+    ];
+    $catColorPalette  = [
+        'bg-primary text-on-primary',
+        'bg-secondary text-on-secondary',
+        'bg-tertiary text-on-tertiary',
+        'bg-primary-container text-on-primary-container',
+        'bg-secondary-container text-on-secondary-container',
+        'bg-tertiary-container text-on-tertiary-container',
+    ];
+    $catLabels = collect($mediaCategories)->pluck('label', 'key')->all();
+    $catColors = [];
+    foreach ($mediaCategories as $i => $cat) {
+        $catColors[$cat['key']] = $catColorPalette[$i % count($catColorPalette)];
+    }
+    $mediaImages = collect($mediaPhotos)->filter(fn ($p) => ($p['type'] ?? 'image') !== 'video')->values();
+    $mediaVideos = collect($mediaPhotos)->filter(fn ($p) => ($p['type'] ?? 'image') === 'video')->values();
+    $hasMediaPhotos = $mediaImages->isNotEmpty();
+    $hasMediaVideos = $mediaVideos->isNotEmpty();
     $contactSection  = $sec->get('contact');
     $contactContent  = $contactSection?->content ?? [];
     $contactTitle    = $contactContent['title']    ?? 'Contactez-nous';
@@ -87,18 +106,6 @@
         'primary'   => 'bg-primary-container text-primary',
         'secondary' => 'bg-secondary-container text-secondary',
         'tertiary'  => 'bg-tertiary-fixed text-tertiary',
-    ];
-
-    // Category badge colors map for mediatheque
-    $catColors = [
-        'terrain'   => 'bg-primary text-on-primary',
-        'formation' => 'bg-secondary text-on-secondary',
-        'evenement' => 'bg-tertiary text-on-tertiary',
-    ];
-    $catLabels = [
-        'terrain'   => 'Terrain',
-        'formation' => 'Formation',
-        'evenement' => 'Événement',
     ];
 @endphp
 <div>
@@ -114,6 +121,7 @@
 <a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="#guichet">Le Guichet</a>
 <a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="#partenaires">Partenaires</a>
 <a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="#mediatheque">Médiathèque</a>
+<a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="{{ route('bibliotheque') }}">Bibliothèque</a>
 <a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="#contact">Contact</a>
 <a href="{{ route('login') }}" class="bg-primary text-on-primary px-6 py-2 rounded-lg font-label-bold hover:opacity-90 transition-all">Connexion</a>
 </div>
@@ -554,48 +562,150 @@
 
 {{-- ══════════════════════════════════ MÉDIATHÈQUE ══════════════════════════════════════════ --}}
 @if($mediaSection?->is_active !== false && count($mediaPhotos))
-<section class="py-20 bg-surface-container-low" id="mediatheque">
+<section class="py-20 bg-surface-container-low scroll-mt-24" id="mediatheque">
 <div class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
-    <div class="text-center mb-12" data-animate="fade-up">
+    <div class="text-center mb-10" data-animate="fade-up">
         <h2 class="font-headline-lg text-headline-lg text-primary mb-4 uppercase">{{ $mediaTitle }}</h2>
         <div class="h-1.5 w-24 bg-secondary mx-auto rounded-full"></div>
         <p class="font-body-lg text-on-surface-variant mt-6 max-w-xl mx-auto">{{ $mediaDesc }}</p>
     </div>
 
-    <div class="flex justify-center gap-2 mb-10 flex-wrap">
-        <button type="button" onclick="filterMedia('all', this)" class="media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-primary text-on-primary transition-all">Tout</button>
-        <button type="button" onclick="filterMedia('terrain', this)" class="media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-surface border border-outline-variant text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all">Terrain</button>
-        <button type="button" onclick="filterMedia('formation', this)" class="media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-surface border border-outline-variant text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all">Formation</button>
-        <button type="button" onclick="filterMedia('evenement', this)" class="media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-surface border border-outline-variant text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all">Événements</button>
+    @if($hasMediaPhotos && $hasMediaVideos)
+    <div class="flex justify-center gap-2 mb-4 flex-wrap" data-animate="fade-up" data-delay="50">
+        <button type="button" onclick="filterMediaType('all', this)" class="media-type-tab px-5 py-2 rounded-full font-label-bold text-sm bg-primary text-on-primary transition-all">Tout</button>
+        <button type="button" onclick="filterMediaType('photo', this)" class="media-type-tab px-5 py-2 rounded-full font-label-bold text-sm bg-surface border border-outline-variant text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all">
+            <span class="material-symbols-outlined text-sm align-middle mr-0.5">photo_library</span>Photos
+        </button>
+        <button type="button" onclick="filterMediaType('video', this)" class="media-type-tab px-5 py-2 rounded-full font-label-bold text-sm bg-surface border border-outline-variant text-on-surface-variant hover:bg-[#283593] hover:text-white transition-all">
+            <span class="material-symbols-outlined text-sm align-middle mr-0.5">smart_display</span>Vidéos
+        </button>
     </div>
+    @endif
 
-    <div id="media-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        @foreach($mediaPhotos as $photo)
-        <div class="media-item" data-cat="{{ $photo['category'] ?? 'terrain' }}" data-animate="zoom-in" data-delay="{{ ($loop->index % 4) * 100 }}">
-            <div class="relative overflow-hidden rounded-2xl aspect-square bg-surface-container-high group cursor-pointer">
-                <img src="{{ $photo['src'] ?? '' }}" alt="{{ $photo['alt'] ?? '' }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-white text-4xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">zoom_in</span>
-                </div>
-                <span class="absolute bottom-2 left-2 {{ $catColors[$photo['category'] ?? 'terrain'] ?? 'bg-primary text-on-primary' }} text-xs px-2 py-1 rounded-full font-label-bold">
-                    {{ $catLabels[$photo['category'] ?? 'terrain'] ?? 'Photo' }}
-                </span>
-            </div>
-        </div>
+    @if($hasMediaPhotos)
+    <div id="media-cat-filters" class="flex justify-center gap-2 mb-8 flex-wrap">
+        <button type="button" onclick="filterMedia('all', this)" class="media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-primary text-on-primary transition-all">Tout</button>
+        @foreach($mediaCategories as $cat)
+        <button type="button" onclick="filterMedia('{{ $cat['key'] }}', this)" class="media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-surface border border-outline-variant text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all">{{ $cat['label'] }}</button>
         @endforeach
     </div>
+    @endif
+
+    @if($hasMediaPhotos)
+    <div id="media-photos-block">
+        @if($hasMediaVideos)
+        <div class="flex items-center gap-2 mb-4">
+            <span class="material-symbols-outlined text-primary text-xl">photo_library</span>
+            <h3 class="font-label-bold text-on-surface text-lg">Photos</h3>
+        </div>
+        @endif
+        <div id="media-photos-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            @foreach($mediaImages as $photo)
+            <div class="media-item media-photo" data-cat="{{ $photo['category'] ?? 'terrain' }}" data-animate="zoom-in" data-delay="{{ ($loop->index % 4) * 100 }}">
+                <div class="relative overflow-hidden rounded-2xl aspect-square bg-surface-container-high group cursor-pointer"
+                     @if(!empty($photo['src'])) onclick="openMediaLightbox('{{ $photo['src'] }}', '{{ addslashes($photo['alt'] ?? '') }}')" @endif>
+                    @if(!empty($photo['src']))
+                    <img src="{{ $photo['src'] }}" alt="{{ $photo['alt'] ?? '' }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center pointer-events-none">
+                        <span class="material-symbols-outlined text-white text-4xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">zoom_in</span>
+                    </div>
+                    @else
+                    <div class="w-full h-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-outline-variant text-4xl">broken_image</span>
+                    </div>
+                    @endif
+                    <span class="absolute bottom-2 left-2 {{ $catColors[$photo['category'] ?? 'terrain'] ?? 'bg-primary text-on-primary' }} text-xs px-2 py-1 rounded-full font-label-bold">
+                        {{ $catLabels[$photo['category'] ?? 'terrain'] ?? 'Photo' }}
+                    </span>
+                </div>
+                @if(!empty($photo['alt']))
+                <p class="mt-2 text-xs text-on-surface-variant line-clamp-2 px-0.5">{{ $photo['alt'] }}</p>
+                @endif
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    @if($hasMediaVideos)
+    <div id="media-videos-block" class="{{ $hasMediaPhotos ? 'mt-14 pt-10 border-t border-outline-variant/40' : '' }}">
+        <div class="flex items-center justify-center gap-2 mb-6">
+            <span class="material-symbols-outlined text-[#283593] text-xl">smart_display</span>
+            <h3 class="font-label-bold text-on-surface text-lg">Vidéos</h3>
+        </div>
+        <div id="media-videos-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            @foreach($mediaVideos as $video)
+            @php
+                $videoSrc = $video['src'] ?? '';
+                $isEmbedVideo = $videoSrc && \App\Support\MediaVideoUrl::isEmbeddable($videoSrc);
+                $embedSrc = $isEmbedVideo ? \App\Support\MediaVideoUrl::embedUrl($videoSrc) : '';
+                $thumbSrc = \App\Support\MediaVideoUrl::thumbnailUrl($videoSrc);
+            @endphp
+            <div class="media-item media-video" data-cat="{{ $video['category'] ?? 'terrain' }}" data-animate="fade-up" data-delay="{{ ($loop->index % 2) * 100 }}">
+                <button type="button"
+                        onclick="openVideoModal({{ $isEmbedVideo ? 'true' : 'false' }}, @js($isEmbedVideo ? $embedSrc : $videoSrc), @js($video['alt'] ?? 'Vidéo'))"
+                        class="w-full text-left group">
+                    <div class="relative overflow-hidden rounded-2xl aspect-video bg-[#1e1b18] shadow-md">
+                        @if($thumbSrc)
+                        <img src="{{ $thumbSrc }}" alt="" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                        @elseif(!$isEmbedVideo && $videoSrc)
+                        <video src="{{ $videoSrc }}" class="w-full h-full object-cover" muted preload="metadata"></video>
+                        @else
+                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#283593]/20 to-[#1e1b18]">
+                            <span class="material-symbols-outlined text-white/40 text-5xl">play_circle</span>
+                        </div>
+                        @endif
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                            <span class="w-14 h-14 rounded-full bg-white/95 text-[#283593] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined text-3xl ml-0.5" style="font-variation-settings:'FILL' 1">play_arrow</span>
+                            </span>
+                        </div>
+                        <span class="absolute top-3 left-3 bg-[#283593] text-white text-xs px-2.5 py-1 rounded-full font-label-bold flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">smart_display</span>
+                            {{ \App\Support\MediaVideoUrl::previewLabel($videoSrc) }}
+                        </span>
+                    </div>
+                    @if(!empty($video['alt']))
+                    <p class="mt-3 text-sm font-label-bold text-on-surface group-hover:text-[#283593] transition-colors">{{ $video['alt'] }}</p>
+                    @endif
+                </button>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
 </div>
 </section>
 @endif
 
 @script
 <script>
+var activeMediaType = 'all';
+
+function filterMediaType(type, btn) {
+    activeMediaType = type;
+    document.querySelectorAll('.media-type-tab').forEach(function(t) {
+        t.className = 'media-type-tab px-5 py-2 rounded-full font-label-bold text-sm bg-surface border border-outline-variant text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all';
+    });
+    if (btn) {
+        btn.className = type === 'video'
+            ? 'media-type-tab px-5 py-2 rounded-full font-label-bold text-sm bg-[#283593] text-white transition-all'
+            : 'media-type-tab px-5 py-2 rounded-full font-label-bold text-sm bg-primary text-on-primary transition-all';
+    }
+    var photosBlock = document.getElementById('media-photos-block');
+    var videosBlock = document.getElementById('media-videos-block');
+    var catFilters  = document.getElementById('media-cat-filters');
+    if (photosBlock) photosBlock.style.display = (type === 'video') ? 'none' : '';
+    if (videosBlock) videosBlock.style.display = (type === 'photo') ? 'none' : '';
+    if (catFilters)  catFilters.style.display  = (type === 'video') ? 'none' : '';
+}
+
 function filterMedia(cat, btn) {
     document.querySelectorAll('.media-tab').forEach(function(t) {
         t.className = 'media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-surface border border-outline-variant text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all';
     });
-    btn.className = 'media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-primary text-on-primary transition-all';
-    document.querySelectorAll('.media-item').forEach(function(item) {
+    if (btn) btn.className = 'media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-primary text-on-primary transition-all';
+    document.querySelectorAll('.media-photo').forEach(function(item) {
         if (cat === 'all' || item.getAttribute('data-cat') === cat) {
             item.style.display = '';
         } else {
@@ -603,8 +713,77 @@ function filterMedia(cat, btn) {
         }
     });
 }
+
+function openMediaLightbox(src, alt) {
+    var overlay = document.getElementById('media-lightbox');
+    var img = document.getElementById('media-lightbox-img');
+    if (!overlay || !img) return;
+    img.src = src;
+    img.alt = alt || '';
+    overlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeMediaLightbox() {
+    var overlay = document.getElementById('media-lightbox');
+    if (!overlay) return;
+    overlay.classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+function openVideoModal(isEmbed, src, title) {
+    var overlay = document.getElementById('video-modal');
+    var content = document.getElementById('video-modal-content');
+    var titleEl = document.getElementById('video-modal-title');
+    if (!overlay || !content) return;
+    content.innerHTML = '';
+    if (isEmbed) {
+        var iframe = document.createElement('iframe');
+        iframe.src = src + (src.indexOf('?') >= 0 ? '&' : '?') + 'autoplay=1';
+        iframe.className = 'w-full h-full border-0 rounded-xl';
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        iframe.allowFullscreen = true;
+        iframe.title = title || 'Vidéo';
+        content.appendChild(iframe);
+    } else {
+        var video = document.createElement('video');
+        video.src = src;
+        video.controls = true;
+        video.autoplay = true;
+        video.playsInline = true;
+        video.className = 'w-full h-full object-contain rounded-xl bg-black';
+        content.appendChild(video);
+    }
+    if (titleEl) titleEl.textContent = title || '';
+    overlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeVideoModal() {
+    var overlay = document.getElementById('video-modal');
+    var content = document.getElementById('video-modal-content');
+    if (!overlay) return;
+    overlay.classList.add('hidden');
+    if (content) content.innerHTML = '';
+    document.body.style.overflow = '';
+}
 </script>
 @endscript
+
+<div id="media-lightbox" class="hidden fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4" onclick="closeMediaLightbox()">
+    <button type="button" onclick="closeMediaLightbox()" class="absolute top-4 right-4 text-white p-2 rounded-full hover:bg-white/10">
+        <span class="material-symbols-outlined text-3xl">close</span>
+    </button>
+    <img id="media-lightbox-img" src="" alt="" class="max-w-full max-h-[90vh] object-contain rounded-lg" onclick="event.stopPropagation()" />
+</div>
+
+<div id="video-modal" class="hidden fixed inset-0 z-[100] bg-black/92 flex flex-col items-center justify-center p-4 md:p-8" onclick="closeVideoModal()">
+    <button type="button" onclick="closeVideoModal()" class="absolute top-4 right-4 text-white p-2 rounded-full hover:bg-white/10 z-10">
+        <span class="material-symbols-outlined text-3xl">close</span>
+    </button>
+    <p id="video-modal-title" class="text-white font-label-bold text-base mb-4 max-w-4xl w-full text-center"></p>
+    <div id="video-modal-content" class="w-full max-w-4xl aspect-video" onclick="event.stopPropagation()"></div>
+</div>
 
 {{-- ══════════════════════════════════════ CONTACT ═══════════════════════════════════════════ --}}
 @if($contactSection?->is_active !== false)
@@ -681,6 +860,7 @@ function filterMedia(cat, btn) {
                 <h6 class="font-label-bold text-on-surface mb-4">Ressources</h6>
                 <ul class="space-y-2 text-body-sm text-on-surface-variant">
                     <li><a class="hover:text-primary" href="#mediatheque">Médiathèque</a></li>
+                    <li><a class="hover:text-primary" href="{{ route('bibliotheque') }}">Bibliothèque</a></li>
                     <li><a class="hover:text-primary" href="#contact">Contact</a></li>
                 </ul>
             </div>

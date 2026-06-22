@@ -273,6 +273,11 @@ class LandingSectionSeeder extends Seeder
                 'content'        => [
                     'title'       => 'MÉDIATHÈQUE',
                     'description' => 'Découvrez nos activités à travers les photos du terrain.',
+                    'categories'  => [
+                        ['key' => 'terrain',   'label' => 'Terrain'],
+                        ['key' => 'formation', 'label' => 'Formation'],
+                        ['key' => 'evenement', 'label' => 'Événement'],
+                    ],
                     'photos'      => [
                         ['src' => '/images/medias/_DSC3855.jpg',  'alt' => 'Terrain agroécologie', 'category' => 'terrain'],
                         ['src' => '/images/medias/1A3A0174.jpg',  'alt' => 'Terrain',              'category' => 'terrain'],
