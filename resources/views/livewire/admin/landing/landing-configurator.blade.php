@@ -52,8 +52,8 @@
     {{-- ══ GRILLE DES SECTIONS ══════════════════════════════════════════════ --}}
     @php
     $sectionMeta = [
-        'hero'                       => ['icon' => 'slideshow',      'color' => 'bg-[#e8f5e9] text-[#2c6904]',   'border' => 'border-[#4caf50]', 'label' => 'Slider principal'],
-        'le_projet'                  => ['icon' => 'eco',            'color' => 'bg-[#e0f2f1] text-[#00695c]',   'border' => 'border-[#26a69a]', 'label' => 'Description projet'],
+        'hero'                       => ['icon' => 'slideshow',      'color' => 'bg-[#e8f5e9] text-[#2c6904]',   'border' => 'border-[#4caf50]', 'label' => 'Slider + logo en-tête'],
+        'le_projet'                  => ['icon' => 'eco',            'color' => 'bg-[#e0f2f1] text-[#00695c]',   'border' => 'border-[#26a69a]', 'label' => 'Description projet + logo'],
         'audiences'                  => ['icon' => 'group',          'color' => 'bg-[#e3f2fd] text-[#1565c0]',   'border' => 'border-[#42a5f5]', 'label' => '3 cartes audiences'],
         'guichet'                    => ['icon' => 'meeting_room',   'color' => 'bg-[#aef585]/20 text-[#2c6904]', 'border' => 'border-[#2c6904]', 'label' => 'Infos guichet'],
         'ce_que_vous_pouvez_trouver' => ['icon' => 'checklist',      'color' => 'bg-[#f3e5f5] text-[#6a1b9a]',   'border' => 'border-[#ab47bc]', 'label' => 'Listes services'],
@@ -202,6 +202,27 @@
 
                 {{-- ════════════════════ HERO ════════════════════ --}}
                 @if($editingSlug === 'hero')
+                    {{-- Logo en-tête --}}
+                    <div class="mb-6 p-4 bg-[#fbf2ed]/60 border border-[#e9e1dc] rounded-2xl space-y-3">
+                        <p class="{{ $subLbl }}">Logo de l'en-tête (navigation)</p>
+                        @if(!empty($formData['logo_url']))
+                        <div class="flex items-center justify-center h-24 rounded-xl bg-white border border-[#e9e1dc] p-3">
+                            <img src="{{ $formData['logo_url'] }}" alt="Logo en-tête" class="max-h-full max-w-full object-contain"
+                                 onerror="this.parentElement.classList.add('hidden')" />
+                        </div>
+                        @endif
+                        <div class="flex gap-2">
+                            <input type="text" wire:model.live="formData.logo_url" class="{{ $inputCls }} flex-1"
+                                   placeholder="/images/logo.jpeg" />
+                            <button type="button"
+                                    x-on:click="$wire.set('imageUploadSlot', 'header_logo.0').then(() => document.getElementById('global-image-upload').click())"
+                                    class="flex-shrink-0 flex items-center gap-1.5 px-3 py-2.5 bg-[#2c6904] text-white text-xs font-semibold rounded-xl hover:bg-[#448322] transition-colors">
+                                <span class="material-symbols-outlined text-base">upload_file</span>
+                                Importer
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="mb-5 flex items-center justify-between">
                         <p class="text-sm text-[#41493b]">
                             <span class="font-semibold">{{ count($heroSlides) }}</span> slide(s) · maximum 4 recommandé
@@ -335,6 +356,27 @@
                                 class="mt-3 flex items-center gap-1.5 text-sm text-[#2c6904] font-semibold hover:underline">
                             <span class="material-symbols-outlined text-base">add_circle</span> Ajouter un paragraphe
                         </button>
+                    </div>
+
+                    <div class="mt-6 pt-6 border-t border-[#e9e1dc] space-y-3">
+                        <p class="{{ $subLbl }}">Logo / image à droite</p>
+                        @if(!empty($formData['image_url']))
+                        <div class="flex items-center justify-center h-40 rounded-xl bg-white border border-[#e9e1dc] p-4">
+                            <img src="{{ $formData['image_url'] }}" alt="Aperçu" class="max-h-full max-w-full object-contain"
+                                 onerror="this.parentElement.classList.add('hidden')" />
+                        </div>
+                        @endif
+                        <div class="flex gap-2">
+                            <input type="text" wire:model.live="formData.image_url" class="{{ $inputCls }} flex-1"
+                                   placeholder="/images/logo.jpeg ou /images/uploads/..." />
+                            <button type="button"
+                                    x-on:click="$wire.set('imageUploadSlot', 'projet.0').then(() => document.getElementById('global-image-upload').click())"
+                                    class="flex-shrink-0 flex items-center gap-1.5 px-3 py-2.5 bg-[#2c6904] text-white text-xs font-semibold rounded-xl hover:bg-[#448322] transition-colors">
+                                <span class="material-symbols-outlined text-base">upload_file</span>
+                                Importer
+                            </button>
+                        </div>
+                        <p class="text-[11px] text-[#717a69]">Si aucune image n'est définie, l'icône « eco » s'affiche par défaut.</p>
                     </div>
                 @endif
 

@@ -20,6 +20,7 @@ class LandingSectionSeeder extends Seeder
                 'is_active'      => true,
                 'always_visible' => true,
                 'content'        => [
+                    'logo_url' => '/images/logo.jpeg',
                     'slides' => [
                         [
                             'title'               => 'Agro Eco BAARA',
@@ -76,6 +77,7 @@ class LandingSectionSeeder extends Seeder
                 'content'        => [
                     'badge'      => 'NOTRE MISSION',
                     'title'      => 'Le Projet',
+                    'image_url'  => '/images/logo.jpeg',
                     'paragraphs' => [
                         'Le service <strong>Agro Eco BAARA</strong> est une initiative de l\'association <strong>Yelemani</strong> en collaboration avec son partenaire <strong>Centro Regionale d\'Intervento per la Cooperazione (CRIC)</strong>.',
                         'Elle s\'inscrit dans le cadre du projet <em>« Territoires en perspective : transition agroécologique et autonomisation des femmes et des jeunes dans les régions du Kadiogo et de l\'Oubritenga au Burkina Faso »</em>, financé par le <strong>Ministère Italien des Affaires Étrangères et de la Coopération Internationale</strong> (MAECI) à travers l\'<strong>Agence Italienne de Coopération au Développement</strong> (AICS).',

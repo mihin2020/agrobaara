@@ -99,11 +99,13 @@ class LandingConfigurator extends Component
         $idx = (int) $index;
 
         match ($type) {
-            'hero'    => $this->heroSlides[$idx]['image_url'] = $url,
-            'partner' => $this->partnerItems[$idx]['logo']    = $url,
-            'media'   => $this->mediaPhotos[$idx]['src']      = $url,
-            'guichet' => $this->formData['image_url']         = $url,
-            default   => null,
+            'hero'        => $this->heroSlides[$idx]['image_url'] = $url,
+            'partner'     => $this->partnerItems[$idx]['logo']    = $url,
+            'media'       => $this->mediaPhotos[$idx]['src']      = $url,
+            'guichet'     => $this->formData['image_url']         = $url,
+            'header_logo' => $this->formData['logo_url']          = $url,
+            'projet'      => $this->formData['image_url']         = $url,
+            default       => null,
         };
 
         $this->imageUploadFile  = null;

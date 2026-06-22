@@ -3,7 +3,9 @@
 
     // ── Hero ──────────────────────────────────────────────────────────────────
     $heroSection  = $sec->get('hero');
-    $heroSlides   = $heroSection?->content['slides'] ?? [];
+    $heroContent  = $heroSection?->content ?? [];
+    $heroSlides   = $heroContent['slides'] ?? [];
+    $heroLogo     = $heroContent['logo_url'] ?? '/images/logo.jpeg';
 
     // ── Le Projet ─────────────────────────────────────────────────────────────
     $projetSection   = $sec->get('le_projet');
@@ -11,6 +13,7 @@
     $projetBadge     = $projetContent['badge']      ?? 'NOTRE MISSION';
     $projetTitle     = $projetContent['title']      ?? 'Le Projet';
     $projetParagraphs= $projetContent['paragraphs'] ?? [];
+    $projetImage     = $projetContent['image_url']  ?? '';
 
     // ── Audiences ─────────────────────────────────────────────────────────────
     $audSection  = $sec->get('audiences');
@@ -103,7 +106,7 @@
 <header class="bg-surface docked full-width top-0 border-b border-outline-variant z-50 sticky">
 <nav class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
 <div class="flex items-center gap-4">
-<img alt="Agro Eco BAARA Logo" class="h-20 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAzpbcglFrXp83qaNSplq7pnweoWJYke3uk9-PpO8jog7JvjW3_LxAkvux17_NMZa97soNde3PlU9tJTqNc_XXirQ88fB1SMJvZihfaRaddGDfwe_tvCFRRhX6dwUy66A4sy4jpN6mfuIsEEDBTzVmmLLo_mYvJwSdMohLg9UVqfdArVCb8J29ZXG59ihBUxdPdnxB9COpXlh1S_7Egh5s8K0dECj4AqbxgTRZRS-LSUbJ7qxFKJn9GmPIb3nEOLeqnA1VU6enk1Pr"/>
+<img alt="Agro Eco BAARA Logo" class="h-20 w-auto object-contain" src="{{ $heroLogo }}"/>
 </div>
 <div class="hidden md:flex items-center gap-8">
 <a class="text-primary border-b-2 border-primary pb-1 font-label-bold hover:text-primary transition-colors" href="#">Accueil</a>
@@ -238,7 +241,11 @@
 <div class="lg:w-1/3 flex justify-center" data-animate="zoom-in" data-delay="200">
 <div class="relative">
 <div class="absolute -inset-4 bg-primary/10 rounded-full blur-3xl"></div>
+@if($projetImage)
+<img alt="{{ $projetTitle }}" class="relative max-h-64 w-auto object-contain rounded-2xl" src="{{ $projetImage }}"/>
+@else
 <span class="material-symbols-outlined text-[180px] text-primary relative">eco</span>
+@endif
 </div>
 </div>
 </div>

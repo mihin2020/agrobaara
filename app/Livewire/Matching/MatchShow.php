@@ -20,7 +20,7 @@ class MatchShow extends Component
     public function mount(CandidateMatch $match): void
     {
         $this->authorize('view', $match);
-        $match->loadMissing('candidate.skills', 'offer.company', 'offer.skills', 'operator');
+        $match->loadMissing('candidate.skills', 'candidate.commune', 'candidate.educationLevel', 'offer.company', 'offer.skills', 'operator');
         $this->match     = $match;
         $this->newStatus = $match->status->value;
         $this->notes     = $match->notes ?? '';

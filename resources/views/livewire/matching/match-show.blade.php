@@ -62,7 +62,7 @@
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-[#717a69]">Niveau</span>
-                                <span class="font-semibold text-[#1e1b18]">{{ $match->candidate->education_level?->label() ?? '—' }}</span>
+                                <span class="font-semibold text-[#1e1b18]">{{ $match->candidate->educationLevel?->name ?? ($match->candidate->education_level ? ucfirst($match->candidate->education_level) : '—') }}</span>
                             </div>
                         </div>
                         @if($match->candidate->skills->isNotEmpty())

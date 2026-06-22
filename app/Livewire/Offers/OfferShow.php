@@ -19,7 +19,7 @@ class OfferShow extends Component
     public function mount(JobOffer $offer): void
     {
         $this->authorize('view', $offer);
-        $offer->loadMissing('company.sites', 'skills', 'matches.candidate', 'createdBy');
+        $offer->loadMissing('company.sites', 'skills', 'matches.candidate.commune', 'matches.candidate.educationLevel', 'createdBy');
         $this->offer = $offer;
     }
 
