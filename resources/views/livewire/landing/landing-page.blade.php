@@ -111,7 +111,7 @@
 @endphp
 <div>
 <!-- TopAppBar -->
-<header class="bg-surface docked full-width top-0 border-b border-outline-variant z-50 sticky">
+<header class="bg-surface docked full-width top-0 border-b border-outline-variant z-50 sticky" x-data="{ mobileMenu: false }">
 <nav class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
 <div class="flex items-center gap-4">
 <img alt="Agro Eco BAARA Logo" class="h-20 w-auto object-contain" src="{{ $heroLogo }}"/>
@@ -149,10 +149,32 @@ Déconnexion
 <a href="{{ route('login') }}" class="bg-primary text-on-primary px-6 py-2 rounded-lg font-label-bold hover:opacity-90 transition-all">Connexion</a>
 @endauth
 </div>
-<button class="md:hidden text-primary">
-<span class="material-symbols-outlined text-3xl">menu</span>
+<button @click="mobileMenu = !mobileMenu" class="md:hidden text-primary">
+<span class="material-symbols-outlined text-3xl" x-text="mobileMenu ? 'close' : 'menu'"></span>
 </button>
 </nav>
+
+{{-- Menu mobile --}}
+<div x-show="mobileMenu" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="md:hidden border-t border-outline-variant bg-surface px-margin-mobile py-4 space-y-2">
+<a @click="mobileMenu = false" class="block py-2.5 px-4 rounded-lg font-label-bold text-primary bg-primary/5" href="#">Accueil</a>
+<a @click="mobileMenu = false" class="block py-2.5 px-4 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container-low" href="#audiences">S'adresse à vous</a>
+<a @click="mobileMenu = false" class="block py-2.5 px-4 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container-low" href="#guichet">Le Guichet</a>
+<a @click="mobileMenu = false" class="block py-2.5 px-4 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container-low" href="#partenaires">Partenaires</a>
+<a @click="mobileMenu = false" class="block py-2.5 px-4 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container-low" href="#mediatheque">Médiathèque</a>
+<a @click="mobileMenu = false" class="block py-2.5 px-4 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container-low" href="{{ route('bibliotheque') }}">Bibliothèque</a>
+<a @click="mobileMenu = false" class="block py-2.5 px-4 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container-low" href="#contact">Contactez-nous</a>
+<div class="pt-2 border-t border-outline-variant">
+@auth
+<a href="{{ route('admin.candidates.index') }}" class="block py-2.5 px-4 rounded-lg font-label-bold text-primary hover:bg-primary/5">Administration</a>
+<form method="POST" action="{{ route('logout') }}">
+@csrf
+<button type="submit" class="w-full text-left py-2.5 px-4 rounded-lg font-label-bold text-red-600 hover:bg-red-50">Déconnexion</button>
+</form>
+@else
+<a href="{{ route('login') }}" class="block py-2.5 px-4 rounded-lg font-label-bold text-white bg-primary text-center hover:opacity-90">Connexion</a>
+@endauth
+</div>
+</div>
 </header>
 <main>
 
@@ -586,7 +608,7 @@ Déconnexion
 
     {{-- Barre de copyright --}}
     <div class="border-t border-outline-variant/30 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-        <p class="text-body-sm text-on-surface-variant">© 2026 Agro Eco Baara. Tous droits réservés. Conçu par <a href="https://yam-pukri.org" target="_blank" class="hover:text-primary underline">Yam Pukri</a> (yam-pukri.org)</p>
+        <p class="text-body-sm text-on-surface-variant">© 2026 Agro Eco Baara. Tous droits réservés.</p>
     </div>
 
 </div>

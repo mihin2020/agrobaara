@@ -46,11 +46,11 @@
            class="fixed inset-y-0 left-0 z-40 w-64 flex-shrink-0 flex flex-col bg-[#f5ece7] border-r border-[#c1c9b6] transform transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0">
 
         {{-- Logo --}}
-        <div class="px-6 py-5 border-b border-[#c1c9b6] flex justify-center">
+        <div class="px-6 py-4 border-b border-[#c1c9b6] flex items-center justify-center">
             <a href="{{ route('home') }}"
                title="Voir le site public"
                class="block rounded-lg hover:opacity-80 transition-opacity">
-                <img src="{{ asset('images/logo.jpeg') }}" alt="Logo" class="h-14 w-auto object-contain" />
+                <img src="{{ asset('images/logo.jpeg') }}" alt="Logo" class="h-20 w-auto object-contain" />
             </a>
         </div>
 
