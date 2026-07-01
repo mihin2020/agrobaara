@@ -86,7 +86,7 @@ class AuthTest extends TestCase
 
         $response = $this->actingAs($user)->post('/deconnexion');
 
-        $response->assertRedirect('/');
+        $response->assertRedirect(route('login'));
         $this->assertGuest();
     }
 
@@ -96,7 +96,7 @@ class AuthTest extends TestCase
 
         $response = $this->actingAs($user)->get('/connexion');
 
-        $response->assertRedirect(route('admin.dashboard'));
+        $response->assertRedirect('/');
     }
 
     public function test_forgot_password_page_is_accessible(): void

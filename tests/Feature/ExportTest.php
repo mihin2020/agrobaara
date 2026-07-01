@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -15,9 +16,21 @@ class ExportTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_candidates_export_returns_download(): void
+    protected function createSuperAdmin(): User
     {
         $user = User::factory()->create();
+        $role = Role::firstOrCreate(
+            ['slug' => 'super_admin'],
+            ['name' => 'Super Administrateur', 'is_system' => true]
+        );
+        $user->roles()->attach($role);
+        $user->load('roles.permissions', 'permissions');
+        return $user;
+    }
+
+    public function test_candidates_export_returns_download(): void
+    {
+        $user = $this->createSuperAdmin();
         $this->actingAs($user);
 
         $response = Livewire::test(CandidateIndex::class)
@@ -28,7 +41,7 @@ class ExportTest extends TestCase
 
     public function test_companies_export_returns_download(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createSuperAdmin();
         $this->actingAs($user);
 
         $response = Livewire::test(CompanyIndex::class)
@@ -39,7 +52,7 @@ class ExportTest extends TestCase
 
     public function test_offers_export_returns_download(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createSuperAdmin();
         $this->actingAs($user);
 
         $response = Livewire::test(OfferIndex::class)
@@ -50,7 +63,7 @@ class ExportTest extends TestCase
 
     public function test_matches_export_returns_download(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createSuperAdmin();
         $this->actingAs($user);
 
         $response = Livewire::test(MatchIndex::class)
@@ -61,7 +74,7 @@ class ExportTest extends TestCase
 
     public function test_candidates_export_with_date_range(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createSuperAdmin();
         $this->actingAs($user);
 
         $response = Livewire::test(CandidateIndex::class)

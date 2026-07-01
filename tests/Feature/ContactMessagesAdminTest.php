@@ -35,11 +35,13 @@ class ContactMessagesAdminTest extends TestCase
         $message = ContactMessage::create([
             'full_name' => 'Test User',
             'email' => 'test@example.com',
+            'subject' => 'Test subject',
             'message' => 'Test message content long enough',
             'rgpd_consent' => true,
             'ip_address' => '127.0.0.1',
         ]);
 
+        $message->refresh();
         $this->assertFalse($message->is_read);
 
         Livewire::test(ContactMessageIndex::class)
@@ -57,6 +59,7 @@ class ContactMessagesAdminTest extends TestCase
         $message = ContactMessage::create([
             'full_name' => 'Delete Me',
             'email' => 'delete@example.com',
+            'subject' => 'Delete subject',
             'message' => 'This message should be deleted from db',
             'rgpd_consent' => true,
             'ip_address' => '127.0.0.1',
@@ -76,6 +79,7 @@ class ContactMessagesAdminTest extends TestCase
         $message = ContactMessage::create([
             'full_name' => 'Cache Test',
             'email' => 'cache@example.com',
+            'subject' => 'Cache subject',
             'message' => 'Testing cache invalidation on read',
             'rgpd_consent' => true,
             'ip_address' => '127.0.0.1',
