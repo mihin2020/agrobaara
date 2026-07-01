@@ -21,7 +21,7 @@
             </div>
             <div>
                 <label class="block text-xs font-semibold text-[#1e1b18] mb-1.5">Type d'événement</label>
-                <select wire:model.live="event"
+                <select wire:model.live.debounce.300ms="event"
                         class="w-full bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e1b18]/20 focus:border-[#1e1b18] transition-all">
                     <option value="">Tous les événements</option>
                     @foreach($events as $evt)
@@ -31,12 +31,12 @@
             </div>
             <div>
                 <label class="block text-xs font-semibold text-[#1e1b18] mb-1.5">Date de début</label>
-                <input wire:model.live="dateFrom" type="date"
+                <input wire:model.live.debounce.500ms="dateFrom" type="date"
                        class="w-full bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e1b18]/20 focus:border-[#1e1b18] transition-all" />
             </div>
             <div>
                 <label class="block text-xs font-semibold text-[#1e1b18] mb-1.5">Date de fin</label>
-                <input wire:model.live="dateTo" type="date"
+                <input wire:model.live.debounce.500ms="dateTo" type="date"
                        class="w-full bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e1b18]/20 focus:border-[#1e1b18] transition-all" />
             </div>
         </div>

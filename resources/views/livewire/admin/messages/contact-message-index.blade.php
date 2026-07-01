@@ -21,7 +21,7 @@
             <input wire:model.live.debounce.300ms="search" type="text" placeholder="Rechercher par nom, email ou contenu..."
                    class="w-full pl-10 pr-4 py-2.5 bg-white border border-[#c1c9b6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904]" />
         </div>
-        <select wire:model.live="filter"
+        <select wire:model.live.debounce.300ms="filter"
                 class="px-4 py-2.5 bg-white border border-[#c1c9b6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904]">
             <option value="all">Tous</option>
             <option value="unread">Non-lus</option>

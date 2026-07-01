@@ -86,7 +86,7 @@
             {{-- Ville --}}
             <div>
                 <label class="block text-xs font-semibold text-[#1e1b18] mb-1.5">Ville</label>
-                <select wire:model.live="commune"
+                <select wire:model.live.debounce.300ms="commune"
                         class="w-full bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl py-2.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904] transition-all">
                     <option value="">Toutes</option>
                     @foreach($communes as $c)
@@ -98,7 +98,7 @@
             {{-- Compétence --}}
             <div>
                 <label class="block text-xs font-semibold text-[#1e1b18] mb-1.5">Compétence</label>
-                <select wire:model.live="skill"
+                <select wire:model.live.debounce.300ms="skill"
                         class="w-full bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl py-2.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904] transition-all">
                     <option value="">Toutes</option>
                     @foreach($skills as $s)
@@ -110,7 +110,7 @@
             {{-- Niveau --}}
             <div>
                 <label class="block text-xs font-semibold text-[#1e1b18] mb-1.5">Niveau d'étude</label>
-                <select wire:model.live="education"
+                <select wire:model.live.debounce.300ms="education"
                         class="w-full bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl py-2.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904] transition-all">
                     <option value="">Tous</option>
                     @foreach($educations as $e)

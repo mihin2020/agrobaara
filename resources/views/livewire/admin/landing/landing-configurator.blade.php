@@ -260,7 +260,7 @@
                         </div>
                         @endif
                         <div class="flex gap-2">
-                            <input type="text" wire:model.live="formData.logo_url" class="{{ $inputCls }} flex-1"
+                            <input type="text" wire:model.blur="formData.logo_url" class="{{ $inputCls }} flex-1"
                                    placeholder="/images/logo.jpeg" />
                             <button type="button"
                                     x-on:click="$wire.set('imageUploadSlot', 'header_logo.0').then(() => document.getElementById('global-image-upload').click())"
@@ -347,7 +347,7 @@
                                 <div class="md:col-span-2">
                                     <label class="{{ $labelCls }}">Image de fond <span class="font-normal text-[#717a69]">(chemin /images/medias/... ou URL)</span></label>
                                     <div class="flex gap-2">
-                                        <input type="text" wire:model.live="heroSlides.{{ $si }}.image_url" class="{{ $inputCls }} flex-1" placeholder="/images/medias/photo.jpg" />
+                                        <input type="text" wire:model.blur="heroSlides.{{ $si }}.image_url" class="{{ $inputCls }} flex-1" placeholder="/images/medias/photo.jpg" />
                                         <button type="button"
                                                 x-on:click="$wire.set('imageUploadSlot', 'hero.{{ $si }}').then(() => document.getElementById('global-image-upload').click())"
                                                 title="Importer depuis l'ordinateur"
@@ -415,7 +415,7 @@
                         </div>
                         @endif
                         <div class="flex gap-2">
-                            <input type="text" wire:model.live="formData.image_url" class="{{ $inputCls }} flex-1"
+                            <input type="text" wire:model.blur="formData.image_url" class="{{ $inputCls }} flex-1"
                                    placeholder="/images/logo.jpeg ou /images/uploads/..." />
                             <button type="button"
                                     x-on:click="$wire.set('imageUploadSlot', 'projet.0').then(() => document.getElementById('global-image-upload').click())"
@@ -519,7 +519,7 @@
                             </div>
 
                             <div class="flex gap-2">
-                                <input type="text" wire:model.live="formData.image_url" class="{{ $inputCls }} flex-1"
+                                <input type="text" wire:model.blur="formData.image_url" class="{{ $inputCls }} flex-1"
                                        placeholder="/images/medias/..."
                                        x-on:input="preview = $event.target.value" />
                                 <button type="button"
