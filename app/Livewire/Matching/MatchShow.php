@@ -10,7 +10,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('components.layouts.app')]
-#[Title('Mise en relation — Agro Eco BAARA')]
+#[Title('Mise en relation - Agro Eco BAARA')]
 class MatchShow extends Component
 {
     public CandidateMatch $match;

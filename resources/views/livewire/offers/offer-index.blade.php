@@ -148,13 +148,13 @@
                                 <span class="text-xs text-[#41493b]">{{ $offer->contract_type->label() }}</span>
                             </td>
                             <td class="px-4 py-3.5 text-sm text-[#1e1b18] hidden md:table-cell">
-                                {{ $offer->positions_count ?? '—' }}
+                                {{ $offer->positions_count ?? '-' }}
                             </td>
                             <td class="px-4 py-3.5 hidden lg:table-cell">
                                 @if($offer->matches_count > 0)
                                     <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">{{ $offer->matches_count }}</span>
                                 @else
-                                    <span class="text-xs text-[#717a69]">—</span>
+                                    <span class="text-xs text-[#717a69]">-</span>
                                 @endif
                             </td>
                             <td class="px-4 py-3.5">

@@ -187,7 +187,7 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3.5 text-sm text-[#1e1b18] hidden md:table-cell">
-                                {{ $candidate->commune?->name ?? '—' }}
+                                {{ $candidate->commune?->name ?? '-' }}
                             </td>
                             <td class="px-4 py-3.5 hidden lg:table-cell">
                                 <div class="flex flex-wrap gap-1">

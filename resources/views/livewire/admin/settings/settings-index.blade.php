@@ -81,7 +81,7 @@
                         <div class="flex gap-2.5">
                             <div class="flex-1">
                                 <input type="text" wire:model="newLanguageName" wire:keydown.enter="saveLanguage"
-                                       placeholder="Nom de la langue  — ex : Bambara"
+                                       placeholder="Nom de la langue  - ex : Bambara"
                                        class="w-full px-3.5 py-2.5 bg-[#f5ece7] border {{ $errors->has('newLanguageName') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904] transition-all" />
                                 @error('newLanguageName') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
@@ -164,13 +164,13 @@
                         <div class="flex gap-2.5">
                             <div class="flex-1">
                                 <input type="text" wire:model="newEducationName" wire:keydown.enter="saveEducation"
-                                       placeholder="Libellé  — ex : BTS / DUT"
+                                       placeholder="Libellé  - ex : BTS / DUT"
                                        class="w-full px-3.5 py-2.5 bg-[#f5ece7] border {{ $errors->has('newEducationName') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904] transition-all" />
                                 @error('newEducationName') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div class="w-36">
                                 <input type="text" wire:model="newEducationCode" wire:keydown.enter="saveEducation"
-                                       placeholder="Code  — ex : bts"
+                                       placeholder="Code  - ex : bts"
                                        class="w-full px-3.5 py-2.5 bg-[#f5ece7] border {{ $errors->has('newEducationCode') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904] transition-all" />
                                 @error('newEducationCode') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
@@ -245,7 +245,7 @@
                         <div class="flex gap-2.5">
                             <div class="flex-1">
                                 <input type="text" wire:model="newNationalityName" wire:keydown.enter="saveNationality"
-                                       placeholder="Nationalité  — ex : Libérien(ne)"
+                                       placeholder="Nationalité  - ex : Libérien(ne)"
                                        class="w-full px-3.5 py-2.5 bg-[#f5ece7] border {{ $errors->has('newNationalityName') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904] transition-all" />
                                 @error('newNationalityName') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
@@ -318,7 +318,7 @@
                         <div class="flex gap-2.5">
                             <div class="flex-1">
                                 <input type="text" wire:model="newSkillName" wire:keydown.enter="saveSkill"
-                                       placeholder="Compétence  — ex : Sylviculture"
+                                       placeholder="Compétence  - ex : Sylviculture"
                                        class="w-full px-3.5 py-2.5 bg-[#f5ece7] border {{ $errors->has('newSkillName') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904] transition-all" />
                                 @error('newSkillName') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>

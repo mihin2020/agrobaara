@@ -55,7 +55,7 @@ class LandingSectionSeeder extends Seeder
                         [
                             'title'               => 'Pour les Jeunes & Entreprises',
                             'subtitle'            => 'Trouvez vos opportunités, recrutez vos talents',
-                            'description'         => 'Jeunes diplômés, ONG, entreprises agroécologiques — la plateforme qui vous met en relation.',
+                            'description'         => 'Jeunes diplômés, ONG, entreprises agroécologiques - la plateforme qui vous met en relation.',
                             'cta_primary_text'    => 'Voir les publics',
                             'cta_primary_link'    => '#audiences',
                             'cta_secondary_text'  => 'Nous contacter',
@@ -234,7 +234,7 @@ class LandingSectionSeeder extends Seeder
                     'items' => [
                         ['name' => 'Yelemani',                'logo' => '/images/partners/Image1.png', 'description' => 'Organisation porteuse dédiée à la souveraineté alimentaire.',        'website' => 'https://www.yelemani.org',            'social_label' => 'Site Web',  'social_icon' => 'language'],
                         ['name' => 'CRIC',                    'logo' => '/images/partners/Image2.png', 'description' => 'Centro Regionale d\'Intervento per la Cooperazione.',                'website' => 'http://www.cric.it',                  'social_label' => 'Site Web',  'social_icon' => 'language'],
-                        ['name' => 'Ministero dell\'Interno', 'logo' => '/images/partners/Image3.png', 'description' => 'Partenaire institutionnel — Coopération italienne.',                  'website' => '#',                                   'social_label' => 'Site Web',  'social_icon' => 'language'],
+                        ['name' => 'Ministero dell\'Interno', 'logo' => '/images/partners/Image3.png', 'description' => 'Partenaire institutionnel - Coopération italienne.',                  'website' => '#',                                   'social_label' => 'Site Web',  'social_icon' => 'language'],
                         ['name' => 'HUMUS JOB',               'logo' => '/images/partners/Image4.png', 'description' => 'Réseau d\'entreprises agricoles éthiques pour un travail régulier.', 'website' => 'https://humusjob.it',                 'social_label' => 'Site Web',  'social_icon' => 'language'],
                         ['name' => 'CNABio',                  'logo' => '/images/partners/Image5.jpg', 'description' => 'Conseil National de l\'Agriculture Biologique du Burkina Faso.',     'website' => 'https://www.cnabio.net',              'social_label' => 'Site Web',  'social_icon' => 'language'],
                         ['name' => 'Youth Connect BF',        'logo' => '/images/partners/Image6.jpg', 'description' => 'Réseau pour l\'épanouissement et l\'emploi des jeunes.',             'website' => 'https://youthconnektburkina.bf',      'social_label' => 'Site Web',  'social_icon' => 'language'],

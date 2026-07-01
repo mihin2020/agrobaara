@@ -11,7 +11,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('components.layouts.auth')]
-#[Title('Connexion — Agro Eco BAARA')]
+#[Title('Connexion - Agro Eco BAARA')]
 class Login extends Component
 {
     #[Rule('required|email', message: "L'e-mail est obligatoire.")]

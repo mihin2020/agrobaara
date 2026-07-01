@@ -13,7 +13,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('components.layouts.app')]
-#[Title('Modifier offre — Agro Eco BAARA')]
+#[Title('Modifier offre - Agro Eco BAARA')]
 class OfferEdit extends Component
 {
     #[Locked]

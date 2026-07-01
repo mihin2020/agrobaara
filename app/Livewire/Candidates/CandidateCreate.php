@@ -20,12 +20,12 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 
 #[Layout('components.layouts.app')]
-#[Title('Nouveau candidat — Agro Eco BAARA')]
+#[Title('Nouveau candidat - Agro Eco BAARA')]
 class CandidateCreate extends Component
 {
     use WithFileUploads;
 
-    // Section A — Identité
+    // Section A - Identité
     public string $first_name    = '';
     public string $last_name     = '';
     public string $gender        = '';
@@ -42,26 +42,26 @@ class CandidateCreate extends Component
     public $photo                    = null;
     public $identity_document        = null;
 
-    // Section B — Contacts
+    // Section B - Contacts
     public string $phone           = '';
     public string $phone_secondary = '';
     public string $email           = '';
     public array  $language_ids    = [];
 
-    // Section C — Formation
+    // Section C - Formation
     public string $education_level     = '';
     public string $agro_training_text  = '';
     public string $agro_training_place = '';
     public array $diploma_files        = [];
 
-    // Section D — Expériences
+    // Section D - Expériences
     public array  $skill_ids         = [];
     public string $other_skills_text = '';
     public bool   $has_previous_jobs = false;
     public array  $experiences       = [];
     public $cv_file                  = null;
 
-    // Section E — Besoins internes
+    // Section E - Besoins internes
     public array  $need_employment_types = [];
     public array  $need_formation_types  = [];
     public bool   $need_financing        = false;

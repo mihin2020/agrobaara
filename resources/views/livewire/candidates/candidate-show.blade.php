@@ -75,10 +75,10 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-        {{-- Colonne gauche — Profil --}}
+        {{-- Colonne gauche - Profil --}}
         <div class="lg:col-span-2 space-y-4">
 
-            {{-- Section A — Identité --}}
+            {{-- Section A - Identité --}}
             <div class="bg-white rounded-2xl border border-[#c1c9b6] overflow-hidden">
                 <div class="px-5 py-3.5 border-b border-[#c1c9b6] bg-[#fbf2ed] flex items-center gap-2">
                     <span class="material-symbols-outlined text-base text-[#2c6904]">badge</span>
@@ -99,11 +99,11 @@
                     </div>
                     <div>
                         <p class="text-[11px] text-[#717a69] uppercase font-bold tracking-wide">Lieu de naissance</p>
-                        <p class="text-sm font-semibold text-[#1e1b18] mt-0.5">{{ $candidate->birth_place ?? '—' }}</p>
+                        <p class="text-sm font-semibold text-[#1e1b18] mt-0.5">{{ $candidate->birth_place ?? '-' }}</p>
                     </div>
                     <div>
                         <p class="text-[11px] text-[#717a69] uppercase font-bold tracking-wide">Situation matrimoniale</p>
-                        <p class="text-sm font-semibold text-[#1e1b18] mt-0.5">{{ $candidate->marital_status ?? '—' }}</p>
+                        <p class="text-sm font-semibold text-[#1e1b18] mt-0.5">{{ $candidate->marital_status ?? '-' }}</p>
                     </div>
                     <div>
                         <p class="text-[11px] text-[#717a69] uppercase font-bold tracking-wide">Nationalité</p>
@@ -111,11 +111,11 @@
                     </div>
                     <div>
                         <p class="text-[11px] text-[#717a69] uppercase font-bold tracking-wide">Ville</p>
-                        <p class="text-sm font-semibold text-[#1e1b18] mt-0.5">{{ $candidate->commune?->name ?? '—' }}</p>
+                        <p class="text-sm font-semibold text-[#1e1b18] mt-0.5">{{ $candidate->commune?->name ?? '-' }}</p>
                     </div>
                     <div>
                         <p class="text-[11px] text-[#717a69] uppercase font-bold tracking-wide">Adresse</p>
-                        <p class="text-sm font-semibold text-[#1e1b18] mt-0.5">{{ $candidate->address ?? '—' }}</p>
+                        <p class="text-sm font-semibold text-[#1e1b18] mt-0.5">{{ $candidate->address ?? '-' }}</p>
                     </div>
                     @if($candidate->transport_mode)
                         <div>
@@ -146,7 +146,7 @@
                 <div class="p-5 flex flex-wrap gap-3">
                     @if($candidate->photo_path)
                         <button type="button"
-                                @click="$dispatch('open-photo-lightbox', { src: '{{ Storage::url($candidate->photo_path) }}', alt: 'Photo d\'identité — {{ addslashes($candidate->full_name) }}' })"
+                                @click="$dispatch('open-photo-lightbox', { src: '{{ Storage::url($candidate->photo_path) }}', alt: 'Photo d\'identité - {{ addslashes($candidate->full_name) }}' })"
                                 class="flex items-center gap-2.5 px-3 py-2.5 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl hover:border-[#2c6904]/50 transition-colors group cursor-pointer">
                             <span class="material-symbols-outlined text-[#2c6904] text-lg">portrait</span>
                             <span class="text-xs font-semibold text-[#1e1b18] group-hover:text-[#2c6904]">Photo d'identité</span>
@@ -183,7 +183,7 @@
             </div>
             @endif
 
-            {{-- Section B — Contacts --}}
+            {{-- Section B - Contacts --}}
             <div class="bg-white rounded-2xl border border-[#c1c9b6] overflow-hidden">
                 <div class="px-5 py-3.5 border-b border-[#c1c9b6] bg-[#fbf2ed] flex items-center gap-2">
                     <span class="material-symbols-outlined text-base text-[#2c6904]">contact_phone</span>
@@ -217,7 +217,7 @@
                 </div>
             </div>
 
-            {{-- Section C — Formation --}}
+            {{-- Section C - Formation --}}
             <div class="bg-white rounded-2xl border border-[#c1c9b6] overflow-hidden">
                 <div class="px-5 py-3.5 border-b border-[#c1c9b6] bg-[#fbf2ed] flex items-center gap-2">
                     <span class="material-symbols-outlined text-base text-[#2c6904]">school</span>
@@ -227,7 +227,7 @@
                     <div class="grid grid-cols-2 gap-x-8">
                         <div>
                             <p class="text-[11px] text-[#717a69] uppercase font-bold tracking-wide">Niveau d'étude</p>
-                            <p class="text-sm font-semibold text-[#1e1b18] mt-0.5">{{ $candidate->educationLevel?->name ?? ($candidate->education_level ? ucfirst($candidate->education_level) : '—') }}</p>
+                            <p class="text-sm font-semibold text-[#1e1b18] mt-0.5">{{ $candidate->educationLevel?->name ?? ($candidate->education_level ? ucfirst($candidate->education_level) : '-') }}</p>
                         </div>
                         @if($candidate->agro_training_place)
                             <div>
@@ -245,7 +245,7 @@
                 </div>
             </div>
 
-            {{-- Section D — Compétences & Expériences --}}
+            {{-- Section D - Compétences & Expériences --}}
             <div class="bg-white rounded-2xl border border-[#c1c9b6] overflow-hidden">
                 <div class="px-5 py-3.5 border-b border-[#c1c9b6] bg-[#fbf2ed] flex items-center gap-2">
                     <span class="material-symbols-outlined text-base text-[#2c6904]">work_history</span>
@@ -275,7 +275,7 @@
                                 @foreach($candidate->experiences as $exp)
                                     <div class="bg-[#fbf2ed] rounded-xl p-3 border border-[#c1c9b6]">
                                         <div class="flex justify-between items-start">
-                                            <p class="font-semibold text-sm text-[#1e1b18]">{{ $exp->position ?? '—' }}</p>
+                                            <p class="font-semibold text-sm text-[#1e1b18]">{{ $exp->position ?? '-' }}</p>
                                             @if($exp->year)<span class="text-xs text-[#717a69] font-semibold">{{ $exp->year }}</span>@endif
                                         </div>
                                         @if($exp->location)<p class="text-xs text-[#41493b] mt-0.5">{{ $exp->location }}</p>@endif

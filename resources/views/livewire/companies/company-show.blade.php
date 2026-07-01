@@ -128,7 +128,7 @@
                                         <span class="text-[10px] font-bold px-1.5 py-0.5 bg-[#875212] text-white rounded-full">Principal</span>
                                     @endif
                                 </div>
-                                <p class="text-xs text-[#41493b] mt-0.5">{{ $site->commune?->name ?? '—' }}</p>
+                                <p class="text-xs text-[#41493b] mt-0.5">{{ $site->commune?->name ?? '-' }}</p>
                                 @if($site->address)<p class="text-xs text-[#717a69] mt-0.5">{{ $site->address }}</p>@endif
                             </div>
                         </div>

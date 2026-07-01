@@ -106,7 +106,7 @@
             <div class="p-6 space-y-5">
                 <h3 class="font-sora font-bold text-base text-[#1e1b18] flex items-center gap-2">
                     <span class="material-symbols-outlined text-[#2c6904]">badge</span>
-                    Section A — Identité & Localisation
+                    Section A - Identité & Localisation
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <x-form.input wire:model="first_name" label="Prénom *" placeholder="Ex: Moussa" :error="$errors->first('first_name')" />
@@ -194,7 +194,7 @@
                                         <p class="text-sm font-medium text-[#1e1b18]">Photo actuelle enregistrée</p>
                                         <p class="text-xs text-[#717a69]">Cliquer pour remplacer</p>
                                     @else
-                                        <p class="text-sm text-[#717a69]">Aucune photo — cliquer pour téléverser</p>
+                                        <p class="text-sm text-[#717a69]">Aucune photo - cliquer pour téléverser</p>
                                     @endif
                                 </div>
                                 <input type="file" wire:model="photo" accept="image/*" class="sr-only" />
@@ -243,7 +243,7 @@
             <div class="p-6 space-y-5">
                 <h3 class="font-sora font-bold text-base text-[#1e1b18] flex items-center gap-2">
                     <span class="material-symbols-outlined text-[#2c6904]">contact_phone</span>
-                    Section B — Contacts & Langues
+                    Section B - Contacts & Langues
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <x-form.input wire:model="phone" label="Téléphone principal *" placeholder="Ex: +226 70 00 00 00" :error="$errors->first('phone')" />
@@ -272,7 +272,7 @@
             <div class="p-6 space-y-5">
                 <h3 class="font-sora font-bold text-base text-[#1e1b18] flex items-center gap-2">
                     <span class="material-symbols-outlined text-[#2c6904]">school</span>
-                    Section C — Formation & Éducation
+                    Section C - Formation & Éducation
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <x-form.select wire:model="education_level" label="Niveau d'étude *" :error="$errors->first('education_level')">
@@ -327,7 +327,7 @@
             <div class="p-6 space-y-6">
                 <h3 class="font-sora font-bold text-base text-[#1e1b18] flex items-center gap-2">
                     <span class="material-symbols-outlined text-[#2c6904]">work_history</span>
-                    Section D — Compétences & Expériences
+                    Section D - Compétences & Expériences
                 </h3>
                 <div>
                     <label class="block text-sm font-semibold text-[#1e1b18] mb-2">Compétences</label>
@@ -413,7 +413,7 @@
             <div class="p-6 space-y-5">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-amber-600">admin_panel_settings</span>
-                    <h3 class="font-sora font-bold text-base text-[#1e1b18]">Section E — Besoins exprimés</h3>
+                    <h3 class="font-sora font-bold text-base text-[#1e1b18]">Section E - Besoins exprimés</h3>
                     <span class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-normal ml-1">Interne BAARA</span>
                 </div>
                 <p class="text-xs text-[#717a69] -mt-2">Sélectionnez les besoins du candidat. Plusieurs choix possibles par catégorie.</p>

@@ -17,7 +17,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 
 #[Layout('components.layouts.app')]
-#[Title('Nouvelle entreprise — Agro Eco BAARA')]
+#[Title('Nouvelle entreprise - Agro Eco BAARA')]
 class CompanyCreate extends Component
 {
     use WithFileUploads;

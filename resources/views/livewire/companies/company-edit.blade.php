@@ -12,11 +12,11 @@
         </div>
     </div>
 
-    {{-- Section A — Informations générales --}}
+    {{-- Section A - Informations générales --}}
     <div class="bg-white rounded-2xl border border-[#c1c9b6] shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-[#c1c9b6] bg-[#fbf2ed] flex items-center gap-2">
             <span class="material-symbols-outlined text-base text-[#875212]">domain</span>
-            <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Section A — Informations générales</h3>
+            <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Section A - Informations générales</h3>
         </div>
         <div class="p-6 space-y-5">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -90,12 +90,12 @@
         </div>
     </div>
 
-    {{-- Section B — Sites d'activité --}}
+    {{-- Section B - Sites d'activité --}}
     <div class="bg-white rounded-2xl border border-[#c1c9b6] shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-[#c1c9b6] bg-[#fbf2ed] flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-base text-[#875212]">location_on</span>
-                <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Section B — Sites d'activité</h3>
+                <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Section B - Sites d'activité</h3>
             </div>
             <button wire:click="addSite" type="button"
                     class="flex items-center gap-1 text-xs text-[#875212] font-semibold hover:underline">
@@ -139,11 +139,11 @@
         </div>
     </div>
 
-    {{-- Section C — Contacts --}}
+    {{-- Section C - Contacts --}}
     <div class="bg-white rounded-2xl border border-[#c1c9b6] shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-[#c1c9b6] bg-[#fbf2ed] flex items-center gap-2">
             <span class="material-symbols-outlined text-base text-[#875212]">contact_phone</span>
-            <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Section C — Contacts</h3>
+            <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Section C - Contacts</h3>
         </div>
         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
             <x-form.input wire:model="phone" label="Téléphone *" placeholder="Ex: +226 25 00 00 00" :error="$errors->first('phone')" />
@@ -178,11 +178,11 @@
         </div>
     </div>
 
-    {{-- Section D — Besoins internes --}}
+    {{-- Section D - Besoins internes --}}
     <div class="bg-white rounded-2xl border border-[#c1c9b6] shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-[#c1c9b6] bg-amber-50 flex items-center gap-2">
             <span class="material-symbols-outlined text-base text-amber-600">admin_panel_settings</span>
-            <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Section D — Besoins exprimés
+            <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Section D - Besoins exprimés
                 <span class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-normal ml-2">Interne BAARA</span>
             </h3>
         </div>

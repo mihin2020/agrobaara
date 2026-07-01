@@ -76,7 +76,7 @@
                         </div>
                         <div>
                             <p class="font-semibold text-sm text-[#1e1b18]">{{ $candidate->full_name }}</p>
-                            <p class="text-xs text-[#41493b]">{{ $candidate->commune?->name ?? '—' }} · {{ $candidate->educationLevel?->name ?? ($candidate->education_level ? ucfirst($candidate->education_level) : '—') }}</p>
+                            <p class="text-xs text-[#41493b]">{{ $candidate->commune?->name ?? '-' }} · {{ $candidate->educationLevel?->name ?? ($candidate->education_level ? ucfirst($candidate->education_level) : '-') }}</p>
                         </div>
                     </div>
                     <a href="{{ route('admin.candidates.show', $candidate) }}" wire:navigate

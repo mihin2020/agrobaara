@@ -9,7 +9,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('components.layouts.auth')]
-#[Title('Définir votre mot de passe — Agro Eco BAARA')]
+#[Title('Définir votre mot de passe - Agro Eco BAARA')]
 class ChangePassword extends Component
 {
     public string $password = '';

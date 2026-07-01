@@ -14,7 +14,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 #[Layout('components.layouts.app')]
-#[Title('Entreprises — Agro Eco BAARA')]
+#[Title('Entreprises - Agro Eco BAARA')]
 class CompanyIndex extends Component
 {
     use WithPagination;

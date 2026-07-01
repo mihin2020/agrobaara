@@ -88,7 +88,7 @@
                                 @if($activity->subject)
                                     <span class="text-xs text-[#41493b]">{{ class_basename($activity->subject_type) }}</span>
                                 @else
-                                    <span class="text-xs text-[#717a69]">—</span>
+                                    <span class="text-xs text-[#717a69]">-</span>
                                 @endif
                             </td>
                             <td class="px-4 py-3 hidden lg:table-cell">
@@ -99,7 +99,7 @@
                                         @endforeach
                                     </div>
                                 @else
-                                    <span class="text-xs text-[#717a69]">—</span>
+                                    <span class="text-xs text-[#717a69]">-</span>
                                 @endif
                             </td>
                         </tr>

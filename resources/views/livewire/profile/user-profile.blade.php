@@ -11,7 +11,7 @@
         {{-- Colonne principale --}}
         <div class="lg:col-span-2 space-y-6">
 
-            {{-- Carte — Informations personnelles --}}
+            {{-- Carte - Informations personnelles --}}
             <div class="bg-white rounded-2xl border border-[#c1c9b6] p-6">
                 <div class="flex items-center gap-3 mb-5">
                     <div class="w-8 h-8 rounded-lg bg-[#aef585]/20 flex items-center justify-center">
@@ -72,13 +72,13 @@
                 </form>
             </div>
 
-            {{-- Carte — Changer le mot de passe --}}
+            {{-- Carte - Changer le mot de passe --}}
             <div id="securite" class="bg-white rounded-2xl border border-[#c1c9b6] p-6">
                 <div class="flex items-center gap-3 mb-5">
                     <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
                         <span class="material-symbols-outlined text-base text-amber-600">lock</span>
                     </div>
-                    <h3 class="font-sora text-base font-bold text-[#1e1b18]">Sécurité — Mot de passe</h3>
+                    <h3 class="font-sora text-base font-bold text-[#1e1b18]">Sécurité - Mot de passe</h3>
                 </div>
 
                 @if($passwordSaved)
@@ -140,7 +140,7 @@
 
         </div>
 
-        {{-- Colonne latérale — Infos compte --}}
+        {{-- Colonne latérale - Infos compte --}}
         <div class="space-y-5">
 
             {{-- Avatar --}}

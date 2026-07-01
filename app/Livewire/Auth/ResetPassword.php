@@ -13,7 +13,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('components.layouts.auth')]
-#[Title('Réinitialiser le mot de passe — Agro Eco BAARA')]
+#[Title('Réinitialiser le mot de passe - Agro Eco BAARA')]
 class ResetPassword extends Component
 {
     #[Locked]

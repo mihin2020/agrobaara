@@ -11,7 +11,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('components.layouts.app')]
-#[Title('Paramètres — Agro Eco BAARA')]
+#[Title('Paramètres - Agro Eco BAARA')]
 class SettingsIndex extends Component
 {
     public string $activeTab = 'languages';

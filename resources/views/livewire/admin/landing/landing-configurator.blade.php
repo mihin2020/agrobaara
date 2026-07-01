@@ -295,7 +295,7 @@
                                         class="px-4 py-2.5 text-sm transition-colors -mb-px whitespace-nowrap">
                                     Slide {{ $si + 1 }}
                                     @if(!empty($slide['title']))
-                                        <span class="hidden sm:inline text-xs opacity-60 ml-1">— {{ Str::limit($slide['title'], 18) }}</span>
+                                        <span class="hidden sm:inline text-xs opacity-60 ml-1">- {{ Str::limit($slide['title'], 18) }}</span>
                                     @endif
                                 </button>
                             @endforeach
@@ -310,7 +310,7 @@
                                 <img src="{{ $slide['image_url'] }}" alt="Aperçu slide {{ $si+1 }}"
                                      class="w-full h-full object-cover" onerror="this.parentElement.classList.add('hidden')" />
                                 <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex items-end p-3">
-                                    <span class="text-white text-xs font-bold">{{ $slide['title'] ?? '—' }}</span>
+                                    <span class="text-white text-xs font-bold">{{ $slide['title'] ?? '-' }}</span>
                                 </div>
                             </div>
                             @endif
@@ -329,19 +329,19 @@
                                     <textarea wire:model="heroSlides.{{ $si }}.description" rows="2" class="{{ $taCls }}"></textarea>
                                 </div>
                                 <div>
-                                    <label class="{{ $labelCls }}">Bouton 1 — Texte</label>
+                                    <label class="{{ $labelCls }}">Bouton 1 - Texte</label>
                                     <input type="text" wire:model="heroSlides.{{ $si }}.cta_primary_text" class="{{ $inputCls }}" placeholder="Nous contacter" />
                                 </div>
                                 <div>
-                                    <label class="{{ $labelCls }}">Bouton 1 — Lien</label>
+                                    <label class="{{ $labelCls }}">Bouton 1 - Lien</label>
                                     <input type="text" wire:model="heroSlides.{{ $si }}.cta_primary_link" class="{{ $inputCls }}" placeholder="#contact" />
                                 </div>
                                 <div>
-                                    <label class="{{ $labelCls }}">Bouton 2 — Texte <span class="font-normal text-[#717a69]">(optionnel)</span></label>
+                                    <label class="{{ $labelCls }}">Bouton 2 - Texte <span class="font-normal text-[#717a69]">(optionnel)</span></label>
                                     <input type="text" wire:model="heroSlides.{{ $si }}.cta_secondary_text" class="{{ $inputCls }}" />
                                 </div>
                                 <div>
-                                    <label class="{{ $labelCls }}">Bouton 2 — Lien</label>
+                                    <label class="{{ $labelCls }}">Bouton 2 - Lien</label>
                                     <input type="text" wire:model="heroSlides.{{ $si }}.cta_secondary_link" class="{{ $inputCls }}" />
                                 </div>
                                 <div class="md:col-span-2">
@@ -437,7 +437,7 @@
                     <div class="space-y-4">
                         @foreach($audCards as $ci => $card)
                         <div class="{{ $cardCls }}">
-                            <p class="{{ $subLbl }}">Carte {{ $ci + 1 }} — {{ $card['key'] ?? '' }}</p>
+                            <p class="{{ $subLbl }}">Carte {{ $ci + 1 }} - {{ $card['key'] ?? '' }}</p>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="{{ $labelCls }}">Titre</label>
@@ -540,7 +540,7 @@
                                  x-transition:leave-end="opacity-0"
                                  class="flex items-center gap-2 mt-2 px-3 py-2 bg-green-50 border border-green-200 rounded-xl text-xs text-green-700 font-semibold">
                                 <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1">check_circle</span>
-                                Image téléversée avec succès — pensez à enregistrer.
+                                Image téléversée avec succès - pensez à enregistrer.
                             </div>
                         </div>
                         <div class="md:col-span-2">
@@ -815,7 +815,7 @@
                         </div>
                     </div>
 
-                    {{-- Actions rapides (masquées si liste vide — voir état vide ci-dessous) --}}
+                    {{-- Actions rapides (masquées si liste vide - voir état vide ci-dessous) --}}
                     @php
                         $filteredMediaPreview = collect($mediaPhotos)->filter(fn($p) => $mediaTab === 'video'
                             ? ($p['type'] ?? 'image') === 'video'
@@ -1002,7 +1002,7 @@
                                     <span class="material-symbols-outlined text-3xl">add_photo_alternate</span>
                                 </div>
                                 <p class="font-sora font-bold text-[#1e1b18] text-base">Aucune photo pour l'instant</p>
-                                <p class="text-xs text-[#717a69] mt-1.5">JPG, PNG ou WebP — cliquez pour importer depuis votre ordinateur.</p>
+                                <p class="text-xs text-[#717a69] mt-1.5">JPG, PNG ou WebP - cliquez pour importer depuis votre ordinateur.</p>
                                 <span class="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-xl bg-[#2c6904] text-white text-xs font-bold group-hover:bg-[#448322] transition-colors">
                                     <span class="material-symbols-outlined text-base">upload_file</span>
                                     Choisir une photo

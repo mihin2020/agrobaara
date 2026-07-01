@@ -10,7 +10,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('components.layouts.app')]
-#[Title('Mon profil — Agro Eco BAARA')]
+#[Title('Mon profil - Agro Eco BAARA')]
 class UserProfile extends Component
 {
     // Infos du compte

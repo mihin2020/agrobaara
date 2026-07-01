@@ -18,7 +18,7 @@ class ContactConfirmation extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Merci pour votre message — Agro Eco BAARA',
+            subject: 'Merci pour votre message - Agro Eco BAARA',
         );
     }
 

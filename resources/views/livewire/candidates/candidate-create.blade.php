@@ -130,12 +130,12 @@
     {{-- Toutes les sections (visibilité gérée par Alpine pour éviter le flash sur re-render Livewire) --}}
     <div class="bg-white rounded-2xl border border-[#c1c9b6] shadow-sm">
 
-        {{-- ── Section 1 — Identité ── --}}
+        {{-- ── Section 1 - Identité ── --}}
         @if($currentSection === 1)
         <div class="p-6 space-y-5">
             <h3 class="font-sora font-bold text-base text-[#1e1b18] flex items-center gap-2">
                 <span class="material-symbols-outlined text-[#2c6904]">badge</span>
-                Section A — Identité & Localisation
+                Section A - Identité & Localisation
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
@@ -295,12 +295,12 @@
         </div>
         @endif
 
-        {{-- ── Section 2 — Contacts & Langues ── --}}
+        {{-- ── Section 2 - Contacts & Langues ── --}}
         @if($currentSection === 2)
         <div class="p-6 space-y-5">
             <h3 class="font-sora font-bold text-base text-[#1e1b18] flex items-center gap-2">
                 <span class="material-symbols-outlined text-[#2c6904]">contact_phone</span>
-                Section B — Contacts & Langues
+                Section B - Contacts & Langues
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
@@ -339,12 +339,12 @@
         </div>
         @endif
 
-        {{-- ── Section 3 — Formation ── --}}
+        {{-- ── Section 3 - Formation ── --}}
         @if($currentSection === 3)
         <div class="p-6 space-y-5">
             <h3 class="font-sora font-bold text-base text-[#1e1b18] flex items-center gap-2">
                 <span class="material-symbols-outlined text-[#2c6904]">school</span>
-                Section C — Formation & Éducation
+                Section C - Formation & Éducation
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
@@ -382,7 +382,7 @@
                             <p class="text-sm font-semibold text-[#2c6904]">{{ count($diploma_files) }} fichier(s) sélectionné(s)</p>
                             <div class="mt-1 space-y-0.5">
                                 @foreach($diploma_files as $df)
-                                    <p class="text-xs text-[#717a69] truncate">{{ $df->getClientOriginalName() }} — {{ round($df->getSize() / 1024) }} Ko</p>
+                                    <p class="text-xs text-[#717a69] truncate">{{ $df->getClientOriginalName() }} - {{ round($df->getSize() / 1024) }} Ko</p>
                                 @endforeach
                             </div>
                         @else
@@ -397,12 +397,12 @@
         </div>
         @endif
 
-        {{-- ── Section 4 — Compétences & Expériences ── --}}
+        {{-- ── Section 4 - Compétences & Expériences ── --}}
         @if($currentSection === 4)
         <div class="p-6 space-y-6">
             <h3 class="font-sora font-bold text-base text-[#1e1b18] flex items-center gap-2">
                 <span class="material-symbols-outlined text-[#2c6904]">work_history</span>
-                Section D — Compétences & Expériences
+                Section D - Compétences & Expériences
             </h3>
             <div>
                 <label class="block text-sm font-semibold text-[#1e1b18] mb-2">Compétences</label>
@@ -494,19 +494,19 @@
         </div>
         @endif
 
-        {{-- ── Section 5 — Besoins internes ── --}}
+        {{-- ── Section 5 - Besoins internes ── --}}
         @if($currentSection === 5)
         <div class="p-6 space-y-5">
             <div class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-amber-600">admin_panel_settings</span>
-                <h3 class="font-sora font-bold text-base text-[#1e1b18]">Section E — Besoins exprimés</h3>
+                <h3 class="font-sora font-bold text-base text-[#1e1b18]">Section E - Besoins exprimés</h3>
                 <span class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-normal ml-1">Interne BAARA</span>
             </div>
             <p class="text-xs text-[#717a69] -mt-2">Sélectionnez les besoins du candidat. Plusieurs choix possibles par catégorie.</p>
 
             <div class="space-y-3">
 
-                {{-- Carte 1 — Emploi --}}
+                {{-- Carte 1 - Emploi --}}
                 @php $emploiActive = count($need_employment_types) > 0; @endphp
                 <div @class([
                     'rounded-2xl border-2 overflow-hidden transition-all duration-200',
@@ -558,7 +558,7 @@
                     </div>
                 </div>
 
-                {{-- Carte 2 — Formation --}}
+                {{-- Carte 2 - Formation --}}
                 @php $formationActive = count($need_formation_types) > 0; @endphp
                 <div @class([
                     'rounded-2xl border-2 overflow-hidden transition-all duration-200',
@@ -610,7 +610,7 @@
                     </div>
                 </div>
 
-                {{-- Cartes 3 & 4 — Financement + Appui CV --}}
+                {{-- Cartes 3 & 4 - Financement + Appui CV --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
                     {{-- Financement --}}

@@ -16,7 +16,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('components.layouts.app')]
-#[Title('Tableau de bord — Agro Eco BAARA')]
+#[Title('Tableau de bord - Agro Eco BAARA')]
 class OperatorDashboard extends Component
 {
     public function render()

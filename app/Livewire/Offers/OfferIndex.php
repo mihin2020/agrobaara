@@ -14,7 +14,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 #[Layout('components.layouts.app')]
-#[Title('Offres d\'emploi — Agro Eco BAARA')]
+#[Title('Offres d\'emploi - Agro Eco BAARA')]
 class OfferIndex extends Component
 {
     use WithPagination;

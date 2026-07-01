@@ -11,7 +11,7 @@ use Livewire\WithPagination;
 use Spatie\Activitylog\Models\Activity;
 
 #[Layout('components.layouts.app')]
-#[Title("Journal d'audit — Agro Eco BAARA")]
+#[Title("Journal d'audit - Agro Eco BAARA")]
 class AuditLog extends Component
 {
     use WithPagination;

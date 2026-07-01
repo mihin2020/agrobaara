@@ -12,7 +12,7 @@ use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
 #[Layout('components.layouts.app')]
-#[Title('Bibliothèque — Agro Eco BAARA')]
+#[Title('Bibliothèque - Agro Eco BAARA')]
 class LibraryIndex extends Component
 {
     use WithFileUploads, WithPagination;

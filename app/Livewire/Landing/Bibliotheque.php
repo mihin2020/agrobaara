@@ -9,7 +9,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('components.layouts.landing')]
-#[Title('Bibliothèque — Agro Eco BAARA')]
+#[Title('Bibliothèque - Agro Eco BAARA')]
 class Bibliotheque extends Component
 {
     public function render()

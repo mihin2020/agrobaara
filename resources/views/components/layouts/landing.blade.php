@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ $title ?? 'Agro Eco BAARA — Guichet emploi agroécologique au Burkina Faso' }}</title>
+    <title>{{ $title ?? 'Agro Eco BAARA - Guichet emploi agroécologique au Burkina Faso' }}</title>
     <link rel="icon" type="image/jpeg" href="/images/logo.jpeg" />
     <meta name="description" content="Agro Eco BAARA : plateforme de mise en relation entre jeunes talents et entreprises de l'agroécologie au Burkina Faso. Emploi, formation, insertion professionnelle." />
     <meta name="keywords" content="agroécologie, emploi, Burkina Faso, jeunes, insertion professionnelle, agriculture durable, Ouagadougou" />
@@ -12,7 +12,7 @@
 
     {{-- Open Graph --}}
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="{{ $title ?? 'Agro Eco BAARA — Guichet emploi agroécologique' }}" />
+    <meta property="og:title" content="{{ $title ?? 'Agro Eco BAARA - Guichet emploi agroécologique' }}" />
     <meta property="og:description" content="Plateforme de mise en relation pour l'emploi agroécologique au Burkina Faso." />
     <meta property="og:image" content="{{ asset('images/logo.jpeg') }}" />
     <meta property="og:url" content="{{ url()->current() }}" />

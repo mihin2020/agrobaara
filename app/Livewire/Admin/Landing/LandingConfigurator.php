@@ -12,7 +12,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 
 #[Layout('components.layouts.app')]
-#[Title('Configurateur Landing — Agro Eco BAARA')]
+#[Title('Configurateur Landing - Agro Eco BAARA')]
 class LandingConfigurator extends Component
 {
     use WithFileUploads;

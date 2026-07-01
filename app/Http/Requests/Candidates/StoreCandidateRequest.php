@@ -18,7 +18,7 @@ class StoreCandidateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // Section A — Obligatoire
+            // Section A - Obligatoire
             'first_name'      => ['required', 'string', 'min:2', 'max:100'],
             'last_name'       => ['required', 'string', 'min:2', 'max:100'],
             'gender'          => ['required', Rule::in(array_column(Gender::cases(), 'value'))],
@@ -27,7 +27,7 @@ class StoreCandidateRequest extends FormRequest
             'language_ids'    => ['required', 'array', 'min:1'],
             'language_ids.*'  => ['uuid', 'exists:referentials_languages,id'],
 
-            // Section A — Optionnel
+            // Section A - Optionnel
             'marital_status'  => ['nullable', Rule::in(['celibataire', 'marie', 'veuf'])],
             'birth_place'     => ['nullable', 'string', 'max:150'],
             'nationality'     => ['nullable', 'string', 'max:80'],
@@ -36,17 +36,17 @@ class StoreCandidateRequest extends FormRequest
             'license_ids'     => ['nullable', 'array'],
             'license_ids.*'   => ['uuid', 'exists:referentials_licenses,id'],
 
-            // Section B — Contacts
+            // Section B - Contacts
             'phone'           => ['required', 'string', 'max:30'],
             'phone_secondary' => ['nullable', 'string', 'max:30'],
             'email'           => ['nullable', 'email', 'max:150'],
 
-            // Section C — Formation
+            // Section C - Formation
             'education_level'      => ['required', Rule::in(array_column(EducationLevel::cases(), 'value'))],
             'agro_training_text'   => ['nullable', 'string'],
             'agro_training_place'  => ['nullable', 'string', 'max:200'],
 
-            // Section D — Expériences
+            // Section D - Expériences
             'skill_ids'            => ['nullable', 'array'],
             'skill_ids.*'          => ['uuid', 'exists:referentials_skills,id'],
             'other_skills_text'    => ['nullable', 'string'],
@@ -57,7 +57,7 @@ class StoreCandidateRequest extends FormRequest
             'experiences.*.position'          => ['nullable', 'string', 'max:200'],
             'experiences.*.employer_contacts' => ['nullable', 'string'],
 
-            // Section E — Besoins (interne)
+            // Section E - Besoins (interne)
             'need_types'      => ['nullable', 'array'],
             'need_training'   => ['boolean'],
             'need_financing'  => ['boolean'],

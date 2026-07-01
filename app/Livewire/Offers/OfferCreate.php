@@ -14,7 +14,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('components.layouts.app')]
-#[Title('Nouvelle offre — Agro Eco BAARA')]
+#[Title('Nouvelle offre - Agro Eco BAARA')]
 class OfferCreate extends Component
 {
     public string $company_id          = '';

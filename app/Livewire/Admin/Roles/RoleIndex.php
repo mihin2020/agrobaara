@@ -11,7 +11,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('components.layouts.app')]
-#[Title('Rôles & Permissions — Agro Eco BAARA')]
+#[Title('Rôles & Permissions - Agro Eco BAARA')]
 class RoleIndex extends Component
 {
     // Edition permissions

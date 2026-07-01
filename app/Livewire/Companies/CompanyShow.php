@@ -8,7 +8,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('components.layouts.app')]
-#[Title('Entreprise — Agro Eco BAARA')]
+#[Title('Entreprise - Agro Eco BAARA')]
 class CompanyShow extends Component
 {
     public Company $company;

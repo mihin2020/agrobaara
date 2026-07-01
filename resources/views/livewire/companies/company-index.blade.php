@@ -114,7 +114,7 @@
                                         {{ $company->published_offers_count }} offre(s)
                                     </span>
                                 @else
-                                    <span class="text-xs text-[#717a69]">—</span>
+                                    <span class="text-xs text-[#717a69]">-</span>
                                 @endif
                             </td>
                             <td class="px-4 py-3.5 text-xs text-[#41493b] hidden md:table-cell">

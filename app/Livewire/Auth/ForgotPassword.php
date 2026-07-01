@@ -10,7 +10,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('components.layouts.auth')]
-#[Title('Mot de passe oublié — Agro Eco BAARA')]
+#[Title('Mot de passe oublié - Agro Eco BAARA')]
 class ForgotPassword extends Component
 {
     #[Rule('required|email', message: "L'e-mail est obligatoire et doit être valide.")]

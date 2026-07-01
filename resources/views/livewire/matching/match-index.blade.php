@@ -79,7 +79,7 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3.5 hidden md:table-cell">
-                                <p class="text-xs text-[#41493b]">{{ $match->operator?->full_name ?? '—' }}</p>
+                                <p class="text-xs text-[#41493b]">{{ $match->operator?->full_name ?? '-' }}</p>
                             </td>
                             <td class="px-4 py-3.5 hidden lg:table-cell">
                                 <p class="text-xs text-[#717a69]">{{ $match->updated_at->diffForHumans() }}</p>

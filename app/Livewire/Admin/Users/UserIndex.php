@@ -13,7 +13,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 #[Layout('components.layouts.app')]
-#[Title('Utilisateurs — Agro Eco BAARA')]
+#[Title('Utilisateurs - Agro Eco BAARA')]
 class UserIndex extends Component
 {
     use WithPagination;

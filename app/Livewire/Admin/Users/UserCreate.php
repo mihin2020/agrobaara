@@ -16,7 +16,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('components.layouts.app')]
-#[Title('Nouvel utilisateur — Agro Eco BAARA')]
+#[Title('Nouvel utilisateur - Agro Eco BAARA')]
 class UserCreate extends Component
 {
     public string $first_name = '';

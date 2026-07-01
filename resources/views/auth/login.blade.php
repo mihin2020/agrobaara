@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Connexion — Agro Eco BAARA</title>
+    <title>Connexion - Agro Eco BAARA</title>
     <link rel="icon" type="image/jpeg" href="/images/logo.jpeg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
@@ -52,7 +52,7 @@
         </div>
     </div>
 
-    {{-- Panneau droit — formulaire --}}
+    {{-- Panneau droit - formulaire --}}
     <div class="flex-1 flex flex-col justify-center py-12 px-6 sm:px-12 lg:px-16">
         <div class="mx-auto w-full max-w-md">
 

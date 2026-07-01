@@ -13,7 +13,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('components.layouts.app')]
-#[Title('Profil candidat — Agro Eco BAARA')]
+#[Title('Profil candidat - Agro Eco BAARA')]
 class CandidateShow extends Component
 {
     #[Locked]

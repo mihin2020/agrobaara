@@ -45,7 +45,7 @@
             <a href="{{ url('/admin/messages') }}" class="btn">Voir dans l'administration</a>
         </div>
         <div class="footer">
-            <p>Notification automatique — Agro Eco BAARA</p>
+            <p>Notification automatique - Agro Eco BAARA</p>
         </div>
     </div>
 </body>

@@ -154,7 +154,7 @@
                                 </td>
                                 <td class="px-4 py-3 hidden lg:table-cell">
                                     <span class="text-xs text-[#717a69]">
-                                        {{ $doc->type === 'file' && $doc->file_size ? $doc->fileSizeForHumans() : '—' }}
+                                        {{ $doc->type === 'file' && $doc->file_size ? $doc->fileSizeForHumans() : '-' }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 hidden sm:table-cell">

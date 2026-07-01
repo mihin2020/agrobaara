@@ -53,7 +53,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/reinitialiser-mot-de-passe/{token}', ResetPassword::class)->name('password.reset');
 });
 
-// Changement de mot de passe (1ère connexion) — utilisateur connecté
+// Changement de mot de passe (1ère connexion) - utilisateur connecté
 Route::middleware('auth')->group(function () {
     Route::get('/changer-mot-de-passe', ChangePassword::class)->name('password.change');
     Route::post('/deconnexion', [\App\Http\Controllers\Auth\LogoutController::class, 'destroy'])->name('logout');

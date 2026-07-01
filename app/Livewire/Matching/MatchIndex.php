@@ -13,7 +13,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 #[Layout('components.layouts.app')]
-#[Title('Matching — Agro Eco BAARA')]
+#[Title('Matching - Agro Eco BAARA')]
 class MatchIndex extends Component
 {
     use WithPagination;

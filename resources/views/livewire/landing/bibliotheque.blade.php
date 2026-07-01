@@ -103,7 +103,7 @@
             <h1 class="font-headline-lg text-headline-lg text-primary mb-4 uppercase">Bibliothèque</h1>
             <div class="h-1.5 w-24 bg-secondary mx-auto rounded-full"></div>
             <p class="font-body-lg text-on-surface-variant mt-6 max-w-2xl mx-auto">
-                Parcourez notre collection de rapports, guides et ressources — comme dans une vraie bibliothèque.
+                Parcourez notre collection de rapports, guides et ressources - comme dans une vraie bibliothèque.
             </p>
         </div>
 

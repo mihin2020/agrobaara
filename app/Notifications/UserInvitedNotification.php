@@ -29,7 +29,7 @@ class UserInvitedNotification extends Notification
         ]);
 
         return (new MailMessage)
-            ->subject('Invitation — Agro Eco BAARA Back-office')
+            ->subject('Invitation - Agro Eco BAARA Back-office')
             ->greeting("Bonjour {$notifiable->first_name},")
             ->line("Votre compte d'accès au back-office **Agro Eco BAARA** a été créé par {$this->invitedBy->full_name}.")
             ->line('Cliquez sur le bouton ci-dessous pour définir votre mot de passe et activer votre compte.')

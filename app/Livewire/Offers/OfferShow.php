@@ -10,7 +10,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('components.layouts.app')]
-#[Title('Offre — Agro Eco BAARA')]
+#[Title('Offre - Agro Eco BAARA')]
 class OfferShow extends Component
 {
     public JobOffer $offer;

@@ -22,7 +22,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 
 #[Layout('components.layouts.app')]
-#[Title('Modifier candidat — Agro Eco BAARA')]
+#[Title('Modifier candidat - Agro Eco BAARA')]
 class CandidateEdit extends Component
 {
     use WithFileUploads;
@@ -226,7 +226,7 @@ class CandidateEdit extends Component
                 'updated_by'             => Auth::id(),
             ];
 
-            // Fichiers — uniquement si un nouveau fichier est sélectionné
+            // Fichiers - uniquement si un nouveau fichier est sélectionné
             if ($this->photo) {
                 if ($this->candidate->photo_path) Storage::disk('public')->delete($this->candidate->photo_path);
                 $updates['photo_path'] = $this->photo->store('candidates/photos', 'public');
