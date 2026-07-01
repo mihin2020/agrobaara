@@ -2,7 +2,12 @@
 
 namespace App\Livewire\Landing;
 
+use App\Mail\ContactConfirmation;
+use App\Mail\NewContactMessageAdmin;
 use App\Models\ContactMessage;
+use App\Services\NotificationService;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Rule;
 use Livewire\Component;
 
@@ -22,6 +27,13 @@ class ContactForm extends Component
             return;
         }
 
+        $throttleKey = 'contact_form:' . request()->ip();
+        if (RateLimiter::tooManyAttempts($throttleKey, 3)) {
+            $this->addError('message', 'Trop de messages envoyés. Réessayez dans quelques minutes.');
+            return;
+        }
+        RateLimiter::hit($throttleKey, 600);
+
         $this->validate([
             'full_name'    => 'required|string|min:2|max:100',
             'email'        => 'required|email|max:150',
@@ -36,7 +48,7 @@ class ContactForm extends Component
             'rgpd_consent.accepted' => 'Vous devez accepter la politique de confidentialité.',
         ]);
 
-        ContactMessage::create([
+        $contact = ContactMessage::create([
             'full_name'    => $this->full_name,
             'email'        => $this->email,
             'phone'        => $this->phone ?: null,
@@ -44,6 +56,13 @@ class ContactForm extends Component
             'rgpd_consent' => $this->rgpd_consent,
             'ip_address'   => request()->ip(),
         ]);
+
+        // Confirmation au visiteur
+        Mail::to($contact->email)->queue(new ContactConfirmation($contact));
+
+        // Notification aux utilisateurs ayant la permission 'notifications.contact'
+        app(NotificationService::class)
+            ->notifyByPermission('notifications.contact', new NewContactMessageAdmin($contact));
 
         $this->reset(['full_name', 'email', 'phone', 'message', 'rgpd_consent']);
         $this->submitted = true;

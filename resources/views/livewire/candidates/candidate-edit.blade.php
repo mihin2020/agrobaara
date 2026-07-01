@@ -281,9 +281,9 @@
                             <option value="{{ $e->code }}">{{ $e->name }}</option>
                         @endforeach
                     </x-form.select>
-                    <x-form.input wire:model="agro_training_place" label="Lieu de formation agroécologique" placeholder="Ex: ENEF, Dindéresso" />
+                    <x-form.input wire:model="agro_training_place" label="Lieu de formation" placeholder="Ex: ENEF, Dindéresso" />
                 </div>
-                <x-form.textarea wire:model="agro_training_text" label="Formation agroécologique reçue" placeholder="Décrivez les formations reçues en lien avec l'agroécologie..." rows="4" />
+                <x-form.textarea wire:model="agro_training_text" label="Formation reçue" placeholder="Décrivez les formations reçues en lien avec l'agroécologie..." rows="4" />
 
                 {{-- Diplômes multiples --}}
                 <div>
@@ -330,7 +330,7 @@
                     Section D — Compétences & Expériences
                 </h3>
                 <div>
-                    <label class="block text-sm font-semibold text-[#1e1b18] mb-2">Compétences agroécologiques</label>
+                    <label class="block text-sm font-semibold text-[#1e1b18] mb-2">Compétences</label>
                     <div class="flex flex-wrap gap-2 max-h-48 overflow-y-auto p-3 bg-[#fbf2ed] rounded-xl border border-[#c1c9b6]">
                         @foreach($skills as $skill)
                             <label class="flex items-center gap-1.5 cursor-pointer px-2.5 py-1.5 rounded-lg border transition-all

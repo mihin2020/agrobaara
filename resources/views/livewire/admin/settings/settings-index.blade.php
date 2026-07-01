@@ -22,7 +22,7 @@
                     ['key' => 'languages',     'icon' => 'translate',   'label' => 'Langues parlées',              'count' => $languages->count(),     'color' => 'blue'],
                     ['key' => 'educations',    'icon' => 'school',      'label' => "Niveaux d'étude",              'count' => $educations->count(),    'color' => 'purple'],
                     ['key' => 'nationalities', 'icon' => 'flag',        'label' => 'Nationalités',                 'count' => $nationalities->count(), 'color' => 'amber'],
-                    ['key' => 'skills',        'icon' => 'agriculture', 'label' => 'Compétences agroécologiques',  'count' => $skills->count(),        'color' => 'green'],
+                    ['key' => 'skills',        'icon' => 'agriculture', 'label' => 'Compétences',  'count' => $skills->count(),        'color' => 'green'],
                 ];
             @endphp
 
@@ -301,7 +301,7 @@
                         <div class="flex items-center gap-2.5">
                             <span class="material-symbols-outlined text-base text-[#2c6904]">agriculture</span>
                             <div>
-                                <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Compétences agroécologiques</h3>
+                                <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Compétences</h3>
                                 <p class="text-xs text-[#717a69]">Compétences disponibles pour les candidats et offres</p>
                             </div>
                         </div>

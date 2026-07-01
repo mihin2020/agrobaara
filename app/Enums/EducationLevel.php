@@ -6,7 +6,7 @@ enum EducationLevel: string
 {
     case Secondaire = 'secondaire';
     case Licence    = 'licence';
-    case Master     = 'master';
+    case Certificat = 'certificat';
     case Autre      = 'autre';
 
     public function label(): string
@@ -14,7 +14,7 @@ enum EducationLevel: string
         return match($this) {
             self::Secondaire => 'Secondaire',
             self::Licence    => 'Licence',
-            self::Master     => 'Master',
+            self::Certificat => 'Certificat',
             self::Autre      => 'Autre',
         };
     }

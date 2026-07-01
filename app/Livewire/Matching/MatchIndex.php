@@ -3,6 +3,7 @@
 namespace App\Livewire\Matching;
 
 use App\Enums\MatchStatus;
+use App\Exports\MatchesExport;
 use App\Models\CandidateMatch;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -19,8 +20,18 @@ class MatchIndex extends Component
 
     #[Url]
     public string $status = '';
+    public string $exportFrom = '';
+    public string $exportTo = '';
 
     public function updatedStatus(): void { $this->resetPage(); }
+
+    public function export()
+    {
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new MatchesExport($this->exportFrom ?: null, $this->exportTo ?: null),
+            'matchings_' . date('Y-m-d') . '.xlsx'
+        );
+    }
 
     public function updateStatus(string $matchId, string $newStatus): void
     {

@@ -404,7 +404,7 @@ class TestDataSeeder extends Seeder
                 'nationality'        => 'Burkinabè',
                 'commune_id'         => $ouaga?->id,
                 'phone'              => '+226 65 11 99 88',
-                'education_level'    => EducationLevel::Master,
+                'education_level'    => EducationLevel::Certificat,
                 'agro_training_text' => 'Master Agronomie Tropicale — Institut du Développement Rural (IDR), Bobo-Dioulasso',
                 'has_previous_jobs'  => true,
                 'need_types'         => ['emploi_salarie'],

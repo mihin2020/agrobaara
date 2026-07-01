@@ -3,6 +3,7 @@
 namespace App\Livewire\Offers;
 
 use App\Enums\OfferStatus;
+use App\Exports\OffersExport;
 use App\Models\JobOffer;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -22,9 +23,19 @@ class OfferIndex extends Component
 
     #[Url]
     public string $status = '';
+    public string $exportFrom = '';
+    public string $exportTo = '';
 
     public function updatedSearch(): void { $this->resetPage(); }
     public function updatedStatus(): void { $this->resetPage(); }
+
+    public function export()
+    {
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new OffersExport($this->exportFrom ?: null, $this->exportTo ?: null),
+            'offres_' . date('Y-m-d') . '.xlsx'
+        );
+    }
 
     public function publishOffer(string $offerId): void
     {

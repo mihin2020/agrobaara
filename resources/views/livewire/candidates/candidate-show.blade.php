@@ -145,12 +145,13 @@
                 </div>
                 <div class="p-5 flex flex-wrap gap-3">
                     @if($candidate->photo_path)
-                        <a href="{{ Storage::url($candidate->photo_path) }}" target="_blank"
-                           class="flex items-center gap-2.5 px-3 py-2.5 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl hover:border-[#2c6904]/50 transition-colors group">
+                        <button type="button"
+                                @click="$dispatch('open-photo-lightbox', { src: '{{ Storage::url($candidate->photo_path) }}', alt: 'Photo d\'identité — {{ addslashes($candidate->full_name) }}' })"
+                                class="flex items-center gap-2.5 px-3 py-2.5 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl hover:border-[#2c6904]/50 transition-colors group cursor-pointer">
                             <span class="material-symbols-outlined text-[#2c6904] text-lg">portrait</span>
                             <span class="text-xs font-semibold text-[#1e1b18] group-hover:text-[#2c6904]">Photo d'identité</span>
-                            <span class="material-symbols-outlined text-[#717a69] text-sm">open_in_new</span>
-                        </a>
+                            <span class="material-symbols-outlined text-[#717a69] text-sm">zoom_in</span>
+                        </button>
                     @endif
                     @if($candidate->identity_document_path)
                         <a href="{{ Storage::url($candidate->identity_document_path) }}" target="_blank"
@@ -237,7 +238,7 @@
                     </div>
                     @if($candidate->agro_training_text)
                         <div>
-                            <p class="text-[11px] text-[#717a69] uppercase font-bold tracking-wide mb-1">Formation agroécologique</p>
+                            <p class="text-[11px] text-[#717a69] uppercase font-bold tracking-wide mb-1">Formation</p>
                             <p class="text-sm text-[#1e1b18] leading-relaxed bg-[#fbf2ed] rounded-xl p-3">{{ $candidate->agro_training_text }}</p>
                         </div>
                     @endif
@@ -253,7 +254,7 @@
                 <div class="p-5 space-y-4">
                     @if($candidate->skills->isNotEmpty())
                         <div>
-                            <p class="text-[11px] text-[#717a69] uppercase font-bold tracking-wide mb-2">Compétences agroécologiques</p>
+                            <p class="text-[11px] text-[#717a69] uppercase font-bold tracking-wide mb-2">Compétences</p>
                             <div class="flex flex-wrap gap-1.5">
                                 @foreach($candidate->skills as $skill)
                                     <span class="px-2.5 py-1 bg-[#f5ece7] text-[#41493b] text-xs font-semibold rounded-lg border border-[#c1c9b6]">{{ $skill->name }}</span>
@@ -439,5 +440,23 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    {{-- Lightbox photo --}}
+    <div x-data="{ open: false, src: '', alt: '' }"
+         @open-photo-lightbox.window="src = $event.detail.src; alt = $event.detail.alt; open = true"
+         @keydown.escape.window="open = false">
+        <template x-if="open">
+            <div class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm"
+                 @click.self="open = false">
+                <div class="relative max-w-3xl max-h-[90vh] mx-4">
+                    <button @click="open = false"
+                            class="absolute -top-3 -right-3 z-10 w-9 h-9 flex items-center justify-center bg-white rounded-full shadow-lg text-[#1e1b18] hover:bg-red-50 hover:text-red-600 transition-colors">
+                        <span class="material-symbols-outlined text-xl">close</span>
+                    </button>
+                    <img :src="src" :alt="alt" class="rounded-2xl max-h-[85vh] w-auto object-contain shadow-2xl" />
+                </div>
+            </div>
+        </template>
     </div>
 </div>

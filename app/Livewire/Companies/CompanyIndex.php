@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Companies;
 
+use App\Exports\CompaniesExport;
 use App\Models\Company;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -18,8 +19,18 @@ class CompanyIndex extends Component
 
     #[Url(as: 'q')]
     public string $search = '';
+    public string $exportFrom = '';
+    public string $exportTo = '';
 
     public function updatedSearch(): void { $this->resetPage(); }
+
+    public function export()
+    {
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new CompaniesExport($this->exportFrom ?: null, $this->exportTo ?: null),
+            'entreprises_' . date('Y-m-d') . '.xlsx'
+        );
+    }
 
     public function render()
     {

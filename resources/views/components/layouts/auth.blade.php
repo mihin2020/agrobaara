@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{ $title ?? 'Agro Eco BAARA' }}</title>
+    <link rel="icon" type="image/jpeg" href="/images/logo.jpeg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -15,10 +16,7 @@
 
     {{-- Panneau gauche décoratif --}}
     <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-[#2c6904] to-[#1a4003]"></div>
-        <div class="absolute inset-0 opacity-10"
-             style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');">
-        </div>
+        <div class="absolute inset-0" style="background-color: #69a313;"></div>
         <div class="relative z-10 flex flex-col justify-center px-16 text-white">
             <div class="mb-12 flex flex-col items-center">
                 <img src="{{ asset('images/logo-white.png') }}" alt="Logo" class="h-16 w-auto mb-8"
@@ -30,16 +28,16 @@
             <div class="space-y-6">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-[#93d86c]">person_search</span>
+                        <span class="material-symbols-outlined text-white">person_search</span>
                     </div>
                     <div>
                         <p class="font-semibold">Gestion des candidats</p>
-                        <p class="text-sm opacity-70">Suivi complet des profils agroécologiques</p>
+                        <p class="text-sm opacity-70">Suivi complet des profils</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-[#ffb870]">handshake</span>
+                        <span class="material-symbols-outlined text-white">handshake</span>
                     </div>
                     <div>
                         <p class="font-semibold">Mise en relation</p>
@@ -48,7 +46,7 @@
                 </div>
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-[#93d86c]">bar_chart</span>
+                        <span class="material-symbols-outlined text-white">bar_chart</span>
                     </div>
                     <div>
                         <p class="font-semibold">Tableau de bord</p>

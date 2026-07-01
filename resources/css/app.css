@@ -183,6 +183,7 @@ html { font-size: 93.75%; } /* 15px base — back-office density */
 ════════════════════════════════════════════════════ */
 .bento-item { transition: transform 0.3s ease; }
 .bento-item:hover { transform: translateY(-4px); }
+.full-width { width: 100%; }
 
 details > summary { list-style: none; }
 details > summary::-webkit-details-marker { display: none; }

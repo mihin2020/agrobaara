@@ -12,8 +12,10 @@ use App\Policies\JobOfferPolicy;
 use App\Policies\MatchPolicy;
 use App\Services\AuthService;
 use App\Services\MatchingService;
+use App\Services\NotificationService;
 use App\Services\ReferenceService;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -30,10 +32,16 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(AuthService::class);
         $this->app->singleton(ReferenceService::class);
         $this->app->singleton(MatchingService::class);
+        $this->app->singleton(NotificationService::class);
     }
 
     public function boot(): void
     {
+        // Forcer HTTPS en production
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         // Enregistrement des Policies
         foreach ($this->policies as $model => $policy) {
             Gate::policy($model, $policy);

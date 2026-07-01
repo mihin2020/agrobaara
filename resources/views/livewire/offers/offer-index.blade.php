@@ -49,15 +49,18 @@
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
             <h2 class="font-sora text-xl font-bold text-[#1e1b18]">Offres d'emploi</h2>
-            <p class="text-[#41493b] mt-1 text-sm">Gérez le catalogue des opportunités agroécologiques.</p>
+            <p class="text-[#41493b] mt-1 text-sm">Gérez le catalogue des opportunités.</p>
         </div>
-        @can('create', \App\Models\JobOffer::class)
-            <a href="{{ route('admin.offers.create') }}" wire:navigate
-               class="flex items-center gap-2 bg-[#615c47] text-white py-2.5 px-5 rounded-xl font-semibold text-sm shadow-sm hover:opacity-90 transition-opacity">
-                <span class="material-symbols-outlined text-lg">post_add</span>
-                Publier une offre
-            </a>
-        @endcan
+        <div class="flex items-center gap-2">
+            <x-export-button />
+            @can('create', \App\Models\JobOffer::class)
+                <a href="{{ route('admin.offers.create') }}" wire:navigate
+                   class="flex items-center gap-2 bg-[#615c47] text-white py-2.5 px-5 rounded-xl font-semibold text-sm shadow-sm hover:opacity-90 transition-opacity">
+                    <span class="material-symbols-outlined text-lg">post_add</span>
+                    Publier une offre
+                </a>
+            @endcan
+        </div>
     </div>
 
     {{-- Filtres --}}

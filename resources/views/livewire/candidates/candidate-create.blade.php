@@ -75,7 +75,7 @@
         </a>
         <div>
             <h2 class="font-sora text-xl font-bold text-[#1e1b18]">Nouveau Candidat</h2>
-            <p class="text-[#41493b] text-sm mt-0.5">Enregistrer un profil agroécologique</p>
+            <p class="text-[#41493b] text-sm mt-0.5">Enregistrer un nouveau profil</p>
         </div>
     </div>
 
@@ -359,13 +359,13 @@
                     @error('education_level') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">Lieu de formation agroécologique</label>
+                    <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">Lieu de formation</label>
                     <input wire:model="agro_training_place" type="text" placeholder="Ex: ENEF, Dindéresso"
                            class="w-full px-4 py-2.5 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904]" />
                 </div>
             </div>
             <div>
-                <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">Formation agroécologique reçue</label>
+                <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">Formation reçue</label>
                 <textarea wire:model="agro_training_text" rows="4"
                           placeholder="Décrivez les formations reçues en lien avec l'agroécologie..."
                           class="w-full px-4 py-2.5 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904] resize-none"></textarea>
@@ -405,7 +405,7 @@
                 Section D — Compétences & Expériences
             </h3>
             <div>
-                <label class="block text-sm font-semibold text-[#1e1b18] mb-2">Compétences agroécologiques</label>
+                <label class="block text-sm font-semibold text-[#1e1b18] mb-2">Compétences</label>
                 <div class="flex flex-wrap gap-2 max-h-48 overflow-y-auto p-3 bg-[#fbf2ed] rounded-xl border border-[#c1c9b6]">
                     @foreach($skills as $skill)
                         <label class="flex items-center gap-1.5 cursor-pointer px-2.5 py-1.5 rounded-lg border transition-all

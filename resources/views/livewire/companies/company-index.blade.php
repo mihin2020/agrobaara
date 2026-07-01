@@ -10,15 +10,18 @@
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
             <h2 class="font-sora text-xl font-bold text-[#1e1b18]">Gestion des Entreprises</h2>
-            <p class="text-[#41493b] mt-1 text-sm">Partenaires et organisations agroécologiques du territoire.</p>
+            <p class="text-[#41493b] mt-1 text-sm">Partenaires et organisations du territoire.</p>
         </div>
-        @can('create', \App\Models\Company::class)
-            <a href="{{ route('admin.companies.create') }}" wire:navigate
-               class="flex items-center gap-2 bg-[#875212] text-white py-2.5 px-5 rounded-xl font-semibold text-sm shadow-sm hover:opacity-90 transition-opacity">
-                <span class="material-symbols-outlined text-lg">add_business</span>
-                Ajouter une entreprise
-            </a>
-        @endcan
+        <div class="flex items-center gap-2">
+            <x-export-button />
+            @can('create', \App\Models\Company::class)
+                <a href="{{ route('admin.companies.create') }}" wire:navigate
+                   class="flex items-center gap-2 bg-[#875212] text-white py-2.5 px-5 rounded-xl font-semibold text-sm shadow-sm hover:opacity-90 transition-opacity">
+                    <span class="material-symbols-outlined text-lg">add_business</span>
+                    Ajouter une entreprise
+                </a>
+            @endcan
+        </div>
     </div>
 
     {{-- Recherche --}}

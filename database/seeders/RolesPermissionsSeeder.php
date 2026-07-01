@@ -60,6 +60,14 @@ class RolesPermissionsSeeder extends Seeder
             'roles.manage'       => 'Gérer les rôles',
             'permissions.manage' => 'Gérer les permissions',
         ],
+        // Notifications email
+        'notifications' => [
+            'notifications.contact'    => 'Recevoir les notifications de contact',
+            'notifications.candidates' => 'Recevoir les notifications candidats',
+            'notifications.companies'  => 'Recevoir les notifications entreprises',
+            'notifications.offers'     => 'Recevoir les notifications offres',
+            'notifications.matches'    => 'Recevoir les notifications matching',
+        ],
         // Administration
         'admin' => [
             'audit.view'          => "Consulter le journal d'audit",
@@ -82,6 +90,8 @@ class RolesPermissionsSeeder extends Seeder
             'companies.view', 'companies.create', 'companies.update', 'companies.delete', 'companies.export',
             'offers.view', 'offers.create', 'offers.update', 'offers.delete', 'offers.publish', 'offers.archive',
             'matches.view', 'matches.create', 'matches.update', 'matches.close',
+            'notifications.contact', 'notifications.candidates', 'notifications.companies',
+            'notifications.offers', 'notifications.matches',
             'users.view',
             'audit.view',
             'settings.view',

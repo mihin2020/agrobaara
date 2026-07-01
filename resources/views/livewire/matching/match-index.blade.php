@@ -6,6 +6,7 @@
             <h2 class="font-sora text-xl font-bold text-[#1e1b18]">Matching & Mises en relation</h2>
             <p class="text-[#41493b] mt-1 text-sm">Suivi de toutes les mises en relation candidats–offres.</p>
         </div>
+        <x-export-button />
     </div>
 
     {{-- Filtres statut --}}

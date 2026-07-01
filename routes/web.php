@@ -26,10 +26,12 @@ use App\Livewire\Landing\ContactForm;
 use App\Livewire\Landing\LandingPage;
 use App\Livewire\Landing\Mediatheque;
 use App\Livewire\Landing\Bibliotheque;
+use App\Livewire\Landing\PrivacyPolicy;
 use App\Livewire\Admin\Landing\LandingConfigurator;
 use App\Livewire\Admin\Audit\AuditLog;
 use App\Livewire\Admin\Settings\SettingsIndex;
 use App\Livewire\Admin\Library\LibraryIndex;
+use App\Livewire\Admin\Messages\ContactMessageIndex;
 use App\Livewire\Profile\UserProfile;
 use Illuminate\Support\Facades\Route;
 
@@ -39,6 +41,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', LandingPage::class)->name('home');
 Route::get('/mediatheque', Mediatheque::class)->name('mediatheque');
 Route::get('/bibliotheque', Bibliotheque::class)->name('bibliotheque');
+Route::get('/politique-de-confidentialite', PrivacyPolicy::class)->name('privacy');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // AUTHENTIFICATION (invités seulement)
@@ -108,6 +111,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::get('/', MatchIndex::class)->name('index');
         Route::get('/{match}', MatchShow::class)->name('show');
     });
+
+    // ── Messages de contact ──────────────────────────────────────────────
+    Route::get('/messages', ContactMessageIndex::class)->name('messages.index');
 
     // ── Bibliothèque (super admin) ─────────────────────────────────────────
     Route::middleware('role:super_admin')

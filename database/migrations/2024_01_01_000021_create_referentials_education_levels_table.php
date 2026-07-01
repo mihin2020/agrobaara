@@ -27,7 +27,7 @@ return new class extends Migration
             ['id' => \Illuminate\Support\Str::uuid(), 'name' => 'CAP / BEP',                    'code' => 'cap',         'sort_order' => 4,  'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
             ['id' => \Illuminate\Support\Str::uuid(), 'name' => 'BAC',                          'code' => 'bac',         'sort_order' => 5,  'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
             ['id' => \Illuminate\Support\Str::uuid(), 'name' => 'Licence (Bac+3)',              'code' => 'licence',     'sort_order' => 6,  'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['id' => \Illuminate\Support\Str::uuid(), 'name' => 'Master (Bac+5)',               'code' => 'master',      'sort_order' => 7,  'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['id' => \Illuminate\Support\Str::uuid(), 'name' => 'Certificat',                   'code' => 'certificat',  'sort_order' => 7,  'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
             ['id' => \Illuminate\Support\Str::uuid(), 'name' => 'Autre',                        'code' => 'autre',       'sort_order' => 8,  'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
         ]);
     }

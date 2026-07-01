@@ -6,13 +6,16 @@
             <h2 class="font-sora text-xl font-bold text-[#1e1b18]">Gestion des Candidats</h2>
             <p class="text-[#41493b] mt-1 text-sm">Gérez et suivez les parcours des jeunes talents de l'agroécologie.</p>
         </div>
-        @can('create', \App\Models\Candidate::class)
-            <a href="{{ route('admin.candidates.create') }}" wire:navigate
-               class="flex items-center gap-2 bg-[#2c6904] text-white py-2.5 px-5 rounded-xl font-semibold text-sm shadow-sm hover:bg-[#448322] transition-colors">
-                <span class="material-symbols-outlined text-lg">person_add</span>
-                Ajouter un candidat
-            </a>
-        @endcan
+        <div class="flex items-center gap-2">
+            <x-export-button />
+            @can('create', \App\Models\Candidate::class)
+                <a href="{{ route('admin.candidates.create') }}" wire:navigate
+                   class="flex items-center gap-2 bg-[#2c6904] text-white py-2.5 px-5 rounded-xl font-semibold text-sm shadow-sm hover:bg-[#448322] transition-colors">
+                    <span class="material-symbols-outlined text-lg">person_add</span>
+                    Ajouter un candidat
+                </a>
+            @endcan
+        </div>
     </div>
 
     {{-- Filtres avancés --}}

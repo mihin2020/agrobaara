@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{ $title ?? 'Back-office — Agro Eco BAARA' }}</title>
+    <link rel="icon" type="image/jpeg" href="/images/logo.jpeg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&family=JetBrains+Mono:wght@500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -46,7 +47,7 @@
 
         {{-- Logo --}}
         <div class="px-6 py-5 border-b border-[#c1c9b6] flex justify-center">
-            <a href="{{ route('home') }}" target="_blank" rel="noopener noreferrer"
+            <a href="{{ route('home') }}"
                title="Voir le site public"
                class="block rounded-lg hover:opacity-80 transition-opacity">
                 <img src="{{ asset('images/logo.jpeg') }}" alt="Logo" class="h-14 w-auto object-contain" />
@@ -74,6 +75,20 @@
             <x-nav-link href="{{ route('admin.matches.index') }}" icon="handshake" :active="request()->routeIs('admin.matches.*')">
                 Matching
             </x-nav-link>
+
+            @php $unreadMessages = cache()->remember('unread_messages_count', 60, fn() => \App\Models\ContactMessage::where('is_read', false)->count()); @endphp
+            <a href="{{ route('admin.messages.index') }}" wire:navigate
+               @class([
+                   'flex items-center gap-3 py-2.5 px-4 rounded-xl text-sm font-semibold transition-colors',
+                   'bg-[#448322] text-white shadow-sm' => request()->routeIs('admin.messages.*'),
+                   'text-[#41493b] hover:bg-[#e9e1dc] hover:text-[#1e1b18]' => !request()->routeIs('admin.messages.*'),
+               ])>
+                <span class="material-symbols-outlined text-xl">mail</span>
+                Messages
+                @if($unreadMessages > 0)
+                    <span class="ml-auto px-1.5 py-0.5 text-[10px] font-bold bg-red-500 text-white rounded-full min-w-[18px] text-center">{{ $unreadMessages }}</span>
+                @endif
+            </a>
 
             @if(auth()->user()->isSuperAdmin())
                 <x-nav-link href="{{ route('admin.library.index') }}" icon="menu_book" :active="request()->routeIs('admin.library.*')">
@@ -153,9 +168,9 @@
                         <span class="hidden md:inline">Nouveau Dossier</span>
                     </a>
 
-                    <a href="{{ route('home') }}" target="_blank" rel="noopener noreferrer"
+                    <a href="{{ route('home') }}"
                        class="hidden sm:flex items-center gap-1.5 px-4 py-2 bg-white border border-[#c1c9b6] text-[#41493b] text-sm font-semibold rounded-xl hover:bg-[#f5ece7] transition-colors">
-                        <span class="material-symbols-outlined text-base">open_in_new</span>
+                        <span class="material-symbols-outlined text-base">home</span>
                         <span class="hidden md:inline">Voir le site</span>
                     </a>
 

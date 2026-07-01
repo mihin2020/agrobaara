@@ -8,7 +8,7 @@
         </a>
         <div>
             <h2 class="font-sora text-xl font-bold text-[#1e1b18]">Nouvelle Offre</h2>
-            <p class="text-[#41493b] text-sm mt-0.5">Créer une opportunité d'emploi agroécologique</p>
+            <p class="text-[#41493b] text-sm mt-0.5">Créer une nouvelle opportunité d'emploi</p>
         </div>
     </div>
 

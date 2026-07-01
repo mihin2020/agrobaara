@@ -1,2 +1,8 @@
 User-agent: *
-Disallow:
+Disallow: /admin/
+Disallow: /connexion
+Disallow: /mot-de-passe-oublie
+Disallow: /reinitialiser-mot-de-passe/
+Disallow: /changer-mot-de-passe
+
+Sitemap: https://agroecobaara.bf/sitemap.xml

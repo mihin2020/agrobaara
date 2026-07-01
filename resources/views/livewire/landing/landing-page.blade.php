@@ -69,7 +69,7 @@
     $mediaSection  = $sec->get('mediatheque');
     $mediaContent  = $mediaSection?->content ?? [];
     $mediaTitle    = $mediaContent['title']       ?? 'MÉDIATHÈQUE';
-    $mediaDesc     = $mediaContent['description'] ?? 'Découvrez nos activités à travers les photos du terrain.';
+    $mediaDesc     = $mediaContent['description'] ?? 'Découvrez nos activités à travers nos visuels.';
     $mediaPhotos      = $mediaContent['photos']      ?? [];
     $mediaCategories  = $mediaContent['categories'] ?? [
         ['key' => 'terrain',   'label' => 'Terrain'],
@@ -84,6 +84,7 @@
         'bg-secondary-container text-on-secondary-container',
         'bg-tertiary-container text-on-tertiary-container',
     ];
+    $firstCatKey = $mediaCategories[0]['key'] ?? 'terrain';
     $catLabels = collect($mediaCategories)->pluck('label', 'key')->all();
     $catColors = [];
     foreach ($mediaCategories as $i => $cat) {
@@ -122,8 +123,31 @@
 <a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="#partenaires">Partenaires</a>
 <a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="#mediatheque">Médiathèque</a>
 <a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="{{ route('bibliotheque') }}">Bibliothèque</a>
-<a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="#contact">Contact</a>
+<a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="#contact">Contactez-nous</a>
+@auth
+<div class="relative" x-data="{ open: false }">
+<button @click="open = !open" class="flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-lg font-label-bold hover:opacity-90 transition-all">
+<span class="material-symbols-outlined text-lg">account_circle</span>
+{{ Auth::user()->name }}
+<span class="material-symbols-outlined text-sm" x-text="open ? 'expand_less' : 'expand_more'"></span>
+</button>
+<div x-show="open" @click.away="open = false" x-transition class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-outline-variant py-2 z-50">
+<a href="{{ route('admin.candidates.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-base">admin_panel_settings</span>
+Administration
+</a>
+<form method="POST" action="{{ route('logout') }}">
+@csrf
+<button type="submit" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+<span class="material-symbols-outlined text-base">logout</span>
+Déconnexion
+</button>
+</form>
+</div>
+</div>
+@else
 <a href="{{ route('login') }}" class="bg-primary text-on-primary px-6 py-2 rounded-lg font-label-bold hover:opacity-90 transition-all">Connexion</a>
+@endauth
 </div>
 <button class="md:hidden text-primary">
 <span class="material-symbols-outlined text-3xl">menu</span>
@@ -132,101 +156,7 @@
 </header>
 <main>
 
-{{-- ═══════════════════════════════════════ HERO SLIDER ══════════════════════════════════════ --}}
-<style>
-#hs{position:relative;height:80vh;overflow:hidden;background:#111;}
-.hs-slide{position:absolute;inset:0;height:100%;display:flex;align-items:center;opacity:0;transition:opacity .8s ease;pointer-events:none;z-index:0;}
-.hs-slide.on{opacity:1;pointer-events:auto;z-index:1;}
-.hs-slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
-.hs-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.72),transparent);z-index:1;}
-.hs-body{position:relative;z-index:2;width:100%;padding:0 1rem;max-width:1280px;margin:0 auto;}
-@media(min-width:768px){.hs-body{padding:0 4rem;}}
-.hs-btn-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:10;width:48px;height:48px;border-radius:9999px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;}
-.hs-btn-nav:hover{background:rgba(255,255,255,.36);}
-#hs-dot-wrap{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:10;display:flex;gap:8px;align-items:center;}
-.hs-dot{height:8px;border-radius:9999px;border:none;cursor:pointer;transition:all .3s;background:rgba(255,255,255,.4);}
-.hs-dot.on{width:32px!important;background:#fff;}
-</style>
-
-@if($heroSection?->is_active !== false)
-<section id="hs">
-    @foreach($heroSlides as $i => $slide)
-    <div class="hs-slide {{ $i === 0 ? 'on' : '' }}">
-        <img src="{{ $slide['image_url'] ?? '' }}" alt="{{ $slide['title'] ?? '' }}" />
-        <div class="hs-overlay"></div>
-        <div class="hs-body text-white">
-            <div style="max-width:48rem">
-                <h1 class="font-display-hero-mobile md:font-display-hero text-display-hero-mobile md:text-display-hero mb-2">{{ $slide['title'] ?? '' }}</h1>
-                @if(!empty($slide['subtitle']))
-                <h2 class="font-headline-lg text-headline-lg mb-6 text-primary-fixed">{{ $slide['subtitle'] }}</h2>
-                @endif
-                @if(!empty($slide['description']))
-                <p class="font-body-lg text-body-lg mb-8 text-surface-container-highest" style="max-width:42rem">{{ $slide['description'] }}</p>
-                @endif
-                <div style="display:flex;flex-wrap:wrap;gap:1rem">
-                    @if(!empty($slide['cta_primary_text']))
-                    <a href="{{ $slide['cta_primary_link'] ?? '#' }}" class="bg-primary text-on-primary px-8 py-4 rounded-xl font-headline-sm" style="display:inline-flex;align-items:center;gap:8px">{{ $slide['cta_primary_text'] }} <span class="material-symbols-outlined">arrow_forward</span></a>
-                    @endif
-                    @if(!empty($slide['cta_secondary_text']))
-                    <a href="{{ $slide['cta_secondary_link'] ?? '#' }}" style="display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25)" class="text-white px-8 py-4 rounded-xl font-headline-sm">{{ $slide['cta_secondary_text'] }}</a>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-    @endforeach
-
-    <button type="button" id="hs-prev" class="hs-btn-nav" style="left:1rem"><span class="material-symbols-outlined">chevron_left</span></button>
-    <button type="button" id="hs-next" class="hs-btn-nav" style="right:1rem"><span class="material-symbols-outlined">chevron_right</span></button>
-    <div id="hs-dot-wrap"></div>
-</section>
-@endif
-
-@script
-<script>
-(function(){
-    var slides  = document.querySelectorAll('#hs .hs-slide');
-    var dotWrap = document.getElementById('hs-dot-wrap');
-    var cur     = 0;
-    var n       = slides.length;
-    var timer;
-    if(!n || !dotWrap) return;
-
-    for(var i=0;i<n;i++){
-        var d=document.createElement('button');
-        d.type='button';
-        d.className='hs-dot';
-        d.style.width='8px';
-        d.setAttribute('data-i',i);
-        d.addEventListener('click',function(){go(+this.getAttribute('data-i'));});
-        dotWrap.appendChild(d);
-    }
-
-    function updateDots(){
-        var ds=dotWrap.querySelectorAll('.hs-dot');
-        ds.forEach(function(d,i){
-            if(i===cur){d.classList.add('on');d.style.width='32px';}
-            else{d.classList.remove('on');d.style.width='8px';}
-        });
-    }
-
-    function go(idx){
-        slides[cur].classList.remove('on');
-        cur=(idx%n+n)%n;
-        slides[cur].classList.add('on');
-        updateDots();
-        clearInterval(timer);
-        timer=setInterval(function(){go(cur+1);},5000);
-    }
-
-    document.getElementById('hs-prev').addEventListener('click',function(){go(cur-1);});
-    document.getElementById('hs-next').addEventListener('click',function(){go(cur+1);});
-
-    updateDots();
-    timer=setInterval(function(){go(cur+1);},5000);
-})();
-</script>
-@endscript
+@include('livewire.landing.partials.hero-slider')
 
 {{-- ═══════════════════════════════════════ LE PROJET ════════════════════════════════════════ --}}
 @if($projetSection?->is_active !== false)
@@ -282,9 +212,9 @@
 </div>
 <h3 class="font-headline-md text-headline-md mb-4">{{ $card['title'] ?? '' }}</h3>
 <p class="font-body-md text-body-md mb-6 opacity-80">{{ $card['description'] ?? '' }}</p>
-<button type="button" class="font-label-bold flex items-center gap-2 group-hover:gap-4 transition-all {{ $audCtaColor[$ci] ?? '' }}">
+<a href="#guichet" class="font-label-bold flex items-center gap-2 group-hover:gap-4 transition-all {{ $audCtaColor[$ci] ?? '' }}">
 {{ $card['cta_text'] ?? '' }} <span class="material-symbols-outlined">east</span>
-</button>
+</a>
 </div>
 @endforeach
 </div>
@@ -293,7 +223,7 @@
 
 {{-- ═══════════════════════════════════════ LE GUICHET ═══════════════════════════════════════ --}}
 @if($guichetSection?->is_active !== false)
-<section class="py-20 bg-primary text-on-primary overflow-hidden relative" id="guichet">
+<section class="py-20 text-white overflow-hidden relative" id="guichet" style="background-color: #69a313;">
 <div class="absolute right-0 top-0 opacity-10 -mr-20 -mt-20">
 <span class="material-symbols-outlined text-[300px]">meeting_room</span>
 </div>
@@ -420,8 +350,10 @@
 </a>
 @endif
 </div>
-<div class="flex-shrink-0 w-full md:w-1/3 text-center">
-<span class="material-symbols-outlined text-[160px] text-primary/10">event_available</span>
+<div class="flex-shrink-0 w-full md:w-1/3">
+<div class="rounded-2xl overflow-hidden border border-outline-variant shadow-sm">
+<iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D61590282042498&tabs=timeline&width=340&height=400&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true&appId" width="340" height="400" style="border:none;overflow:hidden;width:100%;max-width:340px;" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" loading="lazy"></iframe>
+</div>
 </div>
 </div>
 </section>
@@ -560,206 +492,7 @@
 </section>
 @endif
 
-{{-- ══════════════════════════════════ MÉDIATHÈQUE ══════════════════════════════════════════ --}}
-@if($mediaSection?->is_active !== false && count($mediaPhotos))
-<section class="py-20 bg-surface-container-low scroll-mt-24" id="mediatheque">
-<div class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
-    <div class="text-center mb-10" data-animate="fade-up">
-        <h2 class="font-headline-lg text-headline-lg text-primary mb-4 uppercase">{{ $mediaTitle }}</h2>
-        <div class="h-1.5 w-24 bg-secondary mx-auto rounded-full"></div>
-        <p class="font-body-lg text-on-surface-variant mt-6 max-w-xl mx-auto">{{ $mediaDesc }}</p>
-    </div>
-
-    {{-- Filtres : catégories + Vidéos en dernier --}}
-    <div class="flex justify-center gap-2 mb-8 flex-wrap" data-animate="fade-up" data-delay="50">
-        <button type="button" onclick="filterMedia('all', this)" class="media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-primary text-on-primary transition-all">Tout</button>
-        @foreach($mediaCategories as $cat)
-        <button type="button" onclick="filterMedia('{{ $cat['key'] }}', this)" class="media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-surface border border-outline-variant text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all">{{ $cat['label'] }}</button>
-        @endforeach
-        @if($hasMediaVideos)
-        <button type="button" onclick="filterMedia('__videos__', this)" class="media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-surface border border-outline-variant text-on-surface-variant hover:bg-[#283593] hover:text-white transition-all">
-            <span class="material-symbols-outlined text-sm align-middle mr-0.5">smart_display</span>Vidéos
-        </button>
-        @endif
-    </div>
-
-    {{-- Grille unifiée photos + vidéos --}}
-    <div id="media-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        @foreach($mediaPhotos as $item)
-        @php
-            $isVideo = ($item['type'] ?? 'image') === 'video';
-            $itemSrc = $item['src'] ?? '';
-            $isEmbedVideo = $isVideo && $itemSrc && \App\Support\MediaVideoUrl::isEmbeddable($itemSrc);
-            $embedSrc = $isEmbedVideo ? \App\Support\MediaVideoUrl::embedUrl($itemSrc) : '';
-            $thumbSrc = $isVideo ? \App\Support\MediaVideoUrl::thumbnailUrl($itemSrc) : '';
-            $playSrc = $isEmbedVideo ? $embedSrc : $itemSrc;
-        @endphp
-        <div class="media-item" data-cat="{{ $item['category'] ?? 'terrain' }}" data-type="{{ $isVideo ? 'video' : 'photo' }}" data-animate="zoom-in" data-delay="{{ ($loop->index % 4) * 100 }}">
-            @if($isVideo && !empty($itemSrc))
-            <button type="button"
-                    class="media-video-trigger w-full text-left group"
-                    data-embed="{{ $isEmbedVideo ? '1' : '0' }}"
-                    data-src="{{ $playSrc }}"
-                    data-title="{{ $item['alt'] ?? 'Vidéo' }}">
-                <div class="relative overflow-hidden rounded-2xl aspect-square bg-[#1e1b18] shadow-sm">
-                    @if($thumbSrc)
-                    <img src="{{ $thumbSrc }}" alt="" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-                    @else
-                    <video src="{{ $itemSrc }}#t=0.1" class="w-full h-full object-cover pointer-events-none" muted playsinline preload="metadata"></video>
-                    @endif
-                    <div class="absolute inset-0 bg-black/25 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                        <span class="w-12 h-12 rounded-full bg-white/95 text-[#283593] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                            <span class="material-symbols-outlined text-2xl ml-0.5" style="font-variation-settings:'FILL' 1">play_arrow</span>
-                        </span>
-                    </div>
-                    <span class="absolute bottom-2 left-2 bg-[#283593] text-white text-xs px-2 py-1 rounded-full font-label-bold">Vidéo</span>
-                </div>
-                @if(!empty($item['alt']))
-                <p class="mt-2 text-xs text-on-surface-variant line-clamp-2 px-0.5">{{ $item['alt'] }}</p>
-                @endif
-            </button>
-            @else
-            <div class="relative overflow-hidden rounded-2xl aspect-square bg-surface-container-high group cursor-pointer"
-                 @if(!empty($itemSrc)) onclick="openMediaLightbox('{{ $itemSrc }}', '{{ addslashes($item['alt'] ?? '') }}')" @endif>
-                @if(!empty($itemSrc))
-                <img src="{{ $itemSrc }}" alt="{{ $item['alt'] ?? '' }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center pointer-events-none">
-                    <span class="material-symbols-outlined text-white text-4xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">zoom_in</span>
-                </div>
-                @else
-                <div class="w-full h-full flex items-center justify-center">
-                    <span class="material-symbols-outlined text-outline-variant text-4xl">broken_image</span>
-                </div>
-                @endif
-                <span class="absolute bottom-2 left-2 {{ $catColors[$item['category'] ?? 'terrain'] ?? 'bg-primary text-on-primary' }} text-xs px-2 py-1 rounded-full font-label-bold">
-                    {{ $catLabels[$item['category'] ?? 'terrain'] ?? 'Photo' }}
-                </span>
-            </div>
-            @if(!empty($item['alt']))
-            <p class="mt-2 text-xs text-on-surface-variant line-clamp-2 px-0.5">{{ $item['alt'] }}</p>
-            @endif
-            @endif
-        </div>
-        @endforeach
-    </div>
-</div>
-</section>
-@endif
-
-@script
-<script>
-function filterMedia(cat, btn) {
-    document.querySelectorAll('.media-tab').forEach(function(t) {
-        t.className = 'media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-surface border border-outline-variant text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all';
-    });
-    if (btn) {
-        btn.className = cat === '__videos__'
-            ? 'media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-[#283593] text-white transition-all'
-            : 'media-tab px-5 py-2 rounded-full font-label-bold text-sm bg-primary text-on-primary transition-all';
-    }
-    document.querySelectorAll('#mediatheque .media-item').forEach(function(item) {
-        var type = item.getAttribute('data-type');
-        var itemCat = item.getAttribute('data-cat');
-        var show = cat === 'all'
-            || (cat === '__videos__' && type === 'video')
-            || (cat !== '__videos__' && itemCat === cat);
-        item.style.display = show ? '' : 'none';
-    });
-}
-
-function openMediaLightbox(src, alt) {
-    var overlay = document.getElementById('media-lightbox');
-    var img = document.getElementById('media-lightbox-img');
-    if (!overlay || !img) return;
-    img.src = src;
-    img.alt = alt || '';
-    overlay.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeMediaLightbox() {
-    var overlay = document.getElementById('media-lightbox');
-    if (!overlay) return;
-    overlay.classList.add('hidden');
-    document.body.style.overflow = '';
-}
-
-function openVideoModal(isEmbed, src, title) {
-    var overlay = document.getElementById('video-modal');
-    var content = document.getElementById('video-modal-content');
-    var titleEl = document.getElementById('video-modal-title');
-    if (!overlay || !content || !src) return;
-    content.innerHTML = '';
-    if (isEmbed) {
-        var iframe = document.createElement('iframe');
-        iframe.src = src + (src.indexOf('?') >= 0 ? '&' : '?') + 'autoplay=1';
-        iframe.className = 'w-full h-full border-0 rounded-xl';
-        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-        iframe.allowFullscreen = true;
-        iframe.title = title || 'Vidéo';
-        content.appendChild(iframe);
-    } else {
-        var video = document.createElement('video');
-        video.src = src;
-        video.controls = true;
-        video.autoplay = true;
-        video.playsInline = true;
-        video.preload = 'auto';
-        video.className = 'w-full h-full object-contain rounded-xl bg-black';
-        content.appendChild(video);
-        video.play().catch(function() {});
-    }
-    if (titleEl) titleEl.textContent = title || '';
-    overlay.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeVideoModal() {
-    var overlay = document.getElementById('video-modal');
-    var content = document.getElementById('video-modal-content');
-    if (!overlay) return;
-    overlay.classList.add('hidden');
-    if (content) content.innerHTML = '';
-    document.body.style.overflow = '';
-}
-
-function initMediaVideoTriggers() {
-    document.querySelectorAll('.media-video-trigger').forEach(function(btn) {
-        if (btn.dataset.bound) return;
-        btn.dataset.bound = '1';
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            openVideoModal(btn.dataset.embed === '1', btn.dataset.src || '', btn.dataset.title || 'Vidéo');
-        });
-    });
-}
-
-window.filterMedia = filterMedia;
-window.openMediaLightbox = openMediaLightbox;
-window.closeMediaLightbox = closeMediaLightbox;
-window.openVideoModal = openVideoModal;
-window.closeVideoModal = closeVideoModal;
-
-initMediaVideoTriggers();
-document.addEventListener('livewire:navigated', initMediaVideoTriggers);
-document.addEventListener('livewire:updated', initMediaVideoTriggers);
-</script>
-@endscript
-
-<div id="media-lightbox" class="hidden fixed inset-0 z-[200] bg-black/90 flex items-center justify-center p-4" onclick="closeMediaLightbox()">
-    <button type="button" onclick="closeMediaLightbox()" class="absolute top-4 right-4 text-white p-2 rounded-full hover:bg-white/10">
-        <span class="material-symbols-outlined text-3xl">close</span>
-    </button>
-    <img id="media-lightbox-img" src="" alt="" class="max-w-full max-h-[90vh] object-contain rounded-lg" onclick="event.stopPropagation()" />
-</div>
-
-<div id="video-modal" class="hidden fixed inset-0 z-[200] bg-black/92 flex flex-col items-center justify-center p-4 md:p-8" onclick="closeVideoModal()">
-    <button type="button" onclick="closeVideoModal()" class="absolute top-4 right-4 text-white p-2 rounded-full hover:bg-white/10 z-10">
-        <span class="material-symbols-outlined text-3xl">close</span>
-    </button>
-    <p id="video-modal-title" class="text-white font-label-bold text-base mb-4 max-w-4xl w-full text-center"></p>
-    <div id="video-modal-content" class="w-full max-w-4xl aspect-video" onclick="event.stopPropagation()"></div>
-</div>
+@include('livewire.landing.partials.mediatheque-section')
 
 {{-- ══════════════════════════════════════ CONTACT ═══════════════════════════════════════════ --}}
 @if($contactSection?->is_active !== false)
@@ -818,7 +551,7 @@ document.addEventListener('livewire:updated', initMediaVideoTriggers);
         <div class="max-w-xs flex-shrink-0" data-animate="fade-up">
             <img alt="Agro Eco BAARA Logo" class="h-16 w-auto object-contain mb-4"
                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuRijQqvLp95sSNJwMjLI846xn1Rab8bMWm4HXf2LoeFhSSJAV2H3hkdFznbOcXXc7xwEPkwgr6yjCndWw0vhacjZOsgGZEDO0gInmfHIf657Zemle0pmNnUVdBkNWCOx6TOt2UrH_YUA955jayCGr6ZsHkiccenXgjmHpRmrfgnPWy1kgXE5uBckIHGDhPKhE9nXK5mXkD-UL0qoKFcEDgtn8qhEF6YORJ9LE3sLjr1Xe50pV3eG05QpuovYzBoUxGufwtjyr903a"/>
-            <p class="text-on-surface-variant font-body-sm">Facilitateur d'avenir pour l'agroécologie au Burkina Faso. Connecter les compétences d'aujourd'hui aux défis de demain.</p>
+            <p class="text-on-surface-variant font-body-sm">Connecter les compétences d'aujourd'hui aux défis de demain.</p>
         </div>
 
         {{-- Liens navigation --}}
@@ -837,14 +570,13 @@ document.addEventListener('livewire:updated', initMediaVideoTriggers);
                 <ul class="space-y-2 text-body-sm text-on-surface-variant">
                     <li><a class="hover:text-primary" href="#mediatheque">Médiathèque</a></li>
                     <li><a class="hover:text-primary" href="{{ route('bibliotheque') }}">Bibliothèque</a></li>
-                    <li><a class="hover:text-primary" href="#contact">Contact</a></li>
+                    <li><a class="hover:text-primary" href="#contact">Contactez-nous</a></li>
                 </ul>
             </div>
             <div>
                 <h6 class="font-label-bold text-on-surface mb-4">Légal</h6>
                 <ul class="space-y-2 text-body-sm text-on-surface-variant">
-                    <li><a class="hover:text-primary" href="#">Mentions Légales</a></li>
-                    <li><a class="hover:text-primary" href="#">Confidentialité</a></li>
+                    <li><a class="hover:text-primary" href="{{ route('privacy') }}">Politique de confidentialité</a></li>
                 </ul>
             </div>
         </div>
@@ -854,7 +586,7 @@ document.addEventListener('livewire:updated', initMediaVideoTriggers);
 
     {{-- Barre de copyright --}}
     <div class="border-t border-outline-variant/30 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-        <p class="text-body-sm text-on-surface-variant">Copyright © 2020 Yam-Pukri. Tous Droits Réservés.</p>
+        <p class="text-body-sm text-on-surface-variant">© 2026 Agro Eco Baara. Tous droits réservés. Conçu par <a href="https://yam-pukri.org" target="_blank" class="hover:text-primary underline">Yam Pukri</a> (yam-pukri.org)</p>
     </div>
 
 </div>

@@ -3,6 +3,7 @@
 namespace App\Livewire\Candidates;
 
 use App\Enums\Gender;
+use App\Exports\CandidatesExport;
 use App\Models\Candidate;
 use App\Models\ReferentialCommune;
 use App\Models\ReferentialEducationLevel;
@@ -36,6 +37,8 @@ class CandidateIndex extends Component
     public string $gender = '';
 
     public int $perPage = 10;
+    public string $exportFrom = '';
+    public string $exportTo = '';
 
     public function updatedSearch(): void
     {
@@ -51,6 +54,14 @@ class CandidateIndex extends Component
     {
         $this->reset(['search', 'commune', 'skill', 'education', 'gender']);
         $this->resetPage();
+    }
+
+    public function export()
+    {
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new CandidatesExport($this->exportFrom ?: null, $this->exportTo ?: null),
+            'candidats_' . date('Y-m-d') . '.xlsx'
+        );
     }
 
     public function render()
