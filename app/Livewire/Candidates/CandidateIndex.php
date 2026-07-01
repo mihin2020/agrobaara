@@ -56,10 +56,22 @@ class CandidateIndex extends Component
         $this->resetPage();
     }
 
+    public string $exportGender = '';
+    public string $exportCommune = '';
+    public string $exportEducation = '';
+    public string $exportSkill = '';
+
     public function export()
     {
         return \Maatwebsite\Excel\Facades\Excel::download(
-            new CandidatesExport($this->exportFrom ?: null, $this->exportTo ?: null),
+            new CandidatesExport(
+                from: $this->exportFrom ?: null,
+                to: $this->exportTo ?: null,
+                gender: $this->exportGender ?: null,
+                commune: $this->exportCommune ?: null,
+                education: $this->exportEducation ?: null,
+                skill: $this->exportSkill ?: null,
+            ),
             'candidats_' . date('Y-m-d') . '.xlsx'
         );
     }

@@ -6,7 +6,7 @@
         <span class="material-symbols-outlined text-sm" x-text="open ? 'expand_less' : 'expand_more'"></span>
     </button>
     <div x-show="open" @click.away="open = false" x-transition
-         class="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-lg border border-[#c1c9b6] p-4 z-50 space-y-3">
+         class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-[#c1c9b6] p-4 z-50 space-y-3">
         <p class="text-xs font-bold text-[#1e1b18] uppercase tracking-wide">Période d'export</p>
         <div class="grid grid-cols-2 gap-2">
             <div>
@@ -20,6 +20,15 @@
                        class="w-full px-2 py-1.5 text-xs border border-[#c1c9b6] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#2c6904]/30 focus:border-[#2c6904]" />
             </div>
         </div>
+
+        {{-- Filtres additionnels (slot) --}}
+        @if(isset($filters))
+        <div class="border-t border-[#c1c9b6] pt-3">
+            <p class="text-xs font-bold text-[#1e1b18] uppercase tracking-wide mb-2">Filtres</p>
+            {{ $filters }}
+        </div>
+        @endif
+
         <p class="text-[10px] text-[#717a69]">Laissez vide pour exporter tout.</p>
         <button wire:click="export" @click="open = false" type="button"
                 class="w-full flex items-center justify-center gap-2 bg-[#2c6904] text-white py-2 px-4 rounded-lg font-semibold text-xs hover:bg-[#448322] transition-colors">

@@ -22,13 +22,18 @@ class MatchIndex extends Component
     public string $status = '';
     public string $exportFrom = '';
     public string $exportTo = '';
+    public string $exportStatus = '';
 
     public function updatedStatus(): void { $this->resetPage(); }
 
     public function export()
     {
         return \Maatwebsite\Excel\Facades\Excel::download(
-            new MatchesExport($this->exportFrom ?: null, $this->exportTo ?: null),
+            new MatchesExport(
+                from: $this->exportFrom ?: null,
+                to: $this->exportTo ?: null,
+                status: $this->exportStatus ?: null,
+            ),
             'matchings_' . date('Y-m-d') . '.xlsx'
         );
     }

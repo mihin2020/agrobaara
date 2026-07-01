@@ -5,6 +5,7 @@ namespace App\Livewire\Offers;
 use App\Enums\OfferStatus;
 use App\Exports\OffersExport;
 use App\Models\JobOffer;
+use App\Models\ReferentialCommune;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -25,6 +26,8 @@ class OfferIndex extends Component
     public string $status = '';
     public string $exportFrom = '';
     public string $exportTo = '';
+    public string $exportStatus = '';
+    public string $exportCommune = '';
 
     public function updatedSearch(): void { $this->resetPage(); }
     public function updatedStatus(): void { $this->resetPage(); }
@@ -32,7 +35,12 @@ class OfferIndex extends Component
     public function export()
     {
         return \Maatwebsite\Excel\Facades\Excel::download(
-            new OffersExport($this->exportFrom ?: null, $this->exportTo ?: null),
+            new OffersExport(
+                from: $this->exportFrom ?: null,
+                to: $this->exportTo ?: null,
+                status: $this->exportStatus ?: null,
+                commune: $this->exportCommune ?: null,
+            ),
             'offres_' . date('Y-m-d') . '.xlsx'
         );
     }
@@ -82,7 +90,8 @@ class OfferIndex extends Component
             ->paginate(10);
 
         $statuses = OfferStatus::cases();
+        $communes = ReferentialCommune::active()->get();
 
-        return view('livewire.offers.offer-index', compact('offers', 'statuses'));
+        return view('livewire.offers.offer-index', compact('offers', 'statuses', 'communes'));
     }
 }

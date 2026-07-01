@@ -15,6 +15,7 @@ class MatchesExport implements FromCollection, WithHeadings, WithMapping, WithSt
     public function __construct(
         protected ?string $from = null,
         protected ?string $to = null,
+        protected ?string $status = null,
     ) {}
 
     public function collection()
@@ -22,6 +23,7 @@ class MatchesExport implements FromCollection, WithHeadings, WithMapping, WithSt
         return CandidateMatch::with(['candidate', 'offer.company', 'operator'])
             ->when($this->from, fn($q) => $q->whereDate('created_at', '>=', $this->from))
             ->when($this->to, fn($q) => $q->whereDate('created_at', '<=', $this->to))
+            ->when($this->status, fn($q) => $q->where('status', $this->status))
             ->latest()
             ->get();
     }

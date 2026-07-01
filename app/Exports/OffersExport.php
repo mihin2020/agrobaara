@@ -15,6 +15,8 @@ class OffersExport implements FromCollection, WithHeadings, WithMapping, WithSty
     public function __construct(
         protected ?string $from = null,
         protected ?string $to = null,
+        protected ?string $status = null,
+        protected ?string $commune = null,
     ) {}
 
     public function collection()
@@ -22,6 +24,8 @@ class OffersExport implements FromCollection, WithHeadings, WithMapping, WithSty
         return JobOffer::with(['company', 'skills'])
             ->when($this->from, fn($q) => $q->whereDate('created_at', '>=', $this->from))
             ->when($this->to, fn($q) => $q->whereDate('created_at', '<=', $this->to))
+            ->when($this->status, fn($q) => $q->where('status', $this->status))
+            ->when($this->commune, fn($q) => $q->whereJsonContains('locations', $this->commune))
             ->latest()
             ->get();
     }

@@ -7,7 +7,52 @@
             <p class="text-[#41493b] mt-1 text-sm">Gérez et suivez les parcours des jeunes talents de l'agroécologie.</p>
         </div>
         <div class="flex items-center gap-2">
-            <x-export-button />
+            <x-export-button>
+                <x-slot:filters>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[10px] font-semibold text-[#717a69]">Genre</label>
+                            <select wire:model="exportGender"
+                                    class="w-full px-2 py-1.5 text-xs border border-[#c1c9b6] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#2c6904]/30 focus:border-[#2c6904]">
+                                <option value="">Tous</option>
+                                @foreach($genders as $g)
+                                    <option value="{{ $g['value'] }}">{{ $g['label'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-semibold text-[#717a69]">Commune</label>
+                            <select wire:model="exportCommune"
+                                    class="w-full px-2 py-1.5 text-xs border border-[#c1c9b6] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#2c6904]/30 focus:border-[#2c6904]">
+                                <option value="">Toutes</option>
+                                @foreach($communes as $c)
+                                    <option value="{{ $c->id }}">{{ $c->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-semibold text-[#717a69]">Niveau d'étude</label>
+                            <select wire:model="exportEducation"
+                                    class="w-full px-2 py-1.5 text-xs border border-[#c1c9b6] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#2c6904]/30 focus:border-[#2c6904]">
+                                <option value="">Tous</option>
+                                @foreach($educations as $e)
+                                    <option value="{{ $e['value'] }}">{{ $e['label'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-semibold text-[#717a69]">Compétence</label>
+                            <select wire:model="exportSkill"
+                                    class="w-full px-2 py-1.5 text-xs border border-[#c1c9b6] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#2c6904]/30 focus:border-[#2c6904]">
+                                <option value="">Toutes</option>
+                                @foreach($skills as $s)
+                                    <option value="{{ $s->id }}">{{ $s->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </x-slot:filters>
+            </x-export-button>
             @can('create', \App\Models\Candidate::class)
                 <a href="{{ route('admin.candidates.create') }}" wire:navigate
                    class="flex items-center gap-2 bg-[#2c6904] text-white py-2.5 px-5 rounded-xl font-semibold text-sm shadow-sm hover:bg-[#448322] transition-colors">

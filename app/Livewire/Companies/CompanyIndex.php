@@ -2,8 +2,10 @@
 
 namespace App\Livewire\Companies;
 
+use App\Enums\CompanyStatus;
 use App\Exports\CompaniesExport;
 use App\Models\Company;
+use App\Models\ReferentialCommune;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -21,13 +23,20 @@ class CompanyIndex extends Component
     public string $search = '';
     public string $exportFrom = '';
     public string $exportTo = '';
+    public string $exportCommune = '';
+    public string $exportStatus = '';
 
     public function updatedSearch(): void { $this->resetPage(); }
 
     public function export()
     {
         return \Maatwebsite\Excel\Facades\Excel::download(
-            new CompaniesExport($this->exportFrom ?: null, $this->exportTo ?: null),
+            new CompaniesExport(
+                from: $this->exportFrom ?: null,
+                to: $this->exportTo ?: null,
+                commune: $this->exportCommune ?: null,
+                status: $this->exportStatus ?: null,
+            ),
             'entreprises_' . date('Y-m-d') . '.xlsx'
         );
     }
@@ -45,6 +54,9 @@ class CompanyIndex extends Component
             ->latest()
             ->paginate(10);
 
-        return view('livewire.companies.company-index', compact('companies'));
+        $communes = ReferentialCommune::active()->get();
+        $statuses = collect(CompanyStatus::cases())->map(fn($s) => ['value' => $s->value, 'label' => $s->label()]);
+
+        return view('livewire.companies.company-index', compact('companies', 'communes', 'statuses'));
     }
 }
