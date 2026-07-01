@@ -55,6 +55,12 @@ class UserIndex extends Component
         $user = User::findOrFail($this->deleteUserId);
         $this->authorize('delete', $user);
 
+        if ($user->is_system) {
+            session()->flash('error', 'Ce compte système ne peut pas être supprimé.');
+            $this->reset(['confirmingDelete', 'deleteUserId']);
+            return;
+        }
+
         if ($user->id === Auth::id()) {
             session()->flash('error', 'Vous ne pouvez pas supprimer votre propre compte.');
             $this->reset(['confirmingDelete', 'deleteUserId']);
@@ -209,6 +215,7 @@ class UserIndex extends Component
     public function render()
     {
         $users = User::with('roles')
+            ->where('is_system', false)
             ->when($this->search, fn($q) => $q->where(function ($q) {
                 $q->where('first_name', 'like', "%{$this->search}%")
                   ->orWhere('last_name', 'like', "%{$this->search}%")

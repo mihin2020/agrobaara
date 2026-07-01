@@ -25,6 +25,7 @@ class User extends Authenticatable
         'locked_until',
         'last_login_at',
         'last_login_ip',
+        'is_system',
     ];
 
     protected $hidden = [
@@ -40,6 +41,7 @@ class User extends Authenticatable
             'last_login_at'         => 'datetime',
             'locked_until'          => 'datetime',
             'failed_login_attempts' => 'integer',
+            'is_system'             => 'boolean',
         ];
     }
 
