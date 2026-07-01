@@ -57,8 +57,8 @@
         <div class="mx-auto w-full max-w-md">
 
             {{-- Logo mobile --}}
-            <div class="lg:hidden mt-10 mb-8 flex justify-center">
-                <img src="{{ asset('images/logo.jpeg') }}" alt="Logo" class="h-14 w-auto mx-auto">
+            <div class="lg:hidden mt-4 mb-8 flex justify-center">
+                <img src="{{ asset('images/logo.jpeg') }}" alt="Logo" class="h-24 w-auto mx-auto">
             </div>
 
             {{-- Message succès --}}
