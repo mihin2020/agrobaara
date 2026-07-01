@@ -157,6 +157,11 @@
             <p class="mt-8 text-center text-xs text-[#717a69]">
                 Accès réservé aux agents du guichet Agro Eco BAARA.
             </p>
+
+            <a href="{{ route('home') }}" class="mt-4 flex items-center justify-center gap-1 text-sm text-[#2c6904] hover:underline font-medium">
+                <span class="material-symbols-outlined text-base">arrow_back</span>
+                Retour à l'accueil
+            </a>
         </div>
     </div>
 </div>

@@ -608,7 +608,7 @@ Déconnexion
 
     {{-- Barre de copyright --}}
     <div class="border-t border-outline-variant/30 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-        <p class="text-body-sm text-on-surface-variant">© 2026 Agro Eco Baara. Tous droits réservés.</p>
+        <p class="text-body-sm text-on-surface-variant">© 2026 Agro Eco Baara. Tous droits réservés. Conçu par <a href="https://yam-pukri.org" target="_blank" class="hover:text-primary underline">Yam Pukri</a></p>
     </div>
 
 </div>
