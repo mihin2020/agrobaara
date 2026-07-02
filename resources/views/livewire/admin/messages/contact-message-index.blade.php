@@ -111,6 +111,45 @@
                         @if($selected->ip_address)
                             <p class="text-[10px] text-[#717a69]">IP : {{ $selected->ip_address }}</p>
                         @endif
+
+                        <hr class="border-[#c1c9b6]" />
+
+                        {{-- Réponse déjà envoyée --}}
+                        @if($selected->replied_at)
+                            <div class="bg-[#f5f9f2] border-l-4 border-[#2c6904] rounded-lg p-4 space-y-1">
+                                <div class="flex items-center gap-2 text-[#2c6904]">
+                                    <span class="material-symbols-outlined text-sm">reply</span>
+                                    <span class="text-xs font-bold">Réponse envoyée le {{ $selected->replied_at->format('d/m/Y à H:i') }}</span>
+                                </div>
+                                <p class="text-sm text-[#1e1b18] whitespace-pre-wrap">{{ $selected->reply_message }}</p>
+                            </div>
+                        @endif
+
+                        {{-- Message de succès --}}
+                        @if(session('reply_success'))
+                            <div class="bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3 text-sm flex items-center gap-2">
+                                <span class="material-symbols-outlined text-base">check_circle</span>{{ session('reply_success') }}
+                            </div>
+                        @endif
+
+                        {{-- Formulaire de réponse --}}
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2 text-sm font-semibold text-[#1e1b18]">
+                                <span class="material-symbols-outlined text-base text-[#2c6904]">mail</span>
+                                {{ $selected->replied_at ? 'Envoyer une nouvelle réponse' : 'Répondre par e-mail' }}
+                            </label>
+                            <textarea wire:model="replyMessage" rows="4"
+                                      placeholder="Votre réponse sera envoyée directement à {{ $selected->email }}..."
+                                      class="w-full px-4 py-2.5 bg-[#fbf2ed] border {{ $errors->has('replyMessage') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904] resize-none"></textarea>
+                            @error('replyMessage') <p class="text-xs text-red-600">{{ $message }}</p> @enderror
+                            <button wire:click="sendReply"
+                                    wire:loading.attr="disabled" wire:target="sendReply"
+                                    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2c6904] text-white font-semibold text-sm rounded-xl hover:bg-[#245503] transition-colors disabled:opacity-60">
+                                <span wire:loading wire:target="sendReply" class="material-symbols-outlined animate-spin text-base">progress_activity</span>
+                                <span wire:loading.remove wire:target="sendReply" class="material-symbols-outlined text-base">send</span>
+                                Envoyer la réponse
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -115,4 +115,17 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Administrator Address
+    |--------------------------------------------------------------------------
+    |
+    | Adresse utilisée comme "Reply-To" pour les réponses envoyées aux
+    | visiteurs depuis le back-office, afin que leurs réponses arrivent
+    | dans une boîte surveillée.
+    |
+    */
+
+    'admin_address' => env('MAIL_ADMIN_ADDRESS'),
+
 ];

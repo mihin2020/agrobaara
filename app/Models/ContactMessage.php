@@ -13,6 +13,7 @@ class ContactMessage extends Model
         'full_name', 'email', 'phone', 'profile',
         'subject', 'message', 'rgpd_consent',
         'is_read', 'read_at', 'ip_address',
+        'reply_message', 'replied_at', 'replied_by',
     ];
 
     protected function casts(): array
@@ -21,6 +22,7 @@ class ContactMessage extends Model
             'rgpd_consent' => 'boolean',
             'is_read'      => 'boolean',
             'read_at'      => 'datetime',
+            'replied_at'   => 'datetime',
         ];
     }
 
@@ -32,5 +34,14 @@ class ContactMessage extends Model
     public function markAsRead(): void
     {
         $this->update(['is_read' => true, 'read_at' => now()]);
+    }
+
+    public function markAsReplied(string $reply, ?string $userId = null): void
+    {
+        $this->update([
+            'reply_message' => $reply,
+            'replied_at'    => now(),
+            'replied_by'    => $userId,
+        ]);
     }
 }
