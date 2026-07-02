@@ -7,6 +7,8 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use App\Notifications\UserInvitedNotification;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -160,6 +162,30 @@ class UserIndex extends Component
 
         $this->reset(['showRoleModal', 'roleModalUserId', 'roleModalUserName', 'selectedRoleId']);
         session()->flash('success', "Rôle de {$user->full_name} mis à jour : {$role->name}.");
+    }
+
+    // ── Renvoi de l'invitation ────────────────────────────────────────
+
+    public function resendInvitation(string $userId): void
+    {
+        $user = User::findOrFail($userId);
+
+        $this->authorize('create', User::class);
+
+        if ($user->is_system) {
+            session()->flash('error', 'Ce compte système ne peut pas recevoir d\'invitation.');
+            return;
+        }
+
+        $token = Password::createToken($user);
+        $user->notify(new UserInvitedNotification($token, Auth::user()));
+
+        activity()
+            ->causedBy(Auth::user())
+            ->performedOn($user)
+            ->log('user_invitation_resent');
+
+        session()->flash('success', "Invitation renvoyée à {$user->email}.");
     }
 
     // ── Changement de mot de passe ───────────────────────────────────

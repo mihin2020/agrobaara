@@ -101,6 +101,17 @@
                                         </button>
                                     @endif
 
+                                    {{-- Renvoyer l'invitation (compte en attente ou non actif) --}}
+                                    @can('create', \App\Models\User::class)
+                                        @if(!$user->is_system && $user->status->value !== 'active')
+                                            <button wire:click="resendInvitation('{{ $user->id }}')"
+                                                    class="p-1.5 text-[#41493b] hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors"
+                                                    title="Renvoyer l'invitation">
+                                                <span class="material-symbols-outlined text-lg">send</span>
+                                            </button>
+                                        @endif
+                                    @endcan
+
                                     {{-- Changer le mot de passe (super admin seulement) --}}
                                     @if(auth()->user()->isSuperAdmin())
                                         <button wire:click="openPasswordModal('{{ $user->id }}')"
