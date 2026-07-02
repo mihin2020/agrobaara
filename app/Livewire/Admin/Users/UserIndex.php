@@ -185,7 +185,7 @@ class UserIndex extends Component
             ->performedOn($user)
             ->log('user_invitation_resent');
 
-        session()->flash('success', "Invitation renvoyée à {$user->email}.");
+        session()->flash('success', "Lien de réinitialisation renvoyé à {$user->email}.");
     }
 
     // ── Changement de mot de passe ───────────────────────────────────

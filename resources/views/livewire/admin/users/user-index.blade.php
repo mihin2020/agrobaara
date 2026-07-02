@@ -101,12 +101,12 @@
                                         </button>
                                     @endif
 
-                                    {{-- Renvoyer l'invitation (compte en attente ou non actif) --}}
+                                    {{-- Renvoyer le lien de réinitialisation du compte (compte en attente ou non actif) --}}
                                     @can('create', \App\Models\User::class)
                                         @if(!$user->is_system && $user->status->value !== 'active')
                                             <button wire:click="resendInvitation('{{ $user->id }}')"
                                                     class="p-1.5 text-[#41493b] hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors"
-                                                    title="Renvoyer l'invitation">
+                                                    title="Renvoyer le lien de réinitialisation du compte">
                                                 <span class="material-symbols-outlined text-lg">send</span>
                                             </button>
                                         @endif

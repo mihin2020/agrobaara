@@ -34,7 +34,7 @@ class UserInvitedNotification extends Notification
             ->line("Votre compte d'accès au back-office **Agro Eco BAARA** a été créé par {$this->invitedBy->full_name}.")
             ->line('Cliquez sur le bouton ci-dessous pour définir votre mot de passe et activer votre compte.')
             ->action('Définir mon mot de passe', $url)
-            ->line('Ce lien expirera dans **60 minutes**. Contactez votre administrateur si vous avez besoin d\'un nouveau lien.')
+            ->line('Ce lien expirera dans **24 heures**. Contactez votre administrateur si vous avez besoin d\'un nouveau lien.')
             ->salutation('L\'équipe Agro Eco BAARA');
     }
 }
