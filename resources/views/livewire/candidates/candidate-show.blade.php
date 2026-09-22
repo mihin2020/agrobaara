@@ -155,7 +155,7 @@
                 <div class="p-5 flex flex-wrap gap-3">
                     @if($candidate->photo_path)
                         <button type="button"
-                                @click="$dispatch('open-photo-lightbox', { src: '{{ Storage::url($candidate->photo_path) }}', alt: 'Photo d\'identité - {{ addslashes($candidate->full_name) }}' })"
+                                @click="$dispatch('open-photo-lightbox', { src: {{ \Illuminate\Support\Js::from(Storage::url($candidate->photo_path)) }}, alt: {{ \Illuminate\Support\Js::from("Photo d'identité - ".$candidate->full_name) }} })"
                                 class="flex items-center gap-2.5 px-3 py-2.5 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl hover:border-[#2c6904]/50 transition-colors group cursor-pointer">
                             <span class="material-symbols-outlined text-[#2c6904] text-lg">portrait</span>
                             <span class="text-xs font-semibold text-[#1e1b18] group-hover:text-[#2c6904]">Photo d'identité</span>

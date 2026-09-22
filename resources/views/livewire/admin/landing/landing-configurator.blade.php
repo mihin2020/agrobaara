@@ -450,7 +450,7 @@
                         </div>
                         <div class="md:col-span-2"
                              x-data="{
-                                 preview: '{{ addslashes($formData['image_url'] ?? '') }}',
+                                 preview: {{ \Illuminate\Support\Js::from($formData['image_url'] ?? '') }},
                                  uploading: false,
                                  success: false,
                                  init() {

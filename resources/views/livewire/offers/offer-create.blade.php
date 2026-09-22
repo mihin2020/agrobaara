@@ -66,7 +66,14 @@
     </div>
 
     {{-- Compétences requises --}}
-    <div class="bg-white rounded-2xl border border-[#c1c9b6] shadow-sm overflow-hidden" x-data="{ skillFilter: '' }">
+    <div class="bg-white rounded-2xl border border-[#c1c9b6] shadow-sm overflow-hidden"
+         x-data="{
+            skillFilter: '',
+            matches(el) {
+                if (!this.skillFilter) return true;
+                return (el.dataset.skill || '').toLowerCase().includes(this.skillFilter.toLowerCase());
+            }
+         }">
         <div class="px-6 py-4 border-b border-[#c1c9b6] bg-[#fbf2ed] flex items-center gap-2">
             <span class="material-symbols-outlined text-base text-[#615c47]">psychology</span>
             <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Compétences requises *</h3>
@@ -80,8 +87,8 @@
             </div>
             <div class="flex flex-wrap gap-2 max-h-52 overflow-y-auto p-3 bg-[#fbf2ed] rounded-xl border border-[#c1c9b6]">
                 @foreach($skills as $skill)
-                    <label x-show="!skillFilter || '{{ strtolower(addslashes($skill->name)) }}'.includes(skillFilter.toLowerCase())"
-                           x-cloak
+                    <label x-show="matches($el)"
+                           data-skill="{{ $skill->name }}"
                            class="flex items-center gap-1.5 cursor-pointer px-2.5 py-1.5 rounded-lg border transition-all
                                   border-[#c1c9b6] bg-white text-[#41493b] hover:border-[#615c47]/50
                                   has-[:checked]:border-[#615c47] has-[:checked]:bg-[#ebe2c8]/30 has-[:checked]:text-[#615c47]">

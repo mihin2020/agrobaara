@@ -58,7 +58,14 @@
             </button>
             @else
             <div class="relative overflow-hidden rounded-2xl aspect-square bg-surface-container-high group cursor-pointer"
-                 @if(!empty($itemSrc)) onclick="openMediaLightbox('{{ $itemSrc }}', '{{ addslashes($item['alt'] ?? '') }}')" @endif>
+                 @if(!empty($itemSrc))
+                     role="button"
+                     tabindex="0"
+                     data-lightbox-src="{{ $itemSrc }}"
+                     data-lightbox-alt="{{ $item['alt'] ?? '' }}"
+                     onclick="openMediaLightbox(this.dataset.lightboxSrc, this.dataset.lightboxAlt || '')"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openMediaLightbox(this.dataset.lightboxSrc, this.dataset.lightboxAlt || '')}"
+                 @endif>
                 @if(!empty($itemSrc))
                 <img src="{{ $itemSrc }}" alt="{{ $item['alt'] ?? '' }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center pointer-events-none">

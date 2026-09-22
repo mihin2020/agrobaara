@@ -329,7 +329,13 @@
                     <span class="material-symbols-outlined text-[#2c6904]">work_history</span>
                     Section D - Compétences & Expériences
                 </h3>
-                <div x-data="{ skillFilter: '' }">
+                <div x-data="{
+                    skillFilter: '',
+                    matches(el) {
+                        if (!this.skillFilter) return true;
+                        return (el.dataset.skill || '').toLowerCase().includes(this.skillFilter.toLowerCase());
+                    }
+                }">
                     <label class="block text-sm font-semibold text-[#1e1b18] mb-2">Compétences</label>
                     <div class="relative mb-3">
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#717a69] text-base">search</span>
@@ -338,8 +344,8 @@
                     </div>
                     <div class="flex flex-wrap gap-2 max-h-48 overflow-y-auto p-3 bg-[#fbf2ed] rounded-xl border border-[#c1c9b6]">
                         @foreach($skills as $skill)
-                            <label x-show="!skillFilter || '{{ strtolower(addslashes($skill->name)) }}'.includes(skillFilter.toLowerCase())"
-                                   x-cloak
+                            <label x-show="matches($el)"
+                                   data-skill="{{ $skill->name }}"
                                    class="flex items-center gap-1.5 cursor-pointer px-2.5 py-1.5 rounded-lg border transition-all
                                           border-[#c1c9b6] bg-white text-[#41493b] hover:border-[#2c6904]/50
                                           has-[:checked]:border-[#2c6904] has-[:checked]:bg-[#aef585]/20 has-[:checked]:text-[#2c6904]">

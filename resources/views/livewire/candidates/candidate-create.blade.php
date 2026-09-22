@@ -329,8 +329,9 @@
                 <div class="flex flex-wrap gap-3">
                     @foreach($languages as $language)
                         <label class="flex items-center gap-2 cursor-pointer px-3 py-2 rounded-xl border transition-all
-                            {{ in_array($language->id, $language_ids) ? 'border-[#2c6904] bg-[#aef585]/20 text-[#2c6904]' : 'border-[#c1c9b6] text-[#41493b] hover:border-[#2c6904]/50' }}">
-                            <input type="checkbox" wire:model.live="language_ids" value="{{ $language->id }}" class="sr-only" />
+                                      border-[#c1c9b6] text-[#41493b] hover:border-[#2c6904]/50
+                                      has-[:checked]:border-[#2c6904] has-[:checked]:bg-[#aef585]/20 has-[:checked]:text-[#2c6904]">
+                            <input type="checkbox" wire:model="language_ids" value="{{ $language->id }}" class="sr-only" />
                             <span class="text-sm font-semibold">{{ $language->name }}</span>
                         </label>
                     @endforeach
@@ -404,7 +405,13 @@
                 <span class="material-symbols-outlined text-[#2c6904]">work_history</span>
                 Section D - Compétences & Expériences
             </h3>
-            <div x-data="{ skillFilter: '' }">
+            <div x-data="{
+                skillFilter: '',
+                matches(el) {
+                    if (!this.skillFilter) return true;
+                    return (el.dataset.skill || '').toLowerCase().includes(this.skillFilter.toLowerCase());
+                }
+            }">
                 <label class="block text-sm font-semibold text-[#1e1b18] mb-2">Compétences</label>
                 <div class="relative mb-3">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#717a69] text-base">search</span>
@@ -413,8 +420,8 @@
                 </div>
                 <div class="flex flex-wrap gap-2 max-h-48 overflow-y-auto p-3 bg-[#fbf2ed] rounded-xl border border-[#c1c9b6]">
                     @foreach($skills as $skill)
-                        <label x-show="!skillFilter || '{{ strtolower(addslashes($skill->name)) }}'.includes(skillFilter.toLowerCase())"
-                               x-cloak
+                        <label x-show="matches($el)"
+                               data-skill="{{ $skill->name }}"
                                class="flex items-center gap-1.5 cursor-pointer px-2.5 py-1.5 rounded-lg border transition-all
                                       border-[#c1c9b6] bg-white text-[#41493b] hover:border-[#2c6904]/50
                                       has-[:checked]:border-[#2c6904] has-[:checked]:bg-[#aef585]/20 has-[:checked]:text-[#2c6904]">
