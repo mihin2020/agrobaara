@@ -66,37 +66,14 @@
     </div>
 
     {{-- Compétences requises --}}
-    <div class="bg-white rounded-2xl border border-[#c1c9b6] shadow-sm overflow-hidden"
-         x-data="{
-            skillFilter: '',
-            matches(el) {
-                if (!this.skillFilter) return true;
-                return (el.dataset.skill || '').toLowerCase().includes(this.skillFilter.toLowerCase());
-            }
-         }">
+    <div class="bg-white rounded-2xl border border-[#c1c9b6] shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-[#c1c9b6] bg-[#fbf2ed] flex items-center gap-2">
             <span class="material-symbols-outlined text-base text-[#615c47]">psychology</span>
             <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Compétences requises *</h3>
         </div>
         <div class="p-6">
             @error('skill_ids') <p class="text-xs text-red-600 mb-3">{{ $message }}</p> @enderror
-            <div class="relative mb-3">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#717a69] text-base">search</span>
-                <input type="search" x-model="skillFilter" placeholder="Rechercher une compétence..."
-                       class="w-full pl-9 pr-3 py-2 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#615c47]/20 focus:border-[#615c47]" />
-            </div>
-            <div class="flex flex-wrap gap-2 max-h-52 overflow-y-auto p-3 bg-[#fbf2ed] rounded-xl border border-[#c1c9b6]">
-                @foreach($skills as $skill)
-                    <label x-show="matches($el)"
-                           data-skill="{{ $skill->name }}"
-                           class="flex items-center gap-1.5 cursor-pointer px-2.5 py-1.5 rounded-lg border transition-all
-                                  border-[#c1c9b6] bg-white text-[#41493b] hover:border-[#615c47]/50
-                                  has-[:checked]:border-[#615c47] has-[:checked]:bg-[#ebe2c8]/30 has-[:checked]:text-[#615c47]">
-                        <input type="checkbox" wire:model="skill_ids" value="{{ $skill->id }}" class="sr-only" />
-                        <span class="text-xs font-semibold">{{ $skill->name }}</span>
-                    </label>
-                @endforeach
-            </div>
+            <x-skill-picker :skills="$skills" :selected="$skill_ids" accent="offer" />
         </div>
     </div>
 

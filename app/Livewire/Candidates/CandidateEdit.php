@@ -138,6 +138,18 @@ class CandidateEdit extends Component
         $this->experiences = array_values($this->experiences);
     }
 
+    public function toggleSkill(string $skillId): void
+    {
+        if (in_array($skillId, $this->skill_ids, true)) {
+            $this->skill_ids = array_values(array_filter(
+                $this->skill_ids,
+                fn ($id) => (string) $id !== $skillId
+            ));
+        } else {
+            $this->skill_ids[] = $skillId;
+        }
+    }
+
     public function openNationalityModal(): void
     {
         $this->newNationality = '';

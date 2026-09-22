@@ -70,6 +70,18 @@ class OfferEdit extends Component
         }
     }
 
+    public function toggleSkill(string $skillId): void
+    {
+        if (in_array($skillId, $this->skill_ids, true)) {
+            $this->skill_ids = array_values(array_filter(
+                $this->skill_ids,
+                fn ($id) => (string) $id !== $skillId
+            ));
+        } else {
+            $this->skill_ids[] = $skillId;
+        }
+    }
+
     public function save(): void
     {
         $this->validate([

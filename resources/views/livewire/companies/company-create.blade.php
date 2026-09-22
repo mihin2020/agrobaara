@@ -279,29 +279,32 @@
                                 </div>
 
                                 {{-- Compétences recherchées --}}
-                                <div x-data="{
-                                    skillFilter: '',
-                                    matches(el) {
-                                        if (!this.skillFilter) return true;
-                                        return (el.dataset.skill || '').toLowerCase().includes(this.skillFilter.toLowerCase());
-                                    }
-                                }">
+                                <div data-skills-root>
                                     <label class="block text-xs font-semibold text-[#1e1b18] mb-2">Compétences recherchées</label>
                                     <div class="relative mb-2">
                                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#717a69] text-base">search</span>
-                                        <input type="search" x-model="skillFilter" placeholder="Rechercher une compétence..."
+                                        <input type="search" placeholder="Rechercher une compétence..." autocomplete="off"
+                                               oninput="
+                                                   const root = this.closest('[data-skills-root]');
+                                                   const q = this.value.trim().toLowerCase();
+                                                   root.querySelectorAll('[data-skill-name]').forEach((el) => {
+                                                       const name = (el.getAttribute('data-skill-name') || '').toLowerCase();
+                                                       el.style.display = (!q || name.includes(q)) ? '' : 'none';
+                                                   });
+                                               "
                                                class="w-full pl-9 pr-3 py-2 bg-white border border-[#c1c9b6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904]" />
                                     </div>
                                     <div class="flex flex-wrap gap-2 p-3 bg-white rounded-xl border border-[#c1c9b6] max-h-40 overflow-y-auto">
                                         @foreach($skills as $skill)
-                                            <label x-show="matches($el)"
-                                                   data-skill="{{ $skill->name }}"
-                                                   class="flex items-center gap-1.5 cursor-pointer px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all
-                                                          bg-white text-[#41493b] border-[#c1c9b6] hover:border-[#2c6904]/50
-                                                          has-[:checked]:bg-[#2c6904] has-[:checked]:text-white has-[:checked]:border-[#2c6904]">
-                                                <input type="checkbox" wire:model="offers.{{ $i }}.skill_ids" value="{{ $skill->id }}" class="sr-only" />
-                                                <span>{{ $skill->name }}</span>
-                                            </label>
+                                            @php $isOn = in_array($skill->id, $offers[$i]['skill_ids'] ?? [], true); @endphp
+                                            <button type="button"
+                                                    wire:key="offer-{{ $i }}-skill-{{ $skill->id }}"
+                                                    wire:click="toggleOfferSkill({{ $i }}, '{{ $skill->id }}')"
+                                                    data-skill-name="{{ $skill->name }}"
+                                                    class="px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all
+                                                           {{ $isOn ? 'bg-[#2c6904] text-white border-[#2c6904]' : 'bg-white text-[#41493b] border-[#c1c9b6] hover:border-[#2c6904]/50' }}">
+                                                {{ $skill->name }}
+                                            </button>
                                         @endforeach
                                     </div>
                                 </div>
