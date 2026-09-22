@@ -2,6 +2,9 @@
 
 namespace App\Livewire\Offers;
 
+use App\Enums\MatchStatus;
+use App\Models\Candidate;
+use App\Models\CandidateMatch;
 use App\Models\JobOffer;
 use App\Services\MatchingService;
 use Illuminate\Support\Facades\Auth;
@@ -42,6 +45,44 @@ class OfferShow extends Component
     public function toggleSuggestedCandidates(): void
     {
         $this->showSuggestedCandidates = !$this->showSuggestedCandidates;
+    }
+
+    public function proposeMatch(string $candidateId, MatchingService $matchingService): void
+    {
+        $this->authorize('create', CandidateMatch::class);
+
+        if (CandidateMatch::where('candidate_id', $candidateId)->where('offer_id', $this->offer->id)->exists()) {
+            $this->dispatch('notify', type: 'warning', message: 'Cette mise en relation existe déjà.');
+            return;
+        }
+
+        $candidate = Candidate::with('skills', 'commune')->findOrFail($candidateId);
+        $this->offer->loadMissing('skills');
+
+        $score = $matchingService->computeScore(
+            $candidate,
+            $this->offer,
+            $this->offer->skills->pluck('id')->toArray(),
+            collect($this->offer->locations ?? [])
+        );
+
+        $match = CandidateMatch::create([
+            'candidate_id' => $candidate->id,
+            'offer_id'     => $this->offer->id,
+            'status'       => MatchStatus::Proposee,
+            'operator_id'  => Auth::id(),
+            'score'        => $score,
+            'proposed_at'  => now(),
+        ]);
+
+        activity()
+            ->causedBy(Auth::user())
+            ->performedOn($match)
+            ->withProperties(['manual' => true, 'from' => 'offer_suggestions'])
+            ->log('match_created_manual');
+
+        $this->offer->load('matches.candidate.commune', 'matches.candidate.educationLevel');
+        $this->dispatch('notify', type: 'success', message: 'Mise en relation créée avec ' . $candidate->full_name . '.');
     }
 
     public function render(MatchingService $matchingService)

@@ -279,19 +279,23 @@
                                 </div>
 
                                 {{-- Compétences recherchées --}}
-                                <div>
+                                <div x-data="{ skillFilter: '' }">
                                     <label class="block text-xs font-semibold text-[#1e1b18] mb-2">Compétences recherchées</label>
-                                    <div class="flex flex-wrap gap-2 p-3 bg-white rounded-xl border border-[#c1c9b6]">
+                                    <div class="relative mb-2">
+                                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#717a69] text-base">search</span>
+                                        <input type="search" x-model="skillFilter" placeholder="Rechercher une compétence..."
+                                               class="w-full pl-9 pr-3 py-2 bg-white border border-[#c1c9b6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904]" />
+                                    </div>
+                                    <div class="flex flex-wrap gap-2 p-3 bg-white rounded-xl border border-[#c1c9b6] max-h-40 overflow-y-auto">
                                         @foreach($skills as $skill)
-                                            <button type="button"
-                                                    wire:click="toggleOfferSkill({{ $i }}, '{{ $skill->id }}')"
-                                                    @class([
-                                                        'px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all',
-                                                        'bg-[#2c6904] text-white border-[#2c6904]' => in_array($skill->id, $offers[$i]['skill_ids'] ?? []),
-                                                        'bg-white text-[#41493b] border-[#c1c9b6] hover:border-[#2c6904]/50' => !in_array($skill->id, $offers[$i]['skill_ids'] ?? []),
-                                                    ])>
-                                                {{ $skill->name }}
-                                            </button>
+                                            <label x-show="!skillFilter || '{{ strtolower(addslashes($skill->name)) }}'.includes(skillFilter.toLowerCase())"
+                                                   x-cloak
+                                                   class="flex items-center gap-1.5 cursor-pointer px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all
+                                                          bg-white text-[#41493b] border-[#c1c9b6] hover:border-[#2c6904]/50
+                                                          has-[:checked]:bg-[#2c6904] has-[:checked]:text-white has-[:checked]:border-[#2c6904]">
+                                                <input type="checkbox" wire:model="offers.{{ $i }}.skill_ids" value="{{ $skill->id }}" class="sr-only" />
+                                                <span>{{ $skill->name }}</span>
+                                            </label>
                                         @endforeach
                                     </div>
                                 </div>
@@ -301,6 +305,14 @@
                                                  label="Description des missions"
                                                  placeholder="Décrivez les missions, responsabilités et conditions de travail..."
                                                  rows="3" />
+
+                                @can('publish', App\Models\JobOffer::class)
+                                    <label class="flex items-center gap-2 cursor-pointer text-sm text-[#1e1b18]">
+                                        <input type="checkbox" wire:model="offers.{{ $i }}.publish_now"
+                                               class="rounded border-[#c1c9b6] text-[#2c6904] focus:ring-[#2c6904]/30" />
+                                        <span class="font-semibold">Publier cette offre immédiatement</span>
+                                    </label>
+                                @endcan
                             </div>
                         </div>
                     @endforeach

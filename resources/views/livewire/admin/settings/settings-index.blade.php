@@ -72,12 +72,6 @@
 
                     {{-- Formulaire inline --}}
                     <div class="px-6 py-4 border-b border-[#c1c9b6] bg-[#fbfdfb]">
-                        @if(session('success_lang'))
-                            <div class="mb-3 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 rounded-xl px-3 py-2 text-xs">
-                                <span class="material-symbols-outlined text-sm">check_circle</span>
-                                {{ session('success_lang') }}
-                            </div>
-                        @endif
                         <div class="flex gap-2.5">
                             <div class="flex-1">
                                 <input type="text" wire:model="newLanguageName" wire:keydown.enter="saveLanguage"
@@ -87,8 +81,10 @@
                             </div>
                             <div class="w-28">
                                 <input type="text" wire:model="newLanguageCode" wire:keydown.enter="saveLanguage"
+                                       maxlength="10"
                                        placeholder="Code · ex : bm"
-                                       class="w-full px-3.5 py-2.5 bg-[#f5ece7] border border-[#c1c9b6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904] transition-all" />
+                                       class="w-full px-3.5 py-2.5 bg-[#f5ece7] border {{ $errors->has('newLanguageCode') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904] transition-all" />
+                                @error('newLanguageCode') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <button wire:click="saveLanguage"
                                     class="flex items-center gap-1.5 px-4 py-2.5 bg-[#2c6904] text-white text-sm font-semibold rounded-xl hover:bg-[#3a8406] transition-colors whitespace-nowrap shadow-sm shadow-[#2c6904]/20">
@@ -155,12 +151,6 @@
                     </div>
 
                     <div class="px-6 py-4 border-b border-[#c1c9b6] bg-[#fbfdfb]">
-                        @if(session('success_edu'))
-                            <div class="mb-3 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 rounded-xl px-3 py-2 text-xs">
-                                <span class="material-symbols-outlined text-sm">check_circle</span>
-                                {{ session('success_edu') }}
-                            </div>
-                        @endif
                         <div class="flex gap-2.5">
                             <div class="flex-1">
                                 <input type="text" wire:model="newEducationName" wire:keydown.enter="saveEducation"
@@ -236,12 +226,6 @@
                     </div>
 
                     <div class="px-6 py-4 border-b border-[#c1c9b6] bg-[#fbfdfb]">
-                        @if(session('success_nat'))
-                            <div class="mb-3 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 rounded-xl px-3 py-2 text-xs">
-                                <span class="material-symbols-outlined text-sm">check_circle</span>
-                                {{ session('success_nat') }}
-                            </div>
-                        @endif
                         <div class="flex gap-2.5">
                             <div class="flex-1">
                                 <input type="text" wire:model="newNationalityName" wire:keydown.enter="saveNationality"
@@ -309,12 +293,6 @@
                     </div>
 
                     <div class="px-6 py-4 border-b border-[#c1c9b6] bg-[#fbfdfb]">
-                        @if(session('success_skill'))
-                            <div class="mb-3 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 rounded-xl px-3 py-2 text-xs">
-                                <span class="material-symbols-outlined text-sm">check_circle</span>
-                                {{ session('success_skill') }}
-                            </div>
-                        @endif
                         <div class="flex gap-2.5">
                             <div class="flex-1">
                                 <input type="text" wire:model="newSkillName" wire:keydown.enter="saveSkill"

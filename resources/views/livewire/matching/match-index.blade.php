@@ -6,20 +6,29 @@
             <h2 class="font-sora text-xl font-bold text-[#1e1b18]">Matching & Mises en relation</h2>
             <p class="text-[#41493b] mt-1 text-sm">Suivi de toutes les mises en relation candidats–offres.</p>
         </div>
-        <x-export-button>
-            <x-slot:filters>
-                <div>
-                    <label class="text-[10px] font-semibold text-[#717a69]">Statut</label>
-                    <select wire:model="exportStatus"
-                            class="w-full px-2 py-1.5 text-xs border border-[#c1c9b6] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#2c6904]/30 focus:border-[#2c6904]">
-                        <option value="">Tous</option>
-                        @foreach($statuses as $s)
-                            <option value="{{ $s->value }}">{{ $s->label() }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </x-slot:filters>
-        </x-export-button>
+        <div class="flex items-center gap-2">
+            @can('create', App\Models\CandidateMatch::class)
+                <a href="{{ route('admin.matches.create') }}" wire:navigate
+                   class="flex items-center gap-1.5 px-4 py-2 bg-[#2c6904] text-white text-sm font-semibold rounded-xl hover:bg-[#448322] transition-colors">
+                    <span class="material-symbols-outlined text-base">add</span>
+                    Nouvelle mise en relation
+                </a>
+            @endcan
+            <x-export-button>
+                <x-slot:filters>
+                    <div>
+                        <label class="text-[10px] font-semibold text-[#717a69]">Statut</label>
+                        <select wire:model="exportStatus"
+                                class="w-full px-2 py-1.5 text-xs border border-[#c1c9b6] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#2c6904]/30 focus:border-[#2c6904]">
+                            <option value="">Tous</option>
+                            @foreach($statuses as $s)
+                                <option value="{{ $s->value }}">{{ $s->label() }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </x-slot:filters>
+            </x-export-button>
+        </div>
     </div>
 
     {{-- Filtres statut --}}

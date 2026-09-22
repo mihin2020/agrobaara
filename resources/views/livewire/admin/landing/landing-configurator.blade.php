@@ -24,39 +24,7 @@
         <span class="material-symbols-outlined text-base animate-spin">progress_activity</span> Import vidéo…
     </div>
 
-    {{-- Flash --}}
-    @if(session('upload_error'))
-        <div class="flex items-center gap-3 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
-            <span class="material-symbols-outlined text-base flex-shrink-0">error</span>{{ session('upload_error') }}
-        </div>
-    @endif
-    @if(session('upload_success'))
-        <div class="flex items-center gap-3 px-4 py-3 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">
-            <span class="material-symbols-outlined text-base flex-shrink-0">check_circle</span>{{ session('upload_success') }}
-        </div>
-    @endif
-
-    {{-- Toast enregistrement (fixe, visible même dans le modal) --}}
-    @if($saveNotice)
-    <div class="fixed bottom-4 right-4 z-[10050] flex items-center gap-2.5 px-4 py-3 bg-[#2c6904] text-white text-sm font-semibold rounded-xl shadow-2xl shadow-[#2c6904]/30"
-         x-data="{ show: true }"
-         x-init="setTimeout(() => { show = false; $wire.set('saveNotice', ''); }, 4000)"
-         x-show="show"
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0 translate-y-2"
-         x-transition:enter-end="opacity-100 translate-y-0"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0">
-        <span class="material-symbols-outlined text-lg" style="font-variation-settings:'FILL' 1">check_circle</span>
-        {{ $saveNotice }}
-    </div>
-    @endif
-    @if(session('error'))
-        <div class="flex items-center gap-3 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
-            <span class="material-symbols-outlined text-base flex-shrink-0">error</span>{{ session('error') }}
-        </div>
-    @endif
+    {{-- Notifications via toast global --}}
 
     {{-- ══ EN-TÊTE PAGE ══════════════════════════════════════════════════════ --}}
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

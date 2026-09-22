@@ -21,6 +21,7 @@ use App\Livewire\Offers\OfferCreate;
 use App\Livewire\Offers\OfferEdit;
 use App\Livewire\Offers\OfferShow;
 use App\Livewire\Matching\MatchIndex;
+use App\Livewire\Matching\MatchCreate;
 use App\Livewire\Matching\MatchShow;
 use App\Livewire\Landing\ContactForm;
 use App\Livewire\Landing\LandingPage;
@@ -109,6 +110,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // ── Matching ───────────────────────────────────────────────────────────
     Route::prefix('matching')->name('matches.')->group(function () {
         Route::get('/', MatchIndex::class)->name('index');
+        Route::get('/nouveau', MatchCreate::class)
+             ->middleware('permission:matches.create')
+             ->name('create');
         Route::get('/{match}', MatchShow::class)->name('show');
     });
 
@@ -140,7 +144,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::get('/parametres', SettingsIndex::class)->name('settings.index');
 
         Route::get('/landing', LandingConfigurator::class)
-             ->middleware('role:super_admin')
+             ->middleware('permission:landing.configure')
              ->name('landing.configurator');
     });
 });

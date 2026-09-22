@@ -52,7 +52,7 @@ class OfferIndex extends Component
         $offer->publish(Auth::user());
 
         activity()->causedBy(Auth::user())->performedOn($offer)->log('offer_published');
-        session()->flash('success', 'Offre publiée avec succès.');
+        $this->dispatch('notify', type: 'success', message: 'Offre publiée avec succès.');
     }
 
     public function archiveOffer(string $offerId): void
@@ -62,7 +62,7 @@ class OfferIndex extends Component
         $offer->archive();
 
         activity()->causedBy(Auth::user())->performedOn($offer)->log('offer_archived');
-        session()->flash('success', 'Offre archivée.');
+        $this->dispatch('notify', type: 'success', message: 'Offre archivée.');
     }
 
     public function unarchiveOffer(string $offerId): void
@@ -72,7 +72,7 @@ class OfferIndex extends Component
         $offer->unarchive();
 
         activity()->causedBy(Auth::user())->performedOn($offer)->log('offer_unarchived');
-        session()->flash('success', 'Offre remise en brouillon.');
+        $this->dispatch('notify', type: 'success', message: 'Offre remise en brouillon.');
     }
 
     public function render()

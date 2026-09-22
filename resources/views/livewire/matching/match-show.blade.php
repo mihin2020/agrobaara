@@ -1,12 +1,5 @@
 <div class="space-y-5 max-w-5xl mx-auto">
 
-    {{-- Flash --}}
-    @if(session('success'))
-        <div class="bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3 text-sm flex items-center gap-2">
-            <span class="material-symbols-outlined text-base">check_circle</span>{{ session('success') }}
-        </div>
-    @endif
-
     {{-- En-tête --}}
     <div class="flex items-center gap-3">
         <a href="{{ route('admin.matches.index') }}" wire:navigate

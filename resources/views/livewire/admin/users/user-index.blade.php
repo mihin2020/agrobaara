@@ -1,16 +1,5 @@
 <div class="space-y-6">
 
-    @if(session('success'))
-        <div class="bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3 text-sm flex items-center gap-2">
-            <span class="material-symbols-outlined text-base">check_circle</span>{{ session('success') }}
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="bg-red-50 border border-red-200 text-red-800 rounded-xl px-4 py-3 text-sm flex items-center gap-2">
-            <span class="material-symbols-outlined text-base">error</span>{{ session('error') }}
-        </div>
-    @endif
-
     {{-- En-tête --}}
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>

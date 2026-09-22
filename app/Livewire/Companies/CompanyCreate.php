@@ -6,6 +6,7 @@ use App\Enums\CompanyStatus;
 use App\Enums\ContractType;
 use App\Enums\OfferStatus;
 use App\Models\Company;
+use App\Models\JobOffer;
 use App\Models\ReferentialCommune;
 use App\Models\ReferentialSkill;
 use App\Services\ReferenceService;
@@ -72,6 +73,7 @@ class CompanyCreate extends Component
             'skill_ids'           => [],
             'mission_description' => '',
             'location_text'       => '',
+            'publish_now'         => false,
         ];
     }
 
@@ -176,7 +178,12 @@ class CompanyCreate extends Component
                 if (!empty($offerData['skill_ids'])) {
                     $offer->skills()->sync($offerData['skill_ids']);
                 }
-                activity()->causedBy(Auth::user())->performedOn($offer)->log('offer_created');
+                if (!empty($offerData['publish_now']) && Auth::user()->can('publish', JobOffer::class)) {
+                    $offer->publish(Auth::user());
+                    activity()->causedBy(Auth::user())->performedOn($offer)->log('offer_created_and_published');
+                } else {
+                    activity()->causedBy(Auth::user())->performedOn($offer)->log('offer_created');
+                }
             }
 
             activity()->causedBy(Auth::user())->performedOn($company)->log('company_created');

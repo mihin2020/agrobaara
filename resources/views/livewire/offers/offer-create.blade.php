@@ -66,18 +66,26 @@
     </div>
 
     {{-- Compétences requises --}}
-    <div class="bg-white rounded-2xl border border-[#c1c9b6] shadow-sm overflow-hidden">
+    <div class="bg-white rounded-2xl border border-[#c1c9b6] shadow-sm overflow-hidden" x-data="{ skillFilter: '' }">
         <div class="px-6 py-4 border-b border-[#c1c9b6] bg-[#fbf2ed] flex items-center gap-2">
             <span class="material-symbols-outlined text-base text-[#615c47]">psychology</span>
             <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Compétences requises *</h3>
         </div>
         <div class="p-6">
             @error('skill_ids') <p class="text-xs text-red-600 mb-3">{{ $message }}</p> @enderror
+            <div class="relative mb-3">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#717a69] text-base">search</span>
+                <input type="search" x-model="skillFilter" placeholder="Rechercher une compétence..."
+                       class="w-full pl-9 pr-3 py-2 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#615c47]/20 focus:border-[#615c47]" />
+            </div>
             <div class="flex flex-wrap gap-2 max-h-52 overflow-y-auto p-3 bg-[#fbf2ed] rounded-xl border border-[#c1c9b6]">
                 @foreach($skills as $skill)
-                    <label class="flex items-center gap-1.5 cursor-pointer px-2.5 py-1.5 rounded-lg border transition-all
-                        {{ in_array($skill->id, $skill_ids) ? 'border-[#615c47] bg-[#ebe2c8]/30 text-[#615c47]' : 'border-[#c1c9b6] bg-white text-[#41493b] hover:border-[#615c47]/50' }}">
-                        <input type="checkbox" wire:model.live="skill_ids" value="{{ $skill->id }}" class="sr-only" />
+                    <label x-show="!skillFilter || '{{ strtolower(addslashes($skill->name)) }}'.includes(skillFilter.toLowerCase())"
+                           x-cloak
+                           class="flex items-center gap-1.5 cursor-pointer px-2.5 py-1.5 rounded-lg border transition-all
+                                  border-[#c1c9b6] bg-white text-[#41493b] hover:border-[#615c47]/50
+                                  has-[:checked]:border-[#615c47] has-[:checked]:bg-[#ebe2c8]/30 has-[:checked]:text-[#615c47]">
+                        <input type="checkbox" wire:model="skill_ids" value="{{ $skill->id }}" class="sr-only" />
                         <span class="text-xs font-semibold">{{ $skill->name }}</span>
                     </label>
                 @endforeach
@@ -126,6 +134,47 @@
         </div>
     </div>
 
+    {{-- Statut de publication --}}
+    <div class="bg-white rounded-2xl border border-[#c1c9b6] shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-[#c1c9b6] bg-[#fbf2ed] flex items-center gap-2">
+            <span class="material-symbols-outlined text-base text-[#615c47]">publish</span>
+            <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Statut de publication</h3>
+        </div>
+        <div class="p-6">
+            @error('publication_status') <p class="text-xs text-red-600 mb-3">{{ $message }}</p> @enderror
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label class="flex items-start gap-3 cursor-pointer p-4 rounded-xl border transition-all
+                              border-[#c1c9b6] bg-white hover:border-[#615c47]/50
+                              has-[:checked]:border-[#615c47] has-[:checked]:bg-[#ebe2c8]/30">
+                    <input type="radio" wire:model="publication_status" value="brouillon" class="mt-1 accent-[#615c47]" />
+                    <div>
+                        <p class="text-sm font-semibold text-[#1e1b18]">Brouillon</p>
+                        <p class="text-xs text-[#717a69] mt-0.5">L'offre reste privée jusqu'à publication manuelle.</p>
+                    </div>
+                </label>
+                @can('publish', App\Models\JobOffer::class)
+                    <label class="flex items-start gap-3 cursor-pointer p-4 rounded-xl border transition-all
+                                  border-[#c1c9b6] bg-white hover:border-green-600/50
+                                  has-[:checked]:border-green-700 has-[:checked]:bg-green-50">
+                        <input type="radio" wire:model="publication_status" value="publiee" class="mt-1 accent-green-700" />
+                        <div>
+                            <p class="text-sm font-semibold text-[#1e1b18]">Publier immédiatement</p>
+                            <p class="text-xs text-[#717a69] mt-0.5">L'offre sera visible pour le matching dès l'enregistrement.</p>
+                        </div>
+                    </label>
+                @else
+                    <div class="flex items-start gap-3 p-4 rounded-xl border border-dashed border-[#c1c9b6] bg-[#fbf2ed] opacity-70">
+                        <span class="material-symbols-outlined text-[#717a69] text-base mt-0.5">lock</span>
+                        <div>
+                            <p class="text-sm font-semibold text-[#41493b]">Publier immédiatement</p>
+                            <p class="text-xs text-[#717a69] mt-0.5">Permission de publication requise.</p>
+                        </div>
+                    </div>
+                @endcan
+            </div>
+        </div>
+    </div>
+
     {{-- Actions --}}
     <div class="flex justify-end gap-3 pb-4">
         <a href="{{ route('admin.offers.index') }}" wire:navigate
@@ -138,7 +187,7 @@
                 class="flex items-center gap-2 px-6 py-2.5 bg-[#615c47] text-white font-bold rounded-xl hover:opacity-90 transition-opacity text-sm shadow-lg shadow-[#615c47]/20">
             <span wire:loading.remove class="material-symbols-outlined text-base">save</span>
             <span wire:loading class="material-symbols-outlined animate-spin text-base">progress_activity</span>
-            <span wire:loading.remove>Enregistrer l'offre</span>
+            <span wire:loading.remove>{{ $publication_status === 'publiee' ? "Créer et publier" : "Enregistrer l'offre" }}</span>
             <span wire:loading>Enregistrement...</span>
         </button>
     </div>

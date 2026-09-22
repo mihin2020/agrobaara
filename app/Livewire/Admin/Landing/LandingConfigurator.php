@@ -50,7 +50,7 @@ class LandingConfigurator extends Component
 
     public function mount(): void
     {
-        if (!Auth::user()->isSuperAdmin()) {
+        if (!Auth::user()?->hasPermission('landing.configure')) {
             abort(403);
         }
     }
@@ -115,11 +115,11 @@ class LandingConfigurator extends Component
             $this->applyUploadToSlot($this->imageUploadSlot, $url);
             $this->imageUploadFile = null;
             $this->imageUploadSlot = '';
-            session()->flash('upload_success', 'Fichier téléversé avec succès.');
+            $this->dispatch('notify', type: 'success', message: 'Fichier téléversé avec succès.');
         } catch (\Throwable $e) {
             $this->imageUploadFile = null;
             $this->imageUploadSlot = '';
-            session()->flash('upload_error', 'Échec du téléversement : ' . $e->getMessage());
+            $this->dispatch('notify', type: 'error', message: 'Échec du téléversement : ' . $e->getMessage());
         }
     }
 
@@ -186,12 +186,14 @@ class LandingConfigurator extends Component
             }
 
             $this->mediaUploadSlot = '';
-            session()->flash('upload_success', $type === 'video'
-                ? 'Vidéo importée avec succès.'
-                : 'Photo importée avec succès.');
+            $this->dispatch(
+                'notify',
+                type: 'success',
+                message: $type === 'video' ? 'Vidéo importée avec succès.' : 'Photo importée avec succès.'
+            );
         } catch (\Throwable $e) {
             $this->mediaUploadSlot = '';
-            session()->flash('upload_error', 'Échec du téléversement : ' . $e->getMessage());
+            $this->dispatch('notify', type: 'error', message: 'Échec du téléversement : ' . $e->getMessage());
         }
     }
 
@@ -210,7 +212,7 @@ class LandingConfigurator extends Component
             $this->dispatch('guichetUploaded', url: $url);
         } catch (\Throwable $e) {
             $this->guichetImageFile = null;
-            session()->flash('upload_error', 'Échec du téléversement guichet : ' . $e->getMessage());
+            $this->dispatch('notify', type: 'error', message: 'Échec du téléversement guichet : ' . $e->getMessage());
         }
     }
 
@@ -250,8 +252,7 @@ class LandingConfigurator extends Component
         };
 
         $this->cancelEdit();
-        $this->saveNotice = $notice;
-        session()->flash('upload_success', $notice);
+        $this->dispatch('notify', type: 'success', message: $notice);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -262,10 +263,15 @@ class LandingConfigurator extends Component
     {
         $section = LandingSection::findOrFail($id);
         if ($section->always_visible) {
-            session()->flash('error', 'Cette section est toujours visible et ne peut pas être masquée.');
+            $this->dispatch('notify', type: 'error', message: 'Cette section est toujours visible et ne peut pas être masquée.');
             return;
         }
         $section->update(['is_active' => !$section->is_active]);
+        $this->dispatch(
+            'notify',
+            type: 'success',
+            message: $section->is_active ? 'Section affichée.' : 'Section masquée.'
+        );
     }
 
     public function moveSectionUp(string $id): void
@@ -431,7 +437,7 @@ class LandingConfigurator extends Component
         $this->videoLinkInput    = '';
         $this->persistSection('mediatheque');
 
-        session()->flash('upload_success', 'Vidéo ajoutée via lien.');
+        $this->dispatch('notify', type: 'success', message: 'Vidéo ajoutée via lien.');
     }
 
     public function startMediaUpload(string $type): void

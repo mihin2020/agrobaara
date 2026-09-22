@@ -96,6 +96,7 @@ class RolesPermissionsSeeder extends Seeder
             'audit.view',
             'settings.view',
             'landing.preview',
+            'landing.configure',
             'statistics.global', 'statistics.team', 'statistics.personal',
         ],
         UserRole::Operateur->value => [

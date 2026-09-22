@@ -1,12 +1,5 @@
 <div class="space-y-5 max-w-5xl mx-auto">
 
-    {{-- Flash --}}
-    @if(session('success'))
-        <div class="bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3 text-sm flex items-center gap-2">
-            <span class="material-symbols-outlined text-base">check_circle</span>{{ session('success') }}
-        </div>
-    @endif
-
     {{-- En-tête --}}
     <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div class="flex items-start gap-3">
@@ -28,6 +21,13 @@
             </div>
         </div>
         <div class="flex items-center gap-2 flex-shrink-0 flex-wrap sm:flex-nowrap">
+            @can('create', App\Models\CandidateMatch::class)
+                <a href="{{ route('admin.matches.create', ['offer_id' => $offer->id]) }}" wire:navigate
+                   class="flex items-center gap-2 px-4 py-2 border border-[#2c6904] text-[#2c6904] font-semibold text-sm rounded-xl hover:bg-[#aef585]/20 transition-colors">
+                    <span class="material-symbols-outlined text-base">handshake</span>
+                    Mettre en relation
+                </a>
+            @endcan
             @can('update', $offer)
                 <a href="{{ route('admin.offers.edit', $offer) }}" wire:navigate
                    class="flex items-center gap-2 px-4 py-2 border border-[#c1c9b6] text-[#41493b] font-semibold text-sm rounded-xl hover:bg-[#f5ece7] transition-colors">
@@ -68,21 +68,32 @@
                 <span class="material-symbols-outlined text-base">psychology</span>
                 Candidats suggérés par le matching
             </h3>
-            @forelse($suggestedCandidates as $candidate)
+            @forelse($suggestedCandidates as $item)
+                @php $candidate = $item['candidate']; @endphp
                 <div class="bg-white rounded-xl border border-[#c1c9b6] p-3 flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl bg-[#f5ece7] flex items-center justify-center text-[#2c6904] font-bold text-sm border border-[#c1c9b6]">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-9 h-9 rounded-xl bg-[#f5ece7] flex items-center justify-center text-[#2c6904] font-bold text-sm border border-[#c1c9b6] flex-shrink-0">
                             {{ strtoupper(substr($candidate->first_name, 0, 1) . substr($candidate->last_name, 0, 1)) }}
                         </div>
-                        <div>
-                            <p class="font-semibold text-sm text-[#1e1b18]">{{ $candidate->full_name }}</p>
+                        <div class="min-w-0">
+                            <p class="font-semibold text-sm text-[#1e1b18] truncate">{{ $candidate->full_name }}</p>
                             <p class="text-xs text-[#41493b]">{{ $candidate->commune?->name ?? '-' }} · {{ $candidate->educationLevel?->name ?? ($candidate->education_level ? ucfirst($candidate->education_level) : '-') }}</p>
                         </div>
                     </div>
-                    <a href="{{ route('admin.candidates.show', $candidate) }}" wire:navigate
-                       class="flex-shrink-0 px-3 py-1.5 bg-[#2c6904] text-white text-xs font-semibold rounded-lg hover:bg-[#448322] transition-colors">
-                        Voir
-                    </a>
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <span class="text-xs font-bold text-[#2c6904] bg-[#aef585]/30 px-2 py-1 rounded-lg">{{ number_format($item['score'], 0) }}%</span>
+                        @can('create', App\Models\CandidateMatch::class)
+                            <button type="button" wire:click="proposeMatch('{{ $candidate->id }}')"
+                                    wire:loading.attr="disabled"
+                                    class="px-3 py-1.5 bg-[#615c47] text-white text-xs font-semibold rounded-lg hover:opacity-90 transition-opacity">
+                                Proposer
+                            </button>
+                        @endcan
+                        <a href="{{ route('admin.candidates.show', $candidate) }}" wire:navigate
+                           class="px-3 py-1.5 bg-[#2c6904] text-white text-xs font-semibold rounded-lg hover:bg-[#448322] transition-colors">
+                            Voir
+                        </a>
+                    </div>
                 </div>
             @empty
                 <p class="text-sm text-[#717a69] text-center py-3">Aucun candidat correspondant trouvé.</p>

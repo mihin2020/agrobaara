@@ -31,12 +31,18 @@ class MatchingService
                                           ->pluck('candidate_id')
                                           ->toArray();
 
-        $candidates = Candidate::with('skills', 'commune', 'experiences')
-                               ->whereNotIn('id', $existingMatchIds)
-                               ->get();
+        $query = Candidate::with('skills', 'commune', 'experiences', 'educationLevel')
+                          ->whereNotIn('id', $existingMatchIds);
+
+        // Préfiltre SQL : au moins une compétence en commun quand l'offre en a
+        if (!empty($offerSkillIds)) {
+            $query->whereHas('skills', fn ($q) => $q->whereIn('referentials_skills.id', $offerSkillIds));
+        }
+
+        $candidates = $query->get();
 
         return $candidates
-            ->map(fn(Candidate $candidate) => [
+            ->map(fn (Candidate $candidate) => [
                 'candidate' => $candidate,
                 'score'     => $this->computeScore($candidate, $offer, $offerSkillIds, $offerLocations),
             ])
@@ -56,17 +62,28 @@ class MatchingService
                                           ->pluck('offer_id')
                                           ->toArray();
 
-        $offers = JobOffer::with('skills', 'company.sites')
-                          ->published()
-                          ->whereNotIn('id', $existingOfferIds)
-                          ->get();
-
         $candidateSkillIds = $candidate->skills->pluck('id')->toArray();
 
+        $query = JobOffer::with('skills', 'company.sites')
+                         ->published()
+                         ->whereNotIn('id', $existingOfferIds);
+
+        // Préfiltre SQL : au moins une compétence en commun quand le candidat en a
+        if (!empty($candidateSkillIds)) {
+            $query->whereHas('skills', fn ($q) => $q->whereIn('referentials_skills.id', $candidateSkillIds));
+        }
+
+        $offers = $query->get();
+
         return $offers
-            ->map(fn(JobOffer $offer) => [
+            ->map(fn (JobOffer $offer) => [
                 'offer' => $offer,
-                'score' => $this->computeScore($candidate, $offer, $offer->skills->pluck('id')->toArray(), collect($offer->locations ?? [])),
+                'score' => $this->computeScore(
+                    $candidate,
+                    $offer,
+                    $offer->skills->pluck('id')->toArray(),
+                    collect($offer->locations ?? [])
+                ),
             ])
             ->sortByDesc('score')
             ->values()
@@ -128,7 +145,7 @@ class MatchingService
 
     private function transportScore(Candidate $candidate): float
     {
-        return match($candidate->transport_mode?->value) {
+        return match ($candidate->transport_mode?->value) {
             'deux_roues', 'voiture' => 100,
             'autre'                 => 50,
             default                 => 0,

@@ -1,13 +1,5 @@
 <div class="space-y-5 max-w-5xl mx-auto">
 
-    {{-- Flash --}}
-    @if(session('success'))
-        <div class="bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3 text-sm flex items-center gap-2">
-            <span class="material-symbols-outlined text-base">check_circle</span>
-            {{ session('success') }}
-        </div>
-    @endif
-
     {{-- En-tête --}}
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div class="flex items-center gap-3">
@@ -30,20 +22,27 @@
                 </div>
             </div>
         </div>
-        @can('update', $candidate)
-            <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-wrap">
+            @can('create', App\Models\CandidateMatch::class)
+                <a href="{{ route('admin.matches.create', ['candidate_id' => $candidate->id]) }}" wire:navigate
+                   class="flex items-center gap-2 px-4 py-2 border border-[#2c6904] text-[#2c6904] font-semibold text-sm rounded-xl hover:bg-[#aef585]/20 transition-colors">
+                    <span class="material-symbols-outlined text-base">handshake</span>
+                    Mettre en relation
+                </a>
+            @endcan
+            @can('update', $candidate)
                 <a href="{{ route('admin.candidates.edit', $candidate) }}" wire:navigate
                    class="flex items-center gap-2 px-4 py-2 border border-[#c1c9b6] text-[#41493b] font-semibold text-sm rounded-xl hover:bg-[#f5ece7] transition-colors">
                     <span class="material-symbols-outlined text-base">edit</span>
                     Modifier
                 </a>
-                <button wire:click="toggleSuggestedOffers"
-                        class="flex items-center gap-2 px-4 py-2 bg-[#2c6904] text-white font-semibold text-sm rounded-xl hover:bg-[#448322] transition-colors">
-                    <span class="material-symbols-outlined text-base">psychology</span>
-                    {{ $showSuggestedOffers ? 'Masquer offres' : 'Trouver des offres' }}
-                </button>
-            </div>
-        @endcan
+            @endcan
+            <button wire:click="toggleSuggestedOffers"
+                    class="flex items-center gap-2 px-4 py-2 bg-[#2c6904] text-white font-semibold text-sm rounded-xl hover:bg-[#448322] transition-colors">
+                <span class="material-symbols-outlined text-base">psychology</span>
+                {{ $showSuggestedOffers ? 'Masquer offres' : 'Trouver des offres' }}
+            </button>
+        </div>
     </div>
 
     {{-- Offres suggérées --}}
@@ -55,14 +54,24 @@
             </h3>
             @forelse($suggestedOffers as $item)
                 <div class="bg-white rounded-xl border border-[#c1c9b6] p-3 flex items-center justify-between gap-3">
-                    <div>
-                        <p class="font-semibold text-sm text-[#1e1b18]">{{ $item['offer']->title }}</p>
+                    <div class="min-w-0">
+                        <p class="font-semibold text-sm text-[#1e1b18] truncate">{{ $item['offer']->title }}</p>
                         <p class="text-xs text-[#41493b]">{{ $item['offer']->company->name }} · {{ $item['offer']->contract_type->label() }}</p>
                     </div>
-                    <a href="{{ route('admin.offers.show', $item['offer']) }}" wire:navigate
-                       class="flex-shrink-0 px-3 py-1.5 bg-[#2c6904] text-white text-xs font-semibold rounded-lg hover:bg-[#448322] transition-colors">
-                        Voir
-                    </a>
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <span class="text-xs font-bold text-[#2c6904] bg-[#aef585]/30 px-2 py-1 rounded-lg">{{ number_format($item['score'], 0) }}%</span>
+                        @can('create', App\Models\CandidateMatch::class)
+                            <button type="button" wire:click="proposeMatch('{{ $item['offer']->id }}')"
+                                    wire:loading.attr="disabled"
+                                    class="px-3 py-1.5 bg-[#615c47] text-white text-xs font-semibold rounded-lg hover:opacity-90 transition-opacity">
+                                Proposer
+                            </button>
+                        @endcan
+                        <a href="{{ route('admin.offers.show', $item['offer']) }}" wire:navigate
+                           class="px-3 py-1.5 bg-[#2c6904] text-white text-xs font-semibold rounded-lg hover:bg-[#448322] transition-colors">
+                            Voir
+                        </a>
+                    </div>
                 </div>
             @empty
                 <p class="text-sm text-[#717a69] text-center py-3">Aucune offre correspondante trouvée.</p>

@@ -30,6 +30,8 @@ class OfferCreate extends Component
     public array  $locations           = [
         ['commune_id' => '', 'address' => ''],
     ];
+    /** @var string brouillon|publiee */
+    public string $publication_status  = 'brouillon';
 
     public function mount(): void
     {
@@ -60,6 +62,7 @@ class OfferCreate extends Component
             'locations'           => 'required|array|min:1',
             'locations.*.commune_id' => 'required|uuid|exists:referentials_communes,id',
             'positions_count'     => 'nullable|integer|min:1',
+            'publication_status'  => 'required|in:brouillon,publiee',
         ], [
             'company_id.required'          => "L'entreprise est obligatoire.",
             'title.required'               => "L'intitulé est obligatoire.",
@@ -67,7 +70,14 @@ class OfferCreate extends Component
             'mission_description.required' => 'La description des missions est obligatoire.',
             'skill_ids.required'           => 'Au moins une compétence est requise.',
             'locations.*.commune_id.required' => 'La commune est obligatoire.',
+            'publication_status.in'        => 'Le statut de publication est invalide.',
         ]);
+
+        $shouldPublish = $this->publication_status === 'publiee';
+
+        if ($shouldPublish) {
+            $this->authorize('publish', JobOffer::class);
+        }
 
         $offer = JobOffer::create([
             'reference'           => $referenceService->generateOfferReference(),
@@ -87,9 +97,15 @@ class OfferCreate extends Component
 
         $offer->skills()->sync($this->skill_ids);
 
-        activity()->causedBy(Auth::user())->performedOn($offer)->log('offer_created');
+        if ($shouldPublish) {
+            $offer->publish(Auth::user());
+            activity()->causedBy(Auth::user())->performedOn($offer)->log('offer_created_and_published');
+            session()->flash('success', 'Offre créée et publiée avec succès.');
+        } else {
+            activity()->causedBy(Auth::user())->performedOn($offer)->log('offer_created');
+            session()->flash('success', 'Offre créée en brouillon.');
+        }
 
-        session()->flash('success', 'Offre créée en brouillon.');
         $this->redirect(route('admin.offers.show', $offer), navigate: true);
     }
 

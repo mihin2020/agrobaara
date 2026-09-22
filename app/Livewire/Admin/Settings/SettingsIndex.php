@@ -41,12 +41,15 @@ class SettingsIndex extends Component
 
     public function saveLanguage(): void
     {
-        $this->validateOnly('newLanguageName', [
+        $this->validate([
             'newLanguageName' => 'required|string|min:2|max:100|unique:referentials_languages,name',
+            'newLanguageCode' => 'nullable|string|max:10|unique:referentials_languages,code',
         ], [
             'newLanguageName.required' => 'Le nom de la langue est obligatoire.',
             'newLanguageName.min'      => 'Le nom doit contenir au moins 2 caractères.',
             'newLanguageName.unique'   => 'Cette langue existe déjà.',
+            'newLanguageCode.max'      => 'Le code ne peut pas dépasser 10 caractères.',
+            'newLanguageCode.unique'   => 'Ce code de langue est déjà utilisé.',
         ]);
 
         ReferentialLanguage::create([
@@ -56,18 +59,24 @@ class SettingsIndex extends Component
         ]);
 
         $this->reset('newLanguageName', 'newLanguageCode');
-        session()->flash('success_lang', 'Langue ajoutée avec succès.');
+        $this->dispatch('notify', type: 'success', message: 'Langue ajoutée avec succès.');
     }
 
     public function toggleLanguage(string $id): void
     {
         $lang = ReferentialLanguage::findOrFail($id);
         $lang->update(['is_active' => !$lang->is_active]);
+        $this->dispatch(
+            'notify',
+            type: 'success',
+            message: $lang->is_active ? 'Langue activée.' : 'Langue désactivée.'
+        );
     }
 
     public function deleteLanguage(string $id): void
     {
         ReferentialLanguage::findOrFail($id)->delete();
+        $this->dispatch('notify', type: 'success', message: 'Langue supprimée.');
     }
 
     // ── Nationalities ────────────────────────────────────────────────────
@@ -84,18 +93,24 @@ class SettingsIndex extends Component
 
         ReferentialNationality::create(['name' => trim($this->newNationalityName), 'is_active' => true]);
         $this->reset('newNationalityName');
-        session()->flash('success_nat', 'Nationalité ajoutée avec succès.');
+        $this->dispatch('notify', type: 'success', message: 'Nationalité ajoutée avec succès.');
     }
 
     public function toggleNationality(string $id): void
     {
         $nat = ReferentialNationality::findOrFail($id);
         $nat->update(['is_active' => !$nat->is_active]);
+        $this->dispatch(
+            'notify',
+            type: 'success',
+            message: $nat->is_active ? 'Nationalité activée.' : 'Nationalité désactivée.'
+        );
     }
 
     public function deleteNationality(string $id): void
     {
         ReferentialNationality::findOrFail($id)->delete();
+        $this->dispatch('notify', type: 'success', message: 'Nationalité supprimée.');
     }
 
     // ── Education Levels ─────────────────────────────────────────────────
@@ -123,18 +138,24 @@ class SettingsIndex extends Component
         ]);
 
         $this->reset('newEducationName', 'newEducationCode');
-        session()->flash('success_edu', 'Niveau d\'étude ajouté avec succès.');
+        $this->dispatch('notify', type: 'success', message: 'Niveau d\'étude ajouté avec succès.');
     }
 
     public function toggleEducation(string $id): void
     {
         $level = ReferentialEducationLevel::findOrFail($id);
         $level->update(['is_active' => !$level->is_active]);
+        $this->dispatch(
+            'notify',
+            type: 'success',
+            message: $level->is_active ? 'Niveau d\'étude activé.' : 'Niveau d\'étude désactivé.'
+        );
     }
 
     public function deleteEducation(string $id): void
     {
         ReferentialEducationLevel::findOrFail($id)->delete();
+        $this->dispatch('notify', type: 'success', message: 'Niveau d\'étude supprimé.');
     }
 
     // ── Skills ────────────────────────────────────────────────────────────
@@ -156,18 +177,24 @@ class SettingsIndex extends Component
         ]);
 
         $this->reset('newSkillName', 'newSkillCategory');
-        session()->flash('success_skill', 'Compétence ajoutée avec succès.');
+        $this->dispatch('notify', type: 'success', message: 'Compétence ajoutée avec succès.');
     }
 
     public function toggleSkill(string $id): void
     {
         $skill = ReferentialSkill::findOrFail($id);
         $skill->update(['is_active' => !$skill->is_active]);
+        $this->dispatch(
+            'notify',
+            type: 'success',
+            message: $skill->is_active ? 'Compétence activée.' : 'Compétence désactivée.'
+        );
     }
 
     public function deleteSkill(string $id): void
     {
         ReferentialSkill::findOrFail($id)->delete();
+        $this->dispatch('notify', type: 'success', message: 'Compétence supprimée.');
     }
 
     public function render()

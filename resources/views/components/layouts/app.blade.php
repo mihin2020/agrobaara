@@ -98,7 +98,7 @@
 
             @php
                 $user = auth()->user();
-                $hasAdminSection = $user->hasAnyPermission(['users.view', 'roles.manage', 'audit.view', 'settings.view']);
+                $hasAdminSection = $user->hasAnyPermission(['users.view', 'roles.manage', 'audit.view', 'settings.view', 'landing.configure']);
             @endphp
 
             @if($hasAdminSection)
@@ -116,7 +116,9 @@
                     <x-nav-link href="{{ route('admin.admin.roles.index') }}" icon="admin_panel_settings" :active="request()->routeIs('admin.admin.roles.*')">
                         Rôles & Permissions
                     </x-nav-link>
+                @endif
 
+                @if($user->hasPermission('landing.configure'))
                     <x-nav-link href="{{ route('admin.admin.landing.configurator') }}" icon="web" :active="request()->routeIs('admin.admin.landing.*')">
                         Config. Landing
                     </x-nav-link>
@@ -254,6 +256,8 @@
 
     </div>
 </div>
+
+<x-toast />
 
 @livewireScripts
 </body>
