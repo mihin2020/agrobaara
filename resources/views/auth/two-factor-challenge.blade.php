@@ -35,6 +35,14 @@
                 </div>
             @endif
 
+            @if (app()->environment('local') && session('2fa_dev_code'))
+                <div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-sm">
+                    <p class="font-semibold mb-1">Mode local — code de test</p>
+                    <p class="text-2xl font-bold tracking-[0.35em] text-center">{{ session('2fa_dev_code') }}</p>
+                    <p class="mt-2 text-xs text-amber-800">Visible uniquement en local. En prod, seul l’e-mail compte.</p>
+                </div>
+            @endif
+
             <div class="mb-8">
                 <h2 class="font-sora text-3xl font-bold text-[#1e1b18]">Vérification</h2>
                 <p class="mt-2 text-[#41493b] text-sm">

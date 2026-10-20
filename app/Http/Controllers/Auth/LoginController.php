@@ -64,7 +64,7 @@ class LoginController extends Controller
 
         if ($result->needsTwoFactor && $result->user) {
             try {
-                $twoFactor->send($result->user);
+                $code = $twoFactor->send($result->user);
             } catch (\Throwable) {
                 return back()->withErrors([
                     'email' => 'Identifiants corrects, mais l’envoi du code e-mail a échoué. Vérifiez la configuration mail.',
@@ -76,8 +76,15 @@ class LoginController extends Controller
                 '2fa.remember' => $request->boolean('remember'),
             ]);
 
-            return redirect()->route('login.2fa')
+            $redirect = redirect()->route('login.2fa')
                 ->with('success', 'Un code de validation a été envoyé à votre adresse e-mail.');
+
+            // Affichage du code uniquement en local (dev)
+            if (app()->environment('local')) {
+                $redirect->with('2fa_dev_code', $code);
+            }
+
+            return $redirect;
         }
 
         if ($result->user->needsPasswordChange()) {

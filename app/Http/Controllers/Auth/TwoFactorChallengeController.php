@@ -98,13 +98,19 @@ class TwoFactorChallengeController extends Controller
         }
 
         try {
-            $twoFactor->send($user);
+            $code = $twoFactor->send($user);
             $twoFactor->hitResend($request->ip());
         } catch (\Throwable) {
             return back()->withErrors(['code' => 'Impossible d’envoyer l’e-mail. Réessayez plus tard.']);
         }
 
-        return back()->with('success', 'Un nouveau code a été envoyé à votre adresse e-mail.');
+        $redirect = back()->with('success', 'Un nouveau code a été envoyé à votre adresse e-mail.');
+
+        if (app()->environment('local')) {
+            $redirect->with('2fa_dev_code', $code);
+        }
+
+        return $redirect;
     }
 
     public function cancel(Request $request): RedirectResponse

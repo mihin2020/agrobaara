@@ -32,7 +32,10 @@ class EmailTwoFactorService
         return $user->isStaffUser() || (bool) $user->is_system;
     }
 
-    public function send(User $user): void
+    /**
+     * @return string Code en clair (uniquement pour affichage local / tests — jamais logger en prod)
+     */
+    public function send(User $user): string
     {
         $code = (string) random_int(100000, 999999);
 
@@ -48,13 +51,19 @@ class EmailTwoFactorService
                 'user_id' => $user->id,
                 'error'   => $e->getMessage(),
             ]);
-            throw $e;
+
+            // En local : on laisse quand même valider (code affiché à l’écran)
+            if (! app()->environment('local')) {
+                throw $e;
+            }
         }
 
         activity()
             ->causedBy($user)
             ->withProperties(['channel' => 'email'])
             ->log('two_factor_code_sent');
+
+        return $code;
     }
 
     public function canResend(string $ip): bool
