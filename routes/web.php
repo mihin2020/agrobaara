@@ -178,32 +178,35 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/{match}', MatchShow::class)->name('show');
     });
 
-    Route::prefix('contrats')->name('contracts.')->group(function () {
-        Route::get('/', ContractIndex::class)->name('index');
-        Route::get('/nouveau', ContractCreate::class)
-             ->middleware('permission:contracts.create')
-             ->name('create');
-        Route::get('/{contract}', ContractShow::class)->name('show');
+    Route::middleware('feature:phase2_master')->group(function () {
+        Route::prefix('contrats')->name('contracts.')->group(function () {
+            Route::get('/', ContractIndex::class)->name('index');
+            Route::get('/nouveau', ContractCreate::class)
+                 ->middleware('permission:contracts.create')
+                 ->name('create');
+            Route::get('/{contract}', ContractShow::class)->name('show');
+        });
+
+        Route::get('/inscriptions', RegistrationIndex::class)
+            ->middleware('permission:registrations.view')
+            ->name('registrations.index');
+
+        Route::get('/offres-a-valider', OfferValidationIndex::class)
+            ->middleware('permission:offers.validate')
+            ->name('offers.validate');
+
+        Route::get('/temoignages', TestimonialIndex::class)
+            ->middleware('permission:testimonials.view')
+            ->name('testimonials.index');
+
+        Route::get('/actualites', AdminNewsIndex::class)
+            ->middleware('permission:news.view')
+            ->name('news.index');
     });
 
     Route::get('/messages', ContactMessageIndex::class)->name('messages.index');
 
-    Route::get('/inscriptions', RegistrationIndex::class)
-        ->middleware('permission:registrations.view')
-        ->name('registrations.index');
-
-    Route::get('/offres-a-valider', OfferValidationIndex::class)
-        ->middleware('permission:offers.validate')
-        ->name('offers.validate');
-
-    Route::get('/temoignages', TestimonialIndex::class)
-        ->middleware('permission:testimonials.view')
-        ->name('testimonials.index');
-
-    Route::get('/actualites', AdminNewsIndex::class)
-        ->middleware('permission:news.view')
-        ->name('news.index');
-
+    // Accessible même Phase 2 OFF — pour pouvoir activer le flag maître
     Route::get('/phase-2', FeatureFlagsPanel::class)->name('phase2.flags');
 
     Route::middleware('role:super_admin')
