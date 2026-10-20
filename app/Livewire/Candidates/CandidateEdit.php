@@ -5,16 +5,11 @@ namespace App\Livewire\Candidates;
 use App\Enums\Gender;
 use App\Enums\TransportMode;
 use App\Models\Candidate;
-use App\Models\ReferentialCommune;
-use App\Models\ReferentialEducationLevel;
-use App\Models\ReferentialLanguage;
-use App\Models\ReferentialLicense;
 use App\Models\ReferentialNationality;
-use App\Models\ReferentialSkill;
-use App\Services\ReferenceService;
+use App\Services\SecureUploadService;
+use App\Support\ReferentialCache;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
@@ -66,6 +61,8 @@ class CandidateEdit extends Component
     public array  $need_formation_types  = [];
     public bool   $need_financing        = false;
     public bool   $need_cv_support       = false;
+    public string $salary_min            = '';
+    public string $salary_max            = '';
     public string $operator_notes        = '';
     public int    $currentSection = 1;
     public int    $totalSections = 5;
@@ -104,6 +101,8 @@ class CandidateEdit extends Component
         $this->need_formation_types  = $candidate->need_formation_types ?? [];
         $this->need_financing        = $candidate->need_financing;
         $this->need_cv_support       = $candidate->need_cv_support;
+        $this->salary_min            = $candidate->salary_min !== null ? (string) $candidate->salary_min : '';
+        $this->salary_max            = $candidate->salary_max !== null ? (string) $candidate->salary_max : '';
         $this->operator_notes        = $candidate->operator_notes ?? '';
         $this->experiences         = $candidate->experiences->map(fn($e) => [
             'year'              => $e->year ?? '',
@@ -179,7 +178,7 @@ class CandidateEdit extends Component
         $this->newNationality = '';
     }
 
-    public function save(): void
+    public function save(SecureUploadService $uploads): void
     {
         $maxBirthDate = now()->subYears(16)->format('Y-m-d');
 
@@ -197,6 +196,13 @@ class CandidateEdit extends Component
             'identity_document'=> 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
             'diploma_files.*'  => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240',
             'cv_file'          => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'salary_min' => 'nullable|integer|min:0',
+            'salary_max' => array_filter([
+                'nullable',
+                'integer',
+                'min:0',
+                $this->salary_min !== '' ? 'gte:salary_min' : null,
+            ]),
         ], [
             'first_name.required'        => 'Le prénom est obligatoire.',
             'last_name.required'         => 'Le nom est obligatoire.',
@@ -207,6 +213,7 @@ class CandidateEdit extends Component
             'phone.required'             => 'Le téléphone est obligatoire.',
             'language_ids.required'      => 'Au moins une langue est requise.',
             'education_level.required'   => "Le niveau d'étude est obligatoire.",
+            'salary_max.gte'             => 'Le maximum doit être supérieur ou égal au minimum.',
         ]);
 
         DB::transaction(function () {
@@ -234,28 +241,38 @@ class CandidateEdit extends Component
                 'need_training'          => !empty($this->need_formation_types),
                 'need_financing'         => $this->need_financing,
                 'need_cv_support'        => $this->need_cv_support,
+                'salary_min'             => $this->salary_min !== '' ? (int) $this->salary_min : null,
+                'salary_max'             => $this->salary_max !== '' ? (int) $this->salary_max : null,
+                'salary_expectation'     => Candidate::buildSalaryExpectationLabel(
+                    $this->salary_min !== '' ? (int) $this->salary_min : null,
+                    $this->salary_max !== '' ? (int) $this->salary_max : null
+                ),
                 'operator_notes'         => $this->operator_notes ?: null,
                 'updated_by'             => Auth::id(),
             ];
 
-            // Fichiers - uniquement si un nouveau fichier est sélectionné
+            // Fichiers — photo public ; docs sensibles private + UUID
             if ($this->photo) {
-                if ($this->candidate->photo_path) Storage::disk('public')->delete($this->candidate->photo_path);
-                $updates['photo_path'] = $this->photo->store('candidates/photos', 'public');
+                $uploads->delete($this->candidate->photo_path, SecureUploadService::DISK_PUBLIC);
+                $updates['photo_path'] = $uploads->storePublic($this->photo, 'candidates/photos');
             }
             if ($this->identity_document) {
-                if ($this->candidate->identity_document_path) Storage::disk('public')->delete($this->candidate->identity_document_path);
-                $updates['identity_document_path'] = $this->identity_document->store('candidates/documents', 'public');
+                $uploads->delete($this->candidate->identity_document_path);
+                // Ancien éventuellement encore sur public
+                $uploads->delete($this->candidate->identity_document_path, SecureUploadService::DISK_PUBLIC);
+                $updates['identity_document_path'] = $uploads->storePrivate($this->identity_document, 'candidates/documents');
             }
-            if (!empty($this->diploma_files)) {
-                if (!empty($this->candidate->diploma_paths)) {
-                    foreach ($this->candidate->diploma_paths as $p) Storage::disk('public')->delete($p);
-                }
-                $updates['diploma_paths'] = collect($this->diploma_files)->map(fn($f) => $f->store('candidates/diplomas', 'public'))->toArray();
+            if (! empty($this->diploma_files)) {
+                $uploads->deleteMany($this->candidate->diploma_paths);
+                $uploads->deleteMany($this->candidate->diploma_paths, SecureUploadService::DISK_PUBLIC);
+                $updates['diploma_paths'] = collect($this->diploma_files)
+                    ->map(fn ($f) => $uploads->storePrivate($f, 'candidates/diplomas'))
+                    ->toArray();
             }
             if ($this->cv_file) {
-                if ($this->candidate->cv_path) Storage::disk('public')->delete($this->candidate->cv_path);
-                $updates['cv_path'] = $this->cv_file->store('candidates/cvs', 'public');
+                $uploads->delete($this->candidate->cv_path);
+                $uploads->delete($this->candidate->cv_path, SecureUploadService::DISK_PUBLIC);
+                $updates['cv_path'] = $uploads->storePrivate($this->cv_file, 'candidates/cvs');
             }
 
             $this->candidate->update($updates);
@@ -290,14 +307,16 @@ class CandidateEdit extends Component
     public function render()
     {
         return view('livewire.candidates.candidate-edit', [
-            'communes'   => ReferentialCommune::active()->get(),
-            'languages'  => ReferentialLanguage::active()->get(),
-            'licenses'   => ReferentialLicense::active()->get(),
-            'skills'     => ReferentialSkill::active()->get(),
-            'genders'    => Gender::cases(),
-            'transports' => TransportMode::cases(),
-            'educations'    => ReferentialEducationLevel::active()->get(),
-            'nationalities' => ReferentialNationality::active()->get(),
+            'communes'        => ReferentialCache::communes(),
+            'languages'       => ReferentialCache::languages(),
+            'licenses'        => ReferentialCache::licenses(),
+            'skills'          => ReferentialCache::skills(),
+            'genders'         => Gender::cases(),
+            'transports'      => TransportMode::cases(),
+            'educations'      => ReferentialCache::educations(),
+            'nationalities'   => ReferentialCache::nationalities(),
+            'employmentTypes' => ReferentialCache::employmentTypes(),
+            'formationTypes'  => ReferentialCache::formationTypes(),
         ]);
     }
 }

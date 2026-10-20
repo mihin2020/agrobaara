@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Auth;
 
-use App\Models\User;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Rule;
 use Livewire\Attributes\Title;
@@ -20,10 +20,17 @@ class ForgotPassword extends Component
 
     public function sendResetLink(): void
     {
+        $key = 'password-reset:'.request()->ip();
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $this->addError('email', 'Trop de demandes. Réessayez dans '.RateLimiter::availableIn($key).' secondes.');
+            return;
+        }
+        RateLimiter::hit($key, 600);
+
         $this->validate();
 
         // Réponse uniforme pour éviter l'énumération de comptes
-        $status = Password::sendResetLink(['email' => $this->email]);
+        Password::sendResetLink(['email' => $this->email]);
 
         $this->sent = true;
         $this->email = '';

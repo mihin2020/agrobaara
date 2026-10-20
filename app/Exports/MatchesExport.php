@@ -16,14 +16,16 @@ class MatchesExport implements FromCollection, WithHeadings, WithMapping, WithSt
         protected ?string $from = null,
         protected ?string $to = null,
         protected ?string $status = null,
+        protected ?string $operatorId = null,
     ) {}
 
     public function collection()
     {
         return CandidateMatch::with(['candidate', 'offer.company', 'operator'])
-            ->when($this->from, fn($q) => $q->whereDate('created_at', '>=', $this->from))
-            ->when($this->to, fn($q) => $q->whereDate('created_at', '<=', $this->to))
-            ->when($this->status, fn($q) => $q->where('status', $this->status))
+            ->when($this->operatorId, fn ($q) => $q->byOperator($this->operatorId))
+            ->when($this->from, fn ($q) => $q->whereDate('created_at', '>=', $this->from))
+            ->when($this->to, fn ($q) => $q->whereDate('created_at', '<=', $this->to))
+            ->when($this->status, fn ($q) => $q->where('status', $this->status))
             ->latest()
             ->get();
     }

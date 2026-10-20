@@ -17,12 +17,15 @@
     {{-- Panneau gauche décoratif --}}
     <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <div class="absolute inset-0" style="background-color: #69a313;"></div>
-        <div class="relative z-10 flex flex-col justify-center px-16 text-white">
-            <div class="mb-12 flex flex-col items-center">
-                <img src="{{ asset('images/logo-white.png') }}" alt="Logo" class="h-16 w-auto mb-8"
-                     onerror="this.style.display='none'">
-                <p class="text-lg opacity-80 leading-relaxed">
-                    Connecter les talents et les opportunités en agroécologie au Burkina Faso.
+        <div class="relative z-10 flex flex-col items-center justify-center px-16 text-white w-full">
+            <div class="mb-12 w-full flex flex-col items-center">
+                <img src="{{ asset('images/logo.jpeg') }}" alt="Agro Eco BAARA" class="w-auto rounded-2xl mb-8" style="height: 9.5rem;">
+                <p class="text-lg opacity-80 leading-relaxed text-center">
+                    @agroecology
+                        Connecter les talents et les opportunités en agroécologie au Burkina Faso.
+                    @else
+                        Connecter les talents et les opportunités au Burkina Faso.
+                    @endagroecology
                 </p>
             </div>
             <div class="space-y-6">
@@ -61,9 +64,8 @@
     <div class="flex-1 flex flex-col justify-center py-12 px-6 sm:px-12 lg:px-16">
         <div class="mx-auto w-full max-w-md">
             {{-- Logo mobile --}}
-            <div class="lg:hidden mb-10 flex justify-center">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-14 w-auto"
-                     onerror="this.style.display='none'">
+            <div class="lg:hidden mt-4 mb-8 flex justify-center">
+                <img src="{{ asset('images/logo.jpeg') }}" alt="Logo" class="h-24 w-auto mx-auto">
             </div>
 
             @if (session('success'))

@@ -64,6 +64,14 @@
     $temoContent  = $temoSection?->content ?? [];
     $temoTitle    = $temoContent['title'] ?? 'TÉMOIGNAGES';
     $temoItems    = $temoContent['items'] ?? [];
+    if (isset($dbTestimonials) && $dbTestimonials->isNotEmpty()) {
+        $temoItems = $dbTestimonials->map(fn ($t) => [
+            'name'         => $t->author_name,
+            'role'         => $t->role_label ?? 'Candidat',
+            'text'         => $t->body,
+            'avatar_color' => 'primary',
+        ])->all();
+    }
 
     // ── Médiathèque ───────────────────────────────────────────────────────────
     $mediaSection  = $sec->get('mediatheque');
@@ -118,23 +126,29 @@
 </div>
 <div class="hidden md:flex items-center gap-8">
 <a class="text-primary border-b-2 border-primary pb-1 font-label-bold hover:text-primary transition-colors" href="#">Accueil</a>
-<a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="#audiences">S'adresse à vous</a>
+@feature('news_ribbon')
+<a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="{{ route('public.news.index') }}">Actualités</a>
+@endfeature
+@feature('public_offers')
+<a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="{{ route('public.offers.index') }}">Offres</a>
+@endfeature
+<a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors hidden lg:inline" href="#audiences">S'adresse à vous</a>
 <a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="#guichet">Le Guichet</a>
-<a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="#partenaires">Partenaires</a>
+<a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors hidden xl:inline" href="#partenaires">Partenaires</a>
 <a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="#mediatheque">Médiathèque</a>
 <a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="{{ route('bibliotheque') }}">Bibliothèque</a>
-<a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="#contact">Contactez-nous</a>
+<a class="text-on-surface-variant font-label-bold hover:text-primary transition-colors" href="#contact">Contact</a>
 @auth
 <div class="relative" x-data="{ open: false }">
 <button @click="open = !open" class="flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-lg font-label-bold hover:opacity-90 transition-all">
 <span class="material-symbols-outlined text-lg">account_circle</span>
-{{ Auth::user()->name }}
+{{ Auth::user()->full_name }}
 <span class="material-symbols-outlined text-sm" x-text="open ? 'expand_less' : 'expand_more'"></span>
 </button>
 <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-outline-variant py-2 z-50">
-<a href="{{ route('admin.candidates.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low transition-colors">
-<span class="material-symbols-outlined text-base">admin_panel_settings</span>
-Administration
+<a href="{{ route(Auth::user()->homeRouteName()) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-base">{{ Auth::user()->isStaffUser() ? 'admin_panel_settings' : 'person' }}</span>
+{{ Auth::user()->isStaffUser() ? 'Administration' : 'Mon espace' }}
 </a>
 <form method="POST" action="{{ route('logout') }}">
 @csrf
@@ -146,13 +160,60 @@ Déconnexion
 </div>
 </div>
 @else
+<div class="flex items-center gap-2">
+@feature('self_registration')
+<a href="{{ route('register.choice') }}" class="text-primary font-label-bold px-3 py-2 hover:opacity-80">S'inscrire</a>
+@endfeature
 <a href="{{ route('login') }}" class="bg-primary text-on-primary px-6 py-2 rounded-lg font-label-bold hover:opacity-90 transition-all">Connexion</a>
+</div>
 @endauth
 </div>
 <button @click="mobileMenu = !mobileMenu" class="md:hidden text-primary">
 <span class="material-symbols-outlined text-3xl" x-text="mobileMenu ? 'close' : 'menu'"></span>
 </button>
 </nav>
+
+{{-- Bandeau annonces / événements (Phase 2) — défilement horizontal --}}
+@if(!empty($ribbonItems) && $ribbonItems->isNotEmpty())
+<style>
+@keyframes aeb-marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+.aeb-marquee-track {
+    display: inline-flex;
+    width: max-content;
+    animation: aeb-marquee 35s linear infinite;
+}
+.aeb-marquee-track:hover { animation-play-state: paused; }
+</style>
+<div class="bg-primary text-on-primary overflow-hidden border-b border-outline-variant">
+    <div class="flex items-center gap-3 py-2.5 pl-4 md:pl-8">
+        <span class="material-symbols-outlined text-base flex-shrink-0" title="Annonces & événements">campaign</span>
+        <span class="text-[10px] uppercase font-bold tracking-wider flex-shrink-0 opacity-90 hidden sm:inline">Infos</span>
+        <div class="flex-1 overflow-hidden min-w-0">
+            <div class="aeb-marquee-track">
+                @foreach([1, 2] as $loopPass)
+                    @foreach($ribbonItems as $ri)
+                        <a href="{{ route('public.news.show', $ri->slug) }}"
+                           class="inline-flex items-center gap-2 mr-10 hover:underline whitespace-nowrap text-sm">
+                            <span class="text-[10px] uppercase font-bold bg-white/20 px-2 py-0.5 rounded">{{ $ri->kindLabel() }}</span>
+                            <span>{{ $ri->title }}</span>
+                            @if($ri->excerpt)
+                                <span class="opacity-80">— {{ \Illuminate\Support\Str::limit($ri->excerpt, 60) }}</span>
+                            @endif
+                        </a>
+                    @endforeach
+                @endforeach
+            </div>
+        </div>
+        <a href="{{ route('public.news.index') }}"
+           class="flex-shrink-0 text-xs font-bold underline px-4 whitespace-nowrap hover:opacity-90">
+            Voir tout
+        </a>
+    </div>
+</div>
+@endif
 
 {{-- Menu mobile --}}
 <div x-show="mobileMenu" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="md:hidden border-t border-outline-variant bg-surface px-margin-mobile py-4 space-y-2">
@@ -162,15 +223,24 @@ Déconnexion
 <a @click="mobileMenu = false" class="block py-2.5 px-4 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container-low" href="#partenaires">Partenaires</a>
 <a @click="mobileMenu = false" class="block py-2.5 px-4 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container-low" href="#mediatheque">Médiathèque</a>
 <a @click="mobileMenu = false" class="block py-2.5 px-4 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container-low" href="{{ route('bibliotheque') }}">Bibliothèque</a>
+@feature('public_offers')
+<a @click="mobileMenu = false" class="block py-2.5 px-4 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container-low" href="{{ route('public.offers.index') }}">Offres</a>
+@endfeature
+@feature('news_ribbon')
+<a @click="mobileMenu = false" class="block py-2.5 px-4 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container-low" href="{{ route('public.news.index') }}">Actualités</a>
+@endfeature
 <a @click="mobileMenu = false" class="block py-2.5 px-4 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container-low" href="#contact">Contactez-nous</a>
 <div class="pt-2 border-t border-outline-variant">
 @auth
-<a href="{{ route('admin.candidates.index') }}" class="block py-2.5 px-4 rounded-lg font-label-bold text-primary hover:bg-primary/5">Administration</a>
+<a href="{{ route(Auth::user()->homeRouteName()) }}" class="block py-2.5 px-4 rounded-lg font-label-bold text-primary hover:bg-primary/5">{{ Auth::user()->isStaffUser() ? 'Administration' : 'Mon espace' }}</a>
 <form method="POST" action="{{ route('logout') }}">
 @csrf
 <button type="submit" class="w-full text-left py-2.5 px-4 rounded-lg font-label-bold text-red-600 hover:bg-red-50">Déconnexion</button>
 </form>
 @else
+@feature('self_registration')
+<a href="{{ route('register.choice') }}" class="block py-2.5 px-4 rounded-lg font-label-bold text-primary text-center">S'inscrire</a>
+@endfeature
 <a href="{{ route('login') }}" class="block py-2.5 px-4 rounded-lg font-label-bold text-white bg-primary text-center hover:opacity-90">Connexion</a>
 @endauth
 </div>
@@ -487,6 +557,37 @@ Déconnexion
 })();
 </script>
 @endscript
+
+{{-- ══════════════════════════════════ ACTUALITÉS (Phase 2) ════════════════════════════════════ --}}
+@if(!empty($latestNews) && $latestNews->isNotEmpty())
+<section class="py-16 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto" id="actualites">
+    <div class="flex flex-wrap items-end justify-between gap-4 mb-8">
+        <div>
+            <h2 class="font-headline-lg text-headline-lg text-primary" data-animate="fade-up">Actualités</h2>
+            <div class="h-1.5 w-24 bg-secondary rounded-full mt-3" data-animate="fade-up" data-delay="100"></div>
+        </div>
+        <a href="{{ route('public.news.index') }}" class="text-sm font-label-bold text-primary hover:underline" data-animate="fade-up">
+            Toutes les actualités →
+        </a>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        @foreach($latestNews as $news)
+            <a href="{{ route('public.news.show', $news->slug) }}"
+               class="block p-5 rounded-2xl border border-outline-variant bg-surface-container-low hover:border-primary transition-colors card-lift"
+               data-animate="fade-up" data-delay="{{ $loop->index * 80 }}">
+                <span class="text-[10px] uppercase font-bold tracking-wide text-primary">{{ $news->kindLabel() }}</span>
+                <p class="font-label-bold text-on-surface mt-2 leading-snug">{{ $news->title }}</p>
+                @if($news->excerpt)
+                    <p class="text-sm text-on-surface-variant mt-2 line-clamp-2">{{ $news->excerpt }}</p>
+                @endif
+                @if($news->published_at)
+                    <p class="text-[11px] text-on-surface-variant mt-3">{{ $news->published_at->format('d/m/Y') }}</p>
+                @endif
+            </a>
+        @endforeach
+    </div>
+</section>
+@endif
 
 {{-- ══════════════════════════════════ TÉMOIGNAGES ═══════════════════════════════════════════ --}}
 @if($temoSection?->is_active !== false && count($temoItems))

@@ -5,9 +5,7 @@ namespace App\Livewire\Candidates;
 use App\Enums\Gender;
 use App\Exports\CandidatesExport;
 use App\Models\Candidate;
-use App\Models\ReferentialCommune;
-use App\Models\ReferentialEducationLevel;
-use App\Models\ReferentialSkill;
+use App\Support\ReferentialCache;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -63,6 +61,10 @@ class CandidateIndex extends Component
 
     public function export()
     {
+        $this->authorize('export', Candidate::class);
+
+        $user = Auth::user();
+
         return \Maatwebsite\Excel\Facades\Excel::download(
             new CandidatesExport(
                 from: $this->exportFrom ?: null,
@@ -71,6 +73,7 @@ class CandidateIndex extends Component
                 commune: $this->exportCommune ?: null,
                 education: $this->exportEducation ?: null,
                 skill: $this->exportSkill ?: null,
+                operatorId: $user->isOperator() ? $user->id : null,
             ),
             'candidats_' . date('Y-m-d') . '.xlsx'
         );
@@ -82,20 +85,20 @@ class CandidateIndex extends Component
 
         $user = Auth::user();
 
-        $candidates = Candidate::with(['commune', 'skills'])
-            ->when($user->isOperator(), fn($q) => $q->byOperator($user->id))
-            ->when($this->search, fn($q) => $q->search($this->search))
-            ->when($this->commune, fn($q) => $q->byCommune($this->commune))
-            ->when($this->gender, fn($q) => $q->byGender($this->gender))
-            ->when($this->education, fn($q) => $q->byEducation($this->education))
-            ->when($this->skill, fn($q) => $q->bySkills([$this->skill]))
+        $candidates = Candidate::withList()
+            ->when($user->isOperator(), fn ($q) => $q->byOperator($user->id))
+            ->when($this->search, fn ($q) => $q->search($this->search))
+            ->when($this->commune, fn ($q) => $q->byCommune($this->commune))
+            ->when($this->gender, fn ($q) => $q->byGender($this->gender))
+            ->when($this->education, fn ($q) => $q->byEducation($this->education))
+            ->when($this->skill, fn ($q) => $q->bySkills([$this->skill]))
             ->latest()
             ->paginate($this->perPage);
 
-        $communes   = ReferentialCommune::active()->get();
-        $skills     = ReferentialSkill::active()->get();
-        $educations = ReferentialEducationLevel::active()->get()->map(fn($e) => ['value' => $e->code, 'label' => $e->name]);
-        $genders    = collect(Gender::cases())->map(fn($g) => ['value' => $g->value, 'label' => $g->label()]);
+        $communes   = ReferentialCache::communes();
+        $skills     = ReferentialCache::skills();
+        $educations = ReferentialCache::educations()->map(fn ($e) => ['value' => $e->code, 'label' => $e->name]);
+        $genders    = collect(Gender::cases())->map(fn ($g) => ['value' => $g->value, 'label' => $g->label()]);
 
         return view('livewire.candidates.candidate-index', compact(
             'candidates', 'communes', 'skills', 'educations', 'genders'

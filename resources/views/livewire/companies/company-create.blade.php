@@ -21,7 +21,9 @@
         <div class="p-6 space-y-5">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div class="md:col-span-2">
-                    <x-form.input wire:model="name" label="Nom de l'entreprise *" placeholder="Ex: GIE Yennega Agroécologie" :error="$errors->first('name')" />
+                    <x-form.input wire:model="name" label="Nom de l'entreprise *"
+                        placeholder="@agroecology Ex: GIE Yennega Agroécologie @else Ex: GIE Yennega @endagroecology"
+                        :error="$errors->first('name')" />
                 </div>
 
                 {{-- Logo --}}
@@ -73,9 +75,9 @@
                 <div class="flex flex-wrap gap-2 p-3 bg-[#fbf2ed] rounded-xl border border-[#c1c9b6]">
                     @foreach($activityTypesList as $type)
                         <label class="flex items-center gap-1.5 cursor-pointer px-2.5 py-1.5 rounded-lg border transition-all
-                            {{ in_array($type, $activity_types) ? 'border-[#875212] bg-[#ffdcbd]/20 text-[#875212]' : 'border-[#c1c9b6] bg-white text-[#41493b] hover:border-[#875212]/50' }}">
-                            <input type="checkbox" wire:model.live="activity_types" value="{{ $type }}" class="sr-only" />
-                            <span class="text-xs font-semibold">{{ $type }}</span>
+                            {{ in_array($type->name, $activity_types) ? 'border-[#875212] bg-[#ffdcbd]/20 text-[#875212]' : 'border-[#c1c9b6] bg-white text-[#41493b] hover:border-[#875212]/50' }}">
+                            <input type="checkbox" wire:model.live="activity_types" value="{{ $type->name }}" class="sr-only" />
+                            <span class="text-xs font-semibold">{{ $type->name }}</span>
                         </label>
                     @endforeach
                 </div>
@@ -205,6 +207,7 @@
                     </div>
                 </label>
             </div>
+            <x-form.textarea wire:model="other_needs" label="Autres besoins" placeholder="Besoins complémentaires non couverts ci-dessus..." rows="3" />
             <x-form.textarea wire:model="operator_notes" label="Notes de l'opérateur" placeholder="Observations, contexte, priorités..." rows="3" />
         </div>
     </div>

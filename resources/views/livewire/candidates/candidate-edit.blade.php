@@ -223,7 +223,7 @@
                                 @elseif($candidate->identity_document_path)
                                     <p class="text-sm font-medium text-[#1e1b18]">Document actuel enregistré</p>
                                     <p class="text-xs text-[#2c6904] hover:underline">
-                                        <a href="{{ Storage::url($candidate->identity_document_path) }}" target="_blank" onclick="event.stopPropagation()">Voir le document ↗</a>
+                                        <a href="{{ route('admin.secure.candidate-file', ['candidate' => $candidate, 'field' => 'identity']) }}" target="_blank" onclick="event.stopPropagation()">Voir le document ↗</a>
                                         · Cliquer sur la zone pour remplacer
                                     </p>
                                 @else
@@ -283,18 +283,20 @@
                     </x-form.select>
                     <x-form.input wire:model="agro_training_place" label="Lieu de formation" placeholder="Ex: ENEF, Dindéresso" />
                 </div>
-                <x-form.textarea wire:model="agro_training_text" label="Formation reçue" placeholder="Décrivez les formations reçues en lien avec l'agroécologie..." rows="4" />
+                <x-form.textarea wire:model="agro_training_text" label="Formation reçue"
+                    placeholder="@agroecology Décrivez les formations reçues en lien avec l'agroécologie... @else Décrivez les formations reçues... @endagroecology"
+                    rows="4" />
 
                 {{-- Diplômes multiples --}}
                 <div>
                     <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">
-                        Diplômes ou attestations en agroécologie
+                        @agroecology Diplômes ou attestations en agroécologie @else Diplômes ou attestations @endagroecology
                         <span class="text-xs font-normal text-[#717a69] ml-1">Plusieurs fichiers · PDF/JPG/PNG · max 10 Mo/fichier</span>
                     </label>
                     @if(!empty($candidate->diploma_paths) && empty($diploma_files))
                         <div class="mb-2 flex flex-wrap gap-2">
                             @foreach($candidate->diploma_paths as $i => $path)
-                                <a href="{{ Storage::url($path) }}" target="_blank"
+                                <a href="{{ route('admin.secure.candidate-file', ['candidate' => $candidate, 'field' => 'diploma', 'index' => $i]) }}" target="_blank"
                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#aef585]/20 border border-[#2c6904]/20 rounded-lg text-xs font-semibold text-[#2c6904] hover:bg-[#aef585]/40">
                                     <span class="material-symbols-outlined text-sm">workspace_premium</span>
                                     Diplôme {{ count($candidate->diploma_paths) > 1 ? ($i+1) : '' }} ↗
@@ -350,7 +352,7 @@
                             @elseif($candidate->cv_path)
                                 <p class="text-sm font-medium text-[#1e1b18]">CV actuel enregistré</p>
                                 <p class="text-xs text-[#717a69]">
-                                    <a href="{{ Storage::url($candidate->cv_path) }}" target="_blank" onclick="event.stopPropagation()" class="text-[#2c6904] hover:underline">Voir le CV ↗</a>
+                                    <a href="{{ route('admin.secure.candidate-file', ['candidate' => $candidate, 'field' => 'cv']) }}" target="_blank" onclick="event.stopPropagation()" class="text-[#2c6904] hover:underline">Voir le CV ↗</a>
                                     · Cliquer sur la zone pour remplacer
                                 </p>
                             @else
@@ -429,12 +431,12 @@
                             @endif
                         </div>
                         <div class="px-5 pb-4 flex flex-wrap gap-2">
-                            @foreach(['emploi_salarie' => 'Emploi salarié', 'contrats_saisonniers' => 'Contrats saisonniers', 'missions_ponctuelles' => 'Missions ponctuelles', 'apprentissage' => 'Apprentissage', 'entrepreneuriat' => 'Entrepreneuriat'] as $value => $label)
+                            @foreach($employmentTypes as $employmentType)
                                 <label class="cursor-pointer">
-                                    <input type="checkbox" wire:model.live="need_employment_types" value="{{ $value }}" class="sr-only" />
-                                    <span @class(['inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all', 'bg-[#2c6904] text-white border-[#2c6904] shadow-sm' => in_array($value, $need_employment_types), 'bg-white text-[#41493b] border-[#c1c9b6] hover:border-[#2c6904]/40 hover:text-[#2c6904]' => !in_array($value, $need_employment_types)])>
-                                        @if(in_array($value, $need_employment_types))<span class="material-symbols-outlined" style="font-size:11px">check</span>@endif
-                                        {{ $label }}
+                                    <input type="checkbox" wire:model.live="need_employment_types" value="{{ $employmentType->code }}" class="sr-only" />
+                                    <span @class(['inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all', 'bg-[#2c6904] text-white border-[#2c6904] shadow-sm' => in_array($employmentType->code, $need_employment_types), 'bg-white text-[#41493b] border-[#c1c9b6] hover:border-[#2c6904]/40 hover:text-[#2c6904]' => !in_array($employmentType->code, $need_employment_types)])>
+                                        @if(in_array($employmentType->code, $need_employment_types))<span class="material-symbols-outlined" style="font-size:11px">check</span>@endif
+                                        {{ $employmentType->name }}
                                     </span>
                                 </label>
                             @endforeach
@@ -451,7 +453,7 @@
                                 </div>
                                 <div>
                                     <p @class(['text-sm font-bold', 'text-[#2c6904]' => $formationActive, 'text-[#1e1b18]' => !$formationActive])>Formation</p>
-                                    <p class="text-[11px] text-[#717a69]">Opportunités de formation en agroécologie</p>
+                                    <p class="text-[11px] text-[#717a69]">@agroecology Opportunités de formation en agroécologie @else Opportunités de formation @endagroecology</p>
                                 </div>
                             </div>
                             @if($formationActive)
@@ -459,12 +461,12 @@
                             @endif
                         </div>
                         <div class="px-5 pb-4 flex flex-wrap gap-2">
-                            @foreach(['cours' => 'Cours', 'master' => 'Master', 'atelier' => 'Atelier', 'stage' => 'Stage', 'voyage_echange' => 'Voyage d\'échange'] as $value => $label)
+                            @foreach($formationTypes as $formationType)
                                 <label class="cursor-pointer">
-                                    <input type="checkbox" wire:model.live="need_formation_types" value="{{ $value }}" class="sr-only" />
-                                    <span @class(['inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all', 'bg-[#2c6904] text-white border-[#2c6904] shadow-sm' => in_array($value, $need_formation_types), 'bg-white text-[#41493b] border-[#c1c9b6] hover:border-[#2c6904]/40 hover:text-[#2c6904]' => !in_array($value, $need_formation_types)])>
-                                        @if(in_array($value, $need_formation_types))<span class="material-symbols-outlined" style="font-size:11px">check</span>@endif
-                                        {{ $label }}
+                                    <input type="checkbox" wire:model.live="need_formation_types" value="{{ $formationType->code }}" class="sr-only" />
+                                    <span @class(['inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all', 'bg-[#2c6904] text-white border-[#2c6904] shadow-sm' => in_array($formationType->code, $need_formation_types), 'bg-white text-[#41493b] border-[#c1c9b6] hover:border-[#2c6904]/40 hover:text-[#2c6904]' => !in_array($formationType->code, $need_formation_types)])>
+                                        @if(in_array($formationType->code, $need_formation_types))<span class="material-symbols-outlined" style="font-size:11px">check</span>@endif
+                                        {{ $formationType->name }}
                                     </span>
                                 </label>
                             @endforeach
@@ -510,6 +512,30 @@
                     </div>
                 </div>
 
+                <div>
+                    <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">Prétentions salariales</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs text-[#41493b] mb-1">Minimum</label>
+                            <div class="relative">
+                                <input type="number" wire:model="salary_min" min="0" step="1000" placeholder="Ex: 75000"
+                                       class="w-full px-4 py-2.5 pr-16 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904]" />
+                                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#41493b] pointer-events-none">FCFA</span>
+                            </div>
+                            @error('salary_min') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-xs text-[#41493b] mb-1">Maximum</label>
+                            <div class="relative">
+                                <input type="number" wire:model="salary_max" min="0" step="1000" placeholder="Ex: 120000"
+                                       class="w-full px-4 py-2.5 pr-16 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904]" />
+                                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#41493b] pointer-events-none">FCFA</span>
+                            </div>
+                            @error('salary_max') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+                    <p class="mt-1.5 text-xs text-[#41493b]/70">Montants en FCFA / mois</p>
+                </div>
                 <x-form.textarea wire:model="operator_notes" label="Notes de l'opérateur" placeholder="Observations internes, remarques importantes..." rows="4" />
             </div>
         @endif

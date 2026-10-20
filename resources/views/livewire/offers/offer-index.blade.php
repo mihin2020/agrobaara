@@ -130,7 +130,12 @@
                         <tr class="hover:bg-[#fbf2ed]/50 transition-colors">
                             <td class="px-4 py-3.5">
                                 <div>
-                                    <p class="font-semibold text-sm text-[#1e1b18]">{{ $offer->title }}</p>
+                                    <p class="font-semibold text-sm text-[#1e1b18]">
+                                        {{ $offer->title }}
+                                        @if($offer->isPeriodic())
+                                            <span class="ml-1 text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 align-middle">Périodique</span>
+                                        @endif
+                                    </p>
                                     <span class="font-mono text-[11px] font-semibold text-[#615c47] bg-[#ebe2c8]/30 px-1.5 py-0.5 rounded">{{ $offer->reference }}</span>
                                 </div>
                             </td>
@@ -152,21 +157,13 @@
                                 @endif
                             </td>
                             <td class="px-4 py-3.5">
-                                <span class="text-[10px] font-bold px-2 py-1 rounded-full {{ $offer->status->badgeClass() }}">
-                                    {{ $offer->status->label() }}
-                                </span>
+                                <x-status-badge :status="$offer->status" />
                             </td>
                             <td class="px-4 py-3.5 text-right">
                                 <div class="flex items-center justify-end gap-1">
-                                    <a href="{{ route('admin.offers.show', $offer) }}" wire:navigate
-                                       class="p-1.5 text-[#41493b] hover:bg-[#f5ece7] hover:text-[#615c47] rounded-lg transition-colors" title="Voir">
-                                        <span class="material-symbols-outlined text-lg">visibility</span>
-                                    </a>
+                                    <x-icon-btn icon="visibility" title="Voir" :href="route('admin.offers.show', $offer)" />
                                     @can('update', $offer)
-                                        <a href="{{ route('admin.offers.edit', $offer) }}" wire:navigate
-                                           class="p-1.5 text-[#41493b] hover:bg-[#f5ece7] hover:text-[#615c47] rounded-lg transition-colors" title="Modifier">
-                                            <span class="material-symbols-outlined text-lg">edit</span>
-                                        </a>
+                                        <x-icon-btn icon="edit" title="Modifier" :href="route('admin.offers.edit', $offer)" />
                                     @endcan
                                     @can('publish', $offer)
                                         @if($offer->isDraft())
@@ -198,15 +195,17 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-4 py-12 text-center">
-                                <span class="material-symbols-outlined text-5xl text-[#c1c9b6] block mb-3">work_outline</span>
-                                <p class="text-[#717a69] font-medium text-sm">Aucune offre trouvée.</p>
-                                @if($search || $status)
-                                    <button wire:click="$set('search', ''); $set('status', '')"
-                                            class="mt-2 text-sm text-[#615c47] hover:underline font-semibold">
-                                        Réinitialiser les filtres
-                                    </button>
-                                @endif
+                            <td colspan="7">
+                                <x-empty-state icon="work_outline" title="Aucune offre trouvée.">
+                                    <x-slot:actions>
+                                        @if($search || $status)
+                                            <button wire:click="$set('search', ''); $set('status', '')"
+                                                    class="mt-2 text-sm text-[#615c47] hover:underline font-semibold">
+                                                Réinitialiser les filtres
+                                            </button>
+                                        @endif
+                                    </x-slot:actions>
+                                </x-empty-state>
                             </td>
                         </tr>
                     @endforelse

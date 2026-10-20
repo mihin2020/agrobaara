@@ -163,7 +163,7 @@
                         </button>
                     @endif
                     @if($candidate->identity_document_path)
-                        <a href="{{ Storage::url($candidate->identity_document_path) }}" target="_blank"
+                        <a href="{{ route('admin.secure.candidate-file', ['candidate' => $candidate, 'field' => 'identity']) }}" target="_blank"
                            class="flex items-center gap-2.5 px-3 py-2.5 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl hover:border-[#2c6904]/50 transition-colors group">
                             <span class="material-symbols-outlined text-[#2c6904] text-lg">contact_page</span>
                             <span class="text-xs font-semibold text-[#1e1b18] group-hover:text-[#2c6904]">Pièce d'identité</span>
@@ -172,7 +172,7 @@
                     @endif
                     @if(!empty($candidate->diploma_paths))
                         @foreach($candidate->diploma_paths as $i => $path)
-                            <a href="{{ Storage::url($path) }}" target="_blank"
+                            <a href="{{ route('admin.secure.candidate-file', ['candidate' => $candidate, 'field' => 'diploma', 'index' => $i]) }}" target="_blank"
                                class="flex items-center gap-2.5 px-3 py-2.5 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl hover:border-[#2c6904]/50 transition-colors group">
                                 <span class="material-symbols-outlined text-[#2c6904] text-lg">workspace_premium</span>
                                 <span class="text-xs font-semibold text-[#1e1b18] group-hover:text-[#2c6904]">Diplôme {{ count($candidate->diploma_paths) > 1 ? ($i+1) : '' }}</span>
@@ -181,7 +181,7 @@
                         @endforeach
                     @endif
                     @if($candidate->cv_path)
-                        <a href="{{ Storage::url($candidate->cv_path) }}" target="_blank"
+                        <a href="{{ route('admin.secure.candidate-file', ['candidate' => $candidate, 'field' => 'cv']) }}" target="_blank"
                            class="flex items-center gap-2.5 px-3 py-2.5 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl hover:border-[#2c6904]/50 transition-colors group">
                             <span class="material-symbols-outlined text-[#2c6904] text-lg">description</span>
                             <span class="text-xs font-semibold text-[#1e1b18] group-hover:text-[#2c6904]">CV</span>
@@ -303,23 +303,9 @@
 
             {{-- Besoins exprimés --}}
             @php
-                $employmentLabels = [
-                    'emploi_salarie'       => 'Emploi salarié',
-                    'contrats_saisonniers' => 'Contrats saisonniers',
-                    'missions_ponctuelles' => 'Missions ponctuelles',
-                    'apprentissage'        => 'Apprentissage',
-                    'entrepreneuriat'      => 'Entrepreneuriat',
-                ];
-                $formationLabels = [
-                    'cours'          => 'Cours',
-                    'master'         => 'Master',
-                    'atelier'        => 'Atelier',
-                    'stage'          => 'Stage',
-                    'voyage_echange' => "Voyage d'échange",
-                ];
-                $employmentTypes = $candidate->need_employment_types ?? [];
-                $formationTypes  = $candidate->need_formation_types ?? [];
-                $hasAnyNeed = !empty($employmentTypes) || !empty($formationTypes) || $candidate->need_financing || $candidate->need_cv_support;
+                $employmentCodes = $candidate->need_employment_types ?? [];
+                $formationCodes  = $candidate->need_formation_types ?? [];
+                $hasAnyNeed = !empty($employmentCodes) || !empty($formationCodes) || $candidate->need_financing || $candidate->need_cv_support || $candidate->formattedSalaryExpectation();
             @endphp
             <div class="bg-white rounded-2xl border border-[#c1c9b6] overflow-hidden">
                 <div class="px-5 py-3.5 border-b border-[#c1c9b6] bg-amber-50 flex items-center gap-2">
@@ -331,16 +317,16 @@
                         <p class="text-xs text-[#717a69] text-center py-2">Aucun besoin enregistré.</p>
                     @else
                         {{-- Emploi --}}
-                        @if(!empty($employmentTypes))
+                        @if(!empty($employmentCodes))
                             <div>
                                 <div class="flex items-center gap-1.5 mb-1.5">
                                     <span class="material-symbols-outlined text-[#2c6904]" style="font-size:14px">work</span>
                                     <p class="text-[11px] text-[#2c6904] uppercase font-bold tracking-wide">Emploi</p>
                                 </div>
                                 <div class="flex flex-wrap gap-1.5">
-                                    @foreach($employmentTypes as $type)
+                                    @foreach($employmentCodes as $code)
                                         <span class="text-[11px] font-semibold px-2.5 py-1 bg-[#aef585]/20 text-[#2c6904] border border-[#2c6904]/20 rounded-full">
-                                            {{ $employmentLabels[$type] ?? $type }}
+                                            {{ $employmentTypes[$code]->name ?? $code }}
                                         </span>
                                     @endforeach
                                 </div>
@@ -348,19 +334,29 @@
                         @endif
 
                         {{-- Formation --}}
-                        @if(!empty($formationTypes))
+                        @if(!empty($formationCodes))
                             <div>
                                 <div class="flex items-center gap-1.5 mb-1.5">
                                     <span class="material-symbols-outlined text-[#2c6904]" style="font-size:14px">school</span>
                                     <p class="text-[11px] text-[#2c6904] uppercase font-bold tracking-wide">Formation</p>
                                 </div>
                                 <div class="flex flex-wrap gap-1.5">
-                                    @foreach($formationTypes as $type)
+                                    @foreach($formationCodes as $code)
                                         <span class="text-[11px] font-semibold px-2.5 py-1 bg-[#aef585]/20 text-[#2c6904] border border-[#2c6904]/20 rounded-full">
-                                            {{ $formationLabels[$type] ?? $type }}
+                                            {{ $formationTypes[$code]->name ?? $code }}
                                         </span>
                                     @endforeach
                                 </div>
+                            </div>
+                        @endif
+
+                        @if($candidate->formattedSalaryExpectation())
+                            <div>
+                                <div class="flex items-center gap-1.5 mb-1.5">
+                                    <span class="material-symbols-outlined text-[#2c6904]" style="font-size:14px">payments</span>
+                                    <p class="text-[11px] text-[#2c6904] uppercase font-bold tracking-wide">Prétentions salariales</p>
+                                </div>
+                                <p class="text-sm text-[#1e1b18] bg-[#fbf2ed] rounded-xl p-3">{{ $candidate->formattedSalaryExpectation() }}</p>
                             </div>
                         @endif
 
@@ -427,6 +423,48 @@
                     </div>
                 @endif
             </div>
+
+            {{-- Contrats / suivi --}}
+            @can('viewAny', App\Models\Contract::class)
+                <div class="bg-white rounded-2xl border border-[#c1c9b6] overflow-hidden">
+                    <div class="px-4 py-3 border-b border-[#c1c9b6] bg-[#f5f9f2] flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-base text-[#2c6904]">description</span>
+                            <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Contrats</h3>
+                        </div>
+                        <a href="{{ route('admin.contracts.index', ['candidate_id' => $candidate->id]) }}" wire:navigate
+                           class="text-[11px] font-semibold text-[#2c6904] hover:underline">
+                            Voir tout
+                        </a>
+                    </div>
+                    <div class="divide-y divide-[#c1c9b6]/40">
+                        @forelse($candidate->contracts->sortByDesc('created_at')->take(5) as $ctr)
+                            <a href="{{ route('admin.contracts.show', $ctr) }}" wire:navigate
+                               class="block p-3 hover:bg-[#fbf2ed]/50 transition-colors">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="min-w-0">
+                                        <p class="font-mono text-[10px] font-bold text-[#2c6904]">{{ $ctr->reference ?? '—' }}</p>
+                                        <p class="text-xs font-semibold text-[#1e1b18] truncate">{{ $ctr->company->name }}</p>
+                                        <p class="text-[11px] text-[#717a69] truncate">{{ $ctr->offer?->title ?? '—' }}</p>
+                                        <p class="text-[11px] text-[#41493b] mt-0.5">{{ $ctr->periodLabel() }}</p>
+                                    </div>
+                                    <div class="flex flex-col items-end gap-1 flex-shrink-0">
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ $ctr->status->badgeClass() }}">{{ $ctr->status->label() }}</span>
+                                        @if($ctr->isExpired())
+                                            <span class="text-[9px] font-bold text-red-700">Expiré / historisé</span>
+                                        @endif
+                                        @if($ctr->renewed_from_contract_id)
+                                            <span class="text-[9px] font-bold text-[#2c6904]">Renouvellement</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </a>
+                        @empty
+                            <div class="p-6 text-center text-[#717a69] text-xs">Aucun contrat pour ce candidat.</div>
+                        @endforelse
+                    </div>
+                </div>
+            @endcan
 
             {{-- Méta --}}
             <div class="bg-white rounded-2xl border border-[#c1c9b6] p-4 space-y-2">

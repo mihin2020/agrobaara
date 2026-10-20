@@ -19,17 +19,19 @@ class CandidatesExport implements FromCollection, WithHeadings, WithMapping, Wit
         protected ?string $commune = null,
         protected ?string $education = null,
         protected ?string $skill = null,
+        protected ?string $operatorId = null,
     ) {}
 
     public function collection()
     {
         return Candidate::with(['commune', 'skills', 'languages'])
-            ->when($this->from, fn($q) => $q->whereDate('created_at', '>=', $this->from))
-            ->when($this->to, fn($q) => $q->whereDate('created_at', '<=', $this->to))
-            ->when($this->gender, fn($q) => $q->byGender($this->gender))
-            ->when($this->commune, fn($q) => $q->byCommune($this->commune))
-            ->when($this->education, fn($q) => $q->byEducation($this->education))
-            ->when($this->skill, fn($q) => $q->bySkills([$this->skill]))
+            ->when($this->operatorId, fn ($q) => $q->byOperator($this->operatorId))
+            ->when($this->from, fn ($q) => $q->whereDate('created_at', '>=', $this->from))
+            ->when($this->to, fn ($q) => $q->whereDate('created_at', '<=', $this->to))
+            ->when($this->gender, fn ($q) => $q->byGender($this->gender))
+            ->when($this->commune, fn ($q) => $q->byCommune($this->commune))
+            ->when($this->education, fn ($q) => $q->byEducation($this->education))
+            ->when($this->skill, fn ($q) => $q->bySkills([$this->skill]))
             ->latest()
             ->get();
     }

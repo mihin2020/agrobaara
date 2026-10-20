@@ -10,11 +10,17 @@ final class AuthResult
         public readonly bool $success,
         public readonly string $message,
         public readonly ?User $user = null,
+        public readonly bool $needsTwoFactor = false,
     ) {}
 
     public static function success(User $user): self
     {
-        return new self(true, '', $user);
+        return new self(true, '', $user, false);
+    }
+
+    public static function needsTwoFactor(User $user): self
+    {
+        return new self(true, '', $user, true);
     }
 
     public static function failed(string $message): self

@@ -19,10 +19,14 @@
 
             @php
                 $sections = [
-                    ['key' => 'languages',     'icon' => 'translate',   'label' => 'Langues parlées',              'count' => $languages->count(),     'color' => 'blue'],
-                    ['key' => 'educations',    'icon' => 'school',      'label' => "Niveaux d'étude",              'count' => $educations->count(),    'color' => 'purple'],
-                    ['key' => 'nationalities', 'icon' => 'flag',        'label' => 'Nationalités',                 'count' => $nationalities->count(), 'color' => 'amber'],
-                    ['key' => 'skills',        'icon' => 'agriculture', 'label' => 'Compétences',  'count' => $skills->count(),        'color' => 'green'],
+                    ['key' => 'general',        'icon' => 'tune',           'label' => 'Général',                    'count' => null,                       'color' => 'green'],
+                    ['key' => 'languages',      'icon' => 'translate',      'label' => 'Langues parlées',            'count' => $languages->count(),        'color' => 'blue'],
+                    ['key' => 'educations',     'icon' => 'school',         'label' => "Niveaux d'étude",            'count' => $educations->count(),       'color' => 'purple'],
+                    ['key' => 'nationalities',  'icon' => 'flag',           'label' => 'Nationalités',               'count' => $nationalities->count(),    'color' => 'amber'],
+                    ['key' => 'skills',         'icon' => 'agriculture',    'label' => 'Compétences',                'count' => $skills->count(),           'color' => 'green'],
+                    ['key' => 'employment',     'icon' => 'work',           'label' => 'Types d\'emploi',            'count' => $employmentTypes->count(),  'color' => 'blue'],
+                    ['key' => 'formation',      'icon' => 'menu_book',      'label' => 'Types de formation',         'count' => $formationTypes->count(),   'color' => 'purple'],
+                    ['key' => 'activities',     'icon' => 'eco',            'label' => 'Types d\'activité',          'count' => $activityTypes->count(),    'color' => 'green'],
                 ];
             @endphp
 
@@ -40,7 +44,13 @@
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="text-xs font-bold text-[#1e1b18] leading-tight truncate">{{ $section['label'] }}</p>
-                            <p class="text-[11px] text-[#717a69] mt-0.5">{{ $section['count'] }} élément{{ $section['count'] > 1 ? 's' : '' }}</p>
+                            <p class="text-[11px] text-[#717a69] mt-0.5">
+                                @if($section['count'] === null)
+                                    Plateforme
+                                @else
+                                    {{ $section['count'] }} élément{{ $section['count'] > 1 ? 's' : '' }}
+                                @endif
+                            </p>
                         </div>
                         @if($activeTab === $section['key'])
                             <span class="material-symbols-outlined text-sm text-[#2c6904]">chevron_right</span>
@@ -53,6 +63,52 @@
 
         {{-- ─── Panneau principal ─────────────────────────────────────── --}}
         <div class="flex-1 min-w-0">
+
+            {{-- ── Général ──────────────────────────────────────────────── --}}
+            @if($activeTab === 'general')
+                <div class="bg-white rounded-2xl border border-[#c1c9b6] shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-[#c1c9b6] bg-[#f5f9f2] flex items-center gap-2.5">
+                        <span class="material-symbols-outlined text-base text-[#2c6904]">tune</span>
+                        <div>
+                            <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Paramètres généraux</h3>
+                            <p class="text-xs text-[#717a69]">Mentions et options globales de la plateforme</p>
+                        </div>
+                    </div>
+                    <div class="px-6 py-5 space-y-4">
+                        <div class="flex items-start justify-between gap-4 p-4 rounded-xl border border-[#c1c9b6] bg-[#fbfdfb]">
+                            <div class="min-w-0">
+                                <p class="text-sm font-semibold text-[#1e1b18]">Mention Agroécologie</p>
+                                <p class="text-xs text-[#717a69] mt-1">Affiche ou masque les libellés « Agroécologie » dans l’interface admin et l’authentification. Le contenu Landing CMS reste éditable manuellement.</p>
+                            </div>
+                            <button type="button" wire:click="$toggle('showAgroecologyMention')"
+                                    class="relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors focus:outline-none
+                                        {{ $showAgroecologyMention ? 'bg-[#2c6904]' : 'bg-[#c1c9b6]' }}">
+                                <span class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform
+                                    {{ $showAgroecologyMention ? 'translate-x-6' : 'translate-x-1' }}"></span>
+                            </button>
+                        </div>
+                        <div class="flex items-start justify-between gap-4 p-4 rounded-xl border border-[#c1c9b6] bg-[#fbfdfb]">
+                            <div class="min-w-0">
+                                <p class="text-sm font-semibold text-[#1e1b18]">Double authentification e-mail (2FA)</p>
+                                <p class="text-xs text-[#717a69] mt-1">Après le mot de passe, le staff reçoit un code à 6 chiffres par e-mail pour finaliser la connexion. Désactivable temporairement en cas d’incident mail.</p>
+                            </div>
+                            <button type="button" wire:click="$toggle('twoFactorEmailEnabled')"
+                                    class="relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors focus:outline-none
+                                        {{ $twoFactorEmailEnabled ? 'bg-[#2c6904]' : 'bg-[#c1c9b6]' }}">
+                                <span class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform
+                                    {{ $twoFactorEmailEnabled ? 'translate-x-6' : 'translate-x-1' }}"></span>
+                            </button>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="button" wire:click="saveGeneralSettings"
+                                    class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-[#2c6904] text-white text-sm font-semibold rounded-xl hover:bg-[#3a8406] transition-colors shadow-sm shadow-[#2c6904]/20">
+                                <span class="material-symbols-outlined text-base">save</span>
+                                Enregistrer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             {{-- ── Langues ─────────────────────────────────────────────── --}}
             @if($activeTab === 'languages')
@@ -356,7 +412,173 @@
                 </div>
             @endif
 
+            {{-- ── Types d'emploi ─────────────────────────────────────────── --}}
+            @if($activeTab === 'employment')
+                <div class="bg-white rounded-2xl border border-[#c1c9b6] shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-[#c1c9b6] bg-[#f5f9f2] flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <span class="material-symbols-outlined text-base text-[#2c6904]">work</span>
+                            <div>
+                                <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Types d'emploi</h3>
+                                <p class="text-xs text-[#717a69]">Options Emploi des formulaires candidats (codes stables)</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold px-2.5 py-1 bg-[#2c6904]/10 text-[#2c6904] rounded-full">{{ $employmentTypes->count() }}</span>
+                    </div>
+                    <div class="px-6 py-4 border-b border-[#c1c9b6] bg-[#fbfdfb]">
+                        <div class="flex gap-2.5">
+                            <div class="flex-1">
+                                <input type="text" wire:model="newEmploymentName" wire:keydown.enter="saveEmploymentType"
+                                       placeholder="Libellé — ex : Emploi salarié"
+                                       class="w-full px-3.5 py-2.5 bg-[#f5ece7] border {{ $errors->has('newEmploymentName') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904]" />
+                                @error('newEmploymentName') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                            <div class="w-44">
+                                <input type="text" wire:model="newEmploymentCode" wire:keydown.enter="saveEmploymentType"
+                                       placeholder="code_slug"
+                                       class="w-full px-3.5 py-2.5 bg-[#f5ece7] border {{ $errors->has('newEmploymentCode') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904]" />
+                                @error('newEmploymentCode') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                            <button wire:click="saveEmploymentType"
+                                    class="flex items-center gap-1.5 px-4 py-2.5 bg-[#2c6904] text-white text-sm font-semibold rounded-xl hover:bg-[#3a8406] transition-colors whitespace-nowrap">
+                                <span class="material-symbols-outlined text-base">add</span> Ajouter
+                            </button>
+                        </div>
+                    </div>
+                    <div class="divide-y divide-[#c1c9b6]/20">
+                        @forelse($employmentTypes as $row)
+                            <div class="flex items-center justify-between px-6 py-2.5 hover:bg-[#fbf2ed]/40">
+                                <div class="min-w-0">
+                                    <span class="text-sm {{ $row->is_active ? 'font-semibold text-[#1e1b18]' : 'text-[#717a69] line-through' }}">{{ $row->name }}</span>
+                                    <span class="ml-2 text-[11px] text-[#717a69] font-mono">{{ $row->code }}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button wire:click="toggleEmploymentType('{{ $row->id }}')"
+                                            class="relative inline-flex h-5 w-9 items-center rounded-full {{ $row->is_active ? 'bg-[#2c6904]' : 'bg-[#c1c9b6]' }}">
+                                        <span class="inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform {{ $row->is_active ? 'translate-x-4' : 'translate-x-1' }}"></span>
+                                    </button>
+                                    <button wire:click="deleteEmploymentType('{{ $row->id }}')" wire:confirm="Supprimer « {{ $row->name }} » ?"
+                                            class="p-1.5 text-[#c1c9b6] hover:text-red-500 hover:bg-red-50 rounded-lg">
+                                        <span class="material-symbols-outlined text-base">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="py-12 text-center text-sm text-[#717a69]">Aucun type d'emploi.</div>
+                        @endforelse
+                    </div>
+                </div>
+            @endif
+
+            {{-- ── Types de formation ─────────────────────────────────────── --}}
+            @if($activeTab === 'formation')
+                <div class="bg-white rounded-2xl border border-[#c1c9b6] shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-[#c1c9b6] bg-[#f5f9f2] flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <span class="material-symbols-outlined text-base text-[#2c6904]">menu_book</span>
+                            <div>
+                                <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Types de formation</h3>
+                                <p class="text-xs text-[#717a69]">Options Formation des formulaires candidats</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold px-2.5 py-1 bg-[#2c6904]/10 text-[#2c6904] rounded-full">{{ $formationTypes->count() }}</span>
+                    </div>
+                    <div class="px-6 py-4 border-b border-[#c1c9b6] bg-[#fbfdfb]">
+                        <div class="flex gap-2.5">
+                            <div class="flex-1">
+                                <input type="text" wire:model="newFormationName" wire:keydown.enter="saveFormationType"
+                                       placeholder="Libellé — ex : Cours"
+                                       class="w-full px-3.5 py-2.5 bg-[#f5ece7] border {{ $errors->has('newFormationName') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904]" />
+                                @error('newFormationName') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                            <div class="w-44">
+                                <input type="text" wire:model="newFormationCode" wire:keydown.enter="saveFormationType"
+                                       placeholder="code_slug"
+                                       class="w-full px-3.5 py-2.5 bg-[#f5ece7] border {{ $errors->has('newFormationCode') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904]" />
+                                @error('newFormationCode') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                            <button wire:click="saveFormationType"
+                                    class="flex items-center gap-1.5 px-4 py-2.5 bg-[#2c6904] text-white text-sm font-semibold rounded-xl hover:bg-[#3a8406] transition-colors whitespace-nowrap">
+                                <span class="material-symbols-outlined text-base">add</span> Ajouter
+                            </button>
+                        </div>
+                    </div>
+                    <div class="divide-y divide-[#c1c9b6]/20">
+                        @forelse($formationTypes as $row)
+                            <div class="flex items-center justify-between px-6 py-2.5 hover:bg-[#fbf2ed]/40">
+                                <div class="min-w-0">
+                                    <span class="text-sm {{ $row->is_active ? 'font-semibold text-[#1e1b18]' : 'text-[#717a69] line-through' }}">{{ $row->name }}</span>
+                                    <span class="ml-2 text-[11px] text-[#717a69] font-mono">{{ $row->code }}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button wire:click="toggleFormationType('{{ $row->id }}')"
+                                            class="relative inline-flex h-5 w-9 items-center rounded-full {{ $row->is_active ? 'bg-[#2c6904]' : 'bg-[#c1c9b6]' }}">
+                                        <span class="inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform {{ $row->is_active ? 'translate-x-4' : 'translate-x-1' }}"></span>
+                                    </button>
+                                    <button wire:click="deleteFormationType('{{ $row->id }}')" wire:confirm="Supprimer « {{ $row->name }} » ?"
+                                            class="p-1.5 text-[#c1c9b6] hover:text-red-500 hover:bg-red-50 rounded-lg">
+                                        <span class="material-symbols-outlined text-base">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="py-12 text-center text-sm text-[#717a69]">Aucun type de formation.</div>
+                        @endforelse
+                    </div>
+                </div>
+            @endif
+
+            {{-- ── Types d'activité ───────────────────────────────────────── --}}
+            @if($activeTab === 'activities')
+                <div class="bg-white rounded-2xl border border-[#c1c9b6] shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-[#c1c9b6] bg-[#f5f9f2] flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <span class="material-symbols-outlined text-base text-[#2c6904]">eco</span>
+                            <div>
+                                <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Types d'activité</h3>
+                                <p class="text-xs text-[#717a69]">Liste proposée aux entreprises (stockage libellé inchangé)</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold px-2.5 py-1 bg-[#2c6904]/10 text-[#2c6904] rounded-full">{{ $activityTypes->count() }}</span>
+                    </div>
+                    <div class="px-6 py-4 border-b border-[#c1c9b6] bg-[#fbfdfb]">
+                        <div class="flex gap-2.5">
+                            <div class="flex-1">
+                                <input type="text" wire:model="newActivityName" wire:keydown.enter="saveActivityType"
+                                       placeholder="Libellé — ex : Maraîchage"
+                                       class="w-full px-3.5 py-2.5 bg-[#f5ece7] border {{ $errors->has('newActivityName') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904]" />
+                                @error('newActivityName') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                            <button wire:click="saveActivityType"
+                                    class="flex items-center gap-1.5 px-4 py-2.5 bg-[#2c6904] text-white text-sm font-semibold rounded-xl hover:bg-[#3a8406] transition-colors whitespace-nowrap">
+                                <span class="material-symbols-outlined text-base">add</span> Ajouter
+                            </button>
+                        </div>
+                    </div>
+                    <div class="divide-y divide-[#c1c9b6]/20">
+                        @forelse($activityTypes as $row)
+                            <div class="flex items-center justify-between px-6 py-2.5 hover:bg-[#fbf2ed]/40">
+                                <span class="text-sm {{ $row->is_active ? 'font-semibold text-[#1e1b18]' : 'text-[#717a69] line-through' }}">{{ $row->name }}</span>
+                                <div class="flex items-center gap-2">
+                                    <button wire:click="toggleActivityType('{{ $row->id }}')"
+                                            class="relative inline-flex h-5 w-9 items-center rounded-full {{ $row->is_active ? 'bg-[#2c6904]' : 'bg-[#c1c9b6]' }}">
+                                        <span class="inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform {{ $row->is_active ? 'translate-x-4' : 'translate-x-1' }}"></span>
+                                    </button>
+                                    <button wire:click="deleteActivityType('{{ $row->id }}')" wire:confirm="Supprimer « {{ $row->name }} » ?"
+                                            class="p-1.5 text-[#c1c9b6] hover:text-red-500 hover:bg-red-50 rounded-lg">
+                                        <span class="material-symbols-outlined text-base">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="py-12 text-center text-sm text-[#717a69]">Aucun type d'activité.</div>
+                        @endforelse
+                    </div>
+                </div>
+            @endif
+
         </div>{{-- fin panneau principal --}}
     </div>{{-- fin layout deux colonnes --}}
 
 </div>
+

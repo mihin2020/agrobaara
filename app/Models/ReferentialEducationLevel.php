@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ReferentialEducationLevel extends Model
 {
-    use HasUuids;
+    use Concerns\FlushesReferentialCache, HasUuids;
 
     protected $table = 'referentials_education_levels';
 

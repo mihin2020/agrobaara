@@ -43,14 +43,21 @@
         </div>
     </div>
 
-    {{-- Recherche --}}
+    {{-- Recherche + filtre archivées --}}
     <div class="bg-white p-4 rounded-2xl border border-[#c1c9b6] shadow-sm">
-        <div class="relative max-w-md">
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#717a69] text-lg">search</span>
-            <input wire:model.live.debounce.400ms="search"
-                   type="text"
-                   placeholder="Nom, référence, téléphone, e-mail..."
-                   class="w-full pl-10 pr-4 py-2.5 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#875212]/20 focus:border-[#875212] transition-all" />
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div class="relative flex-1 max-w-md">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#717a69] text-lg">search</span>
+                <input wire:model.live.debounce.400ms="search"
+                       type="text"
+                       placeholder="Nom, référence, téléphone, e-mail..."
+                       class="w-full pl-10 pr-4 py-2.5 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#875212]/20 focus:border-[#875212] transition-all" />
+            </div>
+            <label class="inline-flex items-center gap-2 text-sm text-[#41493b] cursor-pointer select-none">
+                <input type="checkbox" wire:model.live="showArchived"
+                       class="rounded border-[#c1c9b6] text-[#875212] focus:ring-[#875212]/30" />
+                Afficher les archivées
+            </label>
         </div>
     </div>
 
@@ -121,13 +128,30 @@
                                        title="Voir la fiche">
                                         <span class="material-symbols-outlined text-lg">visibility</span>
                                     </a>
-                                    @can('update', $company)
-                                        <a href="{{ route('admin.companies.edit', $company) }}" wire:navigate
-                                           class="p-1.5 text-[#41493b] hover:bg-[#f5ece7] hover:text-[#875212] rounded-lg transition-colors"
-                                           title="Modifier">
-                                            <span class="material-symbols-outlined text-lg">edit</span>
-                                        </a>
-                                    @endcan
+                                    @if($showArchived)
+                                        @can('restore', $company)
+                                            <button type="button" wire:click="restoreCompany('{{ $company->id }}')"
+                                                    class="p-1.5 text-[#41493b] hover:bg-green-50 hover:text-green-700 rounded-lg transition-colors"
+                                                    title="Restaurer">
+                                                <span class="material-symbols-outlined text-lg">unarchive</span>
+                                            </button>
+                                        @endcan
+                                    @else
+                                        @can('update', $company)
+                                            <a href="{{ route('admin.companies.edit', $company) }}" wire:navigate
+                                               class="p-1.5 text-[#41493b] hover:bg-[#f5ece7] hover:text-[#875212] rounded-lg transition-colors"
+                                               title="Modifier">
+                                                <span class="material-symbols-outlined text-lg">edit</span>
+                                            </a>
+                                        @endcan
+                                        @can('delete', $company)
+                                            <button type="button" wire:click="openArchiveModal('{{ $company->id }}')"
+                                                    class="p-1.5 text-[#41493b] hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors"
+                                                    title="Archiver">
+                                                <span class="material-symbols-outlined text-lg">archive</span>
+                                            </button>
+                                        @endcan
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -165,4 +189,51 @@
             <span class="text-sm font-medium text-[#1e1b18]">Chargement...</span>
         </div>
     </div>
+
+    {{-- Modal archivage --}}
+    @if($archivingCompany)
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" wire:click.self="closeArchiveModal">
+            <div class="bg-white rounded-2xl border border-[#c1c9b6] shadow-xl w-full max-w-md overflow-hidden">
+                <div class="px-5 py-4 border-b border-[#c1c9b6] bg-[#fbf2ed] flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[#875212]">archive</span>
+                    <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Archiver l'entreprise</h3>
+                </div>
+                <div class="p-5 space-y-4">
+                    <p class="text-sm text-[#41493b]">
+                        Archiver <span class="font-semibold text-[#1e1b18]">{{ $archivingCompany->name }}</span>
+                        ({{ $archivingCompany->offers_count }} offre{{ $archivingCompany->offers_count > 1 ? 's' : '' }}).
+                        Les données restent consultables et restaurables.
+                    </p>
+                    <div class="space-y-2">
+                        <label class="flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors
+                            {{ $archiveMode === 'company_only' ? 'border-[#875212] bg-[#ffdcbd]/20' : 'border-[#c1c9b6] hover:bg-[#fbf2ed]' }}">
+                            <input type="radio" wire:model="archiveMode" value="company_only" class="mt-0.5 text-[#875212] focus:ring-[#875212]/30" />
+                            <span>
+                                <span class="block text-sm font-semibold text-[#1e1b18]">Entreprise seule</span>
+                                <span class="block text-xs text-[#717a69] mt-0.5">Les offres restent actives / publiées.</span>
+                            </span>
+                        </label>
+                        <label class="flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors
+                            {{ $archiveMode === 'company_and_offers' ? 'border-[#875212] bg-[#ffdcbd]/20' : 'border-[#c1c9b6] hover:bg-[#fbf2ed]' }}">
+                            <input type="radio" wire:model="archiveMode" value="company_and_offers" class="mt-0.5 text-[#875212] focus:ring-[#875212]/30" />
+                            <span>
+                                <span class="block text-sm font-semibold text-[#1e1b18]">Entreprise + toutes ses offres</span>
+                                <span class="block text-xs text-[#717a69] mt-0.5">Archive aussi les offres non déjà archivées.</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <div class="px-5 py-4 border-t border-[#c1c9b6] bg-[#fbfdfb] flex justify-end gap-2">
+                    <button type="button" wire:click="closeArchiveModal"
+                            class="px-4 py-2 text-sm font-semibold text-[#41493b] rounded-xl border border-[#c1c9b6] hover:bg-[#f5ece7]">
+                        Annuler
+                    </button>
+                    <button type="button" wire:click="confirmArchive"
+                            class="px-4 py-2 text-sm font-semibold text-white bg-gray-700 rounded-xl hover:bg-gray-800">
+                        Confirmer l'archivage
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>

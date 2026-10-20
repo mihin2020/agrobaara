@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ReferentialNationality extends Model
 {
-    use HasUuids;
+    use Concerns\FlushesReferentialCache, HasUuids;
 
     protected $table = 'referentials_nationalities';
 

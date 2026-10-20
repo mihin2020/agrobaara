@@ -4,7 +4,7 @@
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
             <h2 class="font-sora text-xl font-bold text-[#1e1b18]">Gestion des Candidats</h2>
-            <p class="text-[#41493b] mt-1 text-sm">Gérez et suivez les parcours des jeunes talents de l'agroécologie.</p>
+            <p class="text-[#41493b] mt-1 text-sm">@agroecology Gérez et suivez les parcours des jeunes talents de l'agroécologie. @else Gérez et suivez les parcours des jeunes talents. @endagroecology</p>
         </div>
         <div class="flex items-center gap-2">
             <x-export-button>
@@ -225,15 +225,17 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-12 text-center">
-                                <span class="material-symbols-outlined text-5xl text-[#c1c9b6] block mb-3">person_search</span>
-                                <p class="text-[#717a69] font-medium">Aucun candidat trouvé.</p>
-                                @if($search || $commune || $skill || $education || $gender)
-                                    <button wire:click="resetFilters"
-                                            class="mt-2 text-sm text-[#2c6904] hover:underline font-semibold">
-                                        Effacer les filtres
-                                    </button>
-                                @endif
+                            <td colspan="6">
+                                <x-empty-state icon="person_search" title="Aucun candidat trouvé.">
+                                    <x-slot:actions>
+                                        @if($search || $commune || $skill || $education || $gender)
+                                            <button wire:click="resetFilters"
+                                                    class="mt-2 text-sm text-[#2c6904] hover:underline font-semibold">
+                                                Effacer les filtres
+                                            </button>
+                                        @endif
+                                    </x-slot:actions>
+                                </x-empty-state>
                             </td>
                         </tr>
                     @endforelse
@@ -252,12 +254,6 @@
         @endif
     </div>
 
-    {{-- Loading overlay --}}
-    <div wire:loading.flex class="fixed inset-0 bg-black/10 z-50 items-center justify-center">
-        <div class="bg-white rounded-2xl p-4 shadow-xl flex items-center gap-3">
-            <span class="material-symbols-outlined text-[#2c6904] animate-spin">progress_activity</span>
-            <span class="text-sm font-medium text-[#1e1b18]">Chargement...</span>
-        </div>
-    </div>
+    <x-loading-overlay />
 
 </div>

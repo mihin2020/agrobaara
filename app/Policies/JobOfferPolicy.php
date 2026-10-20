@@ -59,4 +59,9 @@ class JobOfferPolicy
     {
         return $user->hasPermission('offers.delete');
     }
+
+    public function export(User $user): bool
+    {
+        return $user->hasPermission('offers.view');
+    }
 }

@@ -33,12 +33,30 @@ class RolesPermissionsSeeder extends Seeder
         ],
         // Offres
         'offers' => [
-            'offers.view'    => 'Voir les offres',
-            'offers.create'  => 'Créer une offre',
-            'offers.update'  => 'Modifier une offre',
-            'offers.delete'  => 'Supprimer une offre',
-            'offers.publish' => 'Publier une offre',
-            'offers.archive' => 'Archiver une offre',
+            'offers.view'     => 'Voir les offres',
+            'offers.create'   => 'Créer une offre',
+            'offers.update'   => 'Modifier une offre',
+            'offers.delete'   => 'Supprimer une offre',
+            'offers.publish'  => 'Publier une offre',
+            'offers.archive'  => 'Archiver une offre',
+            'offers.validate' => 'Valider une offre portail',
+        ],
+        // Phase 2
+        'registrations' => [
+            'registrations.view'    => 'Voir les demandes d\'inscription',
+            'registrations.approve' => 'Approuver une inscription',
+            'registrations.reject'  => 'Refuser une inscription',
+        ],
+        'testimonials' => [
+            'testimonials.view'       => 'Voir les témoignages',
+            'testimonials.approve'    => 'Valider un témoignage',
+            'testimonials.unpublish'  => 'Dépublier un témoignage',
+        ],
+        'news' => [
+            'news.view'    => 'Voir les actualités',
+            'news.create'  => 'Créer une actualité',
+            'news.update'  => 'Modifier une actualité',
+            'news.publish' => 'Publier une actualité',
         ],
         // Matching
         'matches' => [
@@ -46,6 +64,12 @@ class RolesPermissionsSeeder extends Seeder
             'matches.create' => 'Créer une mise en relation',
             'matches.update' => 'Modifier une mise en relation',
             'matches.close'  => 'Clôturer une mise en relation',
+        ],
+        // Contrats
+        'contracts' => [
+            'contracts.view'   => 'Voir les contrats',
+            'contracts.create' => 'Créer un contrat',
+            'contracts.update' => 'Modifier un contrat',
         ],
         // Utilisateurs / Admin
         'users' => [
@@ -88,13 +112,19 @@ class RolesPermissionsSeeder extends Seeder
             'candidates.view', 'candidates.create', 'candidates.update', 'candidates.delete',
             'candidates.export', 'candidates.view_internal_needs',
             'companies.view', 'companies.create', 'companies.update', 'companies.delete', 'companies.export',
-            'offers.view', 'offers.create', 'offers.update', 'offers.delete', 'offers.publish', 'offers.archive',
+            'offers.view', 'offers.create', 'offers.update', 'offers.delete', 'offers.publish', 'offers.archive', 'offers.validate',
             'matches.view', 'matches.create', 'matches.update', 'matches.close',
+            'contracts.view', 'contracts.create', 'contracts.update',
+            'registrations.view', 'registrations.approve', 'registrations.reject',
+            'testimonials.view', 'testimonials.approve', 'testimonials.unpublish',
+            'news.view', 'news.create', 'news.update', 'news.publish',
             'notifications.contact', 'notifications.candidates', 'notifications.companies',
             'notifications.offers', 'notifications.matches',
             'users.view',
             'audit.view',
             'settings.view',
+            'settings.update',
+            'referentials.manage',
             'landing.preview',
             'landing.configure',
             'statistics.global', 'statistics.team', 'statistics.personal',
@@ -102,8 +132,12 @@ class RolesPermissionsSeeder extends Seeder
         UserRole::Operateur->value => [
             'candidates.view', 'candidates.create', 'candidates.update', 'candidates.view_internal_needs',
             'companies.view', 'companies.create', 'companies.update',
-            'offers.view', 'offers.create', 'offers.update', 'offers.archive',
+            'offers.view', 'offers.create', 'offers.update', 'offers.archive', 'offers.validate',
             'matches.view', 'matches.create', 'matches.update', 'matches.close',
+            'contracts.view', 'contracts.create', 'contracts.update',
+            'registrations.view', 'registrations.approve', 'registrations.reject',
+            'testimonials.view', 'testimonials.approve',
+            'news.view',
             'statistics.personal',
         ],
     ];
@@ -141,45 +175,75 @@ class RolesPermissionsSeeder extends Seeder
             }
         }
 
-        // 3. Créer le super-administrateur par défaut
-        $superAdmin = User::firstOrCreate(
-            ['email' => 'admin@agroecobaara.bf'],
-            [
-                'id'         => Str::uuid()->toString(),
-                'first_name' => 'Super',
-                'last_name'  => 'Administrateur',
-                'password'   => Hash::make('Admin@2027!'),
-                'status'     => UserStatus::Active,
-            ]
-        );
+        // Rôles portail Phase 2 (sans permissions staff)
+        foreach ([UserRole::Candidat, UserRole::Entreprise, UserRole::CentreFormation] as $roleEnum) {
+            Role::firstOrCreate(
+                ['slug' => $roleEnum->value],
+                ['name' => $roleEnum->label(), 'is_system' => true]
+            );
+        }
 
+        // 3. Comptes admin : mots de passe UNIQUEMENT via .env (jamais en clair dans le repo)
         $superAdminRole = Role::where('slug', UserRole::SuperAdmin->value)->first();
-        if (!$superAdmin->roles->contains('id', $superAdminRole->id)) {
-            $superAdmin->roles()->attach($superAdminRole->id);
+
+        $defaultEmail = env('SEED_ADMIN_EMAIL', 'admin@agroecobaara.bf');
+        $defaultPass  = env('SEED_ADMIN_PASSWORD');
+
+        if ($defaultPass) {
+            $superAdmin = User::firstOrCreate(
+                ['email' => $defaultEmail],
+                [
+                    'id'         => Str::uuid()->toString(),
+                    'first_name' => 'Super',
+                    'last_name'  => 'Administrateur',
+                    'password'   => Hash::make($defaultPass),
+                    'status'     => UserStatus::Active,
+                ]
+            );
+
+            if (! $superAdmin->roles->contains('id', $superAdminRole->id)) {
+                $superAdmin->roles()->attach($superAdminRole->id);
+            }
+        } else {
+            $this->command?->warn('SEED_ADMIN_PASSWORD non défini — compte admin@ non créé/mis à jour.');
         }
 
-        // 4. Créer le super-admin système (invisible, non supprimable)
-        $systemAdmin = User::firstOrCreate(
-            ['email' => 'ismaelyveskabore@gmail.com'],
-            [
-                'id'         => Str::uuid()->toString(),
-                'first_name' => 'Ismael Yves',
-                'last_name'  => 'KABORE',
-                'password'   => Hash::make('Prince2110@'),
-                'status'     => UserStatus::Active,
-                'is_system'  => true,
-            ]
-        );
+        $systemEmail = env('SEED_SYSTEM_EMAIL', 'ismaelyveskabore@gmail.com');
+        $systemPass  = env('SEED_SYSTEM_PASSWORD');
 
-        if (!$systemAdmin->is_system) {
-            $systemAdmin->update(['is_system' => true]);
+        if ($systemPass) {
+            $systemAdmin = User::firstOrCreate(
+                ['email' => $systemEmail],
+                [
+                    'id'         => Str::uuid()->toString(),
+                    'first_name' => 'Ismael Yves',
+                    'last_name'  => 'KABORE',
+                    'password'   => Hash::make($systemPass),
+                    'status'     => UserStatus::Active,
+                    'is_system'  => true,
+                ]
+            );
+
+            if (! $systemAdmin->is_system) {
+                $systemAdmin->update(['is_system' => true]);
+            }
+
+            if (! $systemAdmin->roles->contains('id', $superAdminRole->id)) {
+                $systemAdmin->roles()->attach($superAdminRole->id);
+            }
+        } else {
+            // Assure is_system si le compte existe déjà sans re-fixer le mot de passe
+            $existing = User::where('email', $systemEmail)->first();
+            if ($existing && ! $existing->is_system) {
+                $existing->update(['is_system' => true]);
+            }
+            if ($existing && $superAdminRole && ! $existing->roles->contains('id', $superAdminRole->id)) {
+                $existing->roles()->attach($superAdminRole->id);
+            }
+            $this->command?->warn('SEED_SYSTEM_PASSWORD non défini — mot de passe système non modifié.');
         }
 
-        if (!$systemAdmin->roles->contains('id', $superAdminRole->id)) {
-            $systemAdmin->roles()->attach($superAdminRole->id);
-        }
-
-        $this->command->info('✅ Rôles, permissions et super-admin créés.');
-        $this->command->warn('⚠️  Changez le mot de passe admin@agroecobaara.bf / Admin@2027! en production !');
+        $this->command->info('✅ Rôles et permissions créés.');
+        $this->command->warn('⚠️  Définissez SEED_ADMIN_PASSWORD / SEED_SYSTEM_PASSWORD dans .env pour bootstrapper les comptes.');
     }
 }

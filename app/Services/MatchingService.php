@@ -9,17 +9,25 @@ use Illuminate\Support\Collection;
 
 class MatchingService
 {
-    // Pondération MVP (paramétrable en Phase 2)
-    private const WEIGHT_SKILLS      = 0.50;
-    private const WEIGHT_GEOGRAPHY   = 0.20;
-    private const WEIGHT_EDUCATION   = 0.10;
-    private const WEIGHT_EXPERIENCE  = 0.10;
-    private const WEIGHT_TRANSPORT   = 0.10;
+    private const WEIGHT_SKILLS     = 0.50;
+    private const WEIGHT_GEOGRAPHY  = 0.20;
+    private const WEIGHT_EDUCATION  = 0.10;
+    private const WEIGHT_EXPERIENCE = 0.10;
+    private const WEIGHT_TRANSPORT  = 0.10;
+
+    /** Plafond SQL avant scoring PHP (évite de charger toute la table). */
+    private const CANDIDATE_POOL = 200;
+
+    private const OFFER_POOL = 200;
 
     /**
-     * Retourne les candidats suggérés pour une offre, triés par score décroissant.
-     * Exclut les candidats déjà mis en relation avec cette offre.
+     * Top suggestions auto (Phase 2 master).
      */
+    public function topSuggestionsForOffer(JobOffer $offer, int $limit = 5): Collection
+    {
+        return $this->suggestCandidatesForOffer($offer, $limit);
+    }
+
     public function suggestCandidatesForOffer(JobOffer $offer, int $limit = 20): Collection
     {
         $offer->loadMissing('skills', 'company.sites');
@@ -28,18 +36,22 @@ class MatchingService
         $offerLocations = collect($offer->locations ?? []);
 
         $existingMatchIds = CandidateMatch::where('offer_id', $offer->id)
-                                          ->pluck('candidate_id')
-                                          ->toArray();
+            ->pluck('candidate_id')
+            ->all();
 
-        $query = Candidate::with('skills', 'commune', 'experiences', 'educationLevel')
-                          ->whereNotIn('id', $existingMatchIds);
+        $query = Candidate::query()
+            ->with(['skills', 'commune', 'experiences', 'educationLevel'])
+            ->approvedForMatching()
+            ->when($existingMatchIds !== [], fn ($q) => $q->whereNotIn('id', $existingMatchIds));
 
-        // Préfiltre SQL : au moins une compétence en commun quand l'offre en a
-        if (!empty($offerSkillIds)) {
+        if (! empty($offerSkillIds)) {
             $query->whereHas('skills', fn ($q) => $q->whereIn('referentials_skills.id', $offerSkillIds));
         }
 
-        $candidates = $query->get();
+        $candidates = $query
+            ->latest()
+            ->limit(self::CANDIDATE_POOL)
+            ->get();
 
         return $candidates
             ->map(fn (Candidate $candidate) => [
@@ -51,29 +63,29 @@ class MatchingService
             ->take($limit);
     }
 
-    /**
-     * Retourne les offres pertinentes pour un candidat, triées par score décroissant.
-     */
     public function suggestOffersForCandidate(Candidate $candidate, int $limit = 20): Collection
     {
         $candidate->loadMissing('skills', 'commune');
 
         $existingOfferIds = CandidateMatch::where('candidate_id', $candidate->id)
-                                          ->pluck('offer_id')
-                                          ->toArray();
+            ->pluck('offer_id')
+            ->all();
 
         $candidateSkillIds = $candidate->skills->pluck('id')->toArray();
 
-        $query = JobOffer::with('skills', 'company.sites')
-                         ->published()
-                         ->whereNotIn('id', $existingOfferIds);
+        $query = JobOffer::query()
+            ->with(['skills', 'company.sites'])
+            ->published()
+            ->when($existingOfferIds !== [], fn ($q) => $q->whereNotIn('id', $existingOfferIds));
 
-        // Préfiltre SQL : au moins une compétence en commun quand le candidat en a
-        if (!empty($candidateSkillIds)) {
+        if (! empty($candidateSkillIds)) {
             $query->whereHas('skills', fn ($q) => $q->whereIn('referentials_skills.id', $candidateSkillIds));
         }
 
-        $offers = $query->get();
+        $offers = $query
+            ->latest('published_at')
+            ->limit(self::OFFER_POOL)
+            ->get();
 
         return $offers
             ->map(fn (JobOffer $offer) => [
@@ -89,10 +101,6 @@ class MatchingService
             ->values()
             ->take($limit);
     }
-
-    // -----------------------------------------------------------------
-    // Score calculation
-    // -----------------------------------------------------------------
 
     public function computeScore(
         Candidate $candidate,
@@ -124,13 +132,13 @@ class MatchingService
 
     private function geographyScore(Candidate $candidate, Collection $offerLocations): float
     {
-        if ($offerLocations->isEmpty() || !$candidate->commune_id) {
-            return 50; // score neutre si pas d'info géographique
+        if ($offerLocations->isEmpty() || ! $candidate->commune_id) {
+            return 50;
         }
 
         $communeIds = $offerLocations->pluck('commune_id')->filter()->toArray();
 
-        return in_array($candidate->commune_id, $communeIds) ? 100 : 0;
+        return in_array($candidate->commune_id, $communeIds, true) ? 100 : 0;
     }
 
     private function educationScore(Candidate $candidate): float

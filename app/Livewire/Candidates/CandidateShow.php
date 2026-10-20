@@ -6,6 +6,8 @@ use App\Enums\MatchStatus;
 use App\Models\Candidate;
 use App\Models\CandidateMatch;
 use App\Models\JobOffer;
+use App\Models\ReferentialEmploymentType;
+use App\Models\ReferentialFormationType;
 use App\Services\MatchingService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -28,8 +30,11 @@ class CandidateShow extends Component
         $this->authorize('view', $candidate);
         $candidate->loadMissing(
             'commune', 'languages', 'licenses', 'skills', 'experiences',
-            'matches.offer.company', 'createdBy'
+            'educationLevel', 'trainingCenter',
+            'matches.offer.company', 'createdBy',
+            'contracts.company', 'contracts.offer', 'contracts.renewedFrom'
         );
+        $candidate->loadCount('contracts');
         $this->candidate   = $candidate;
         $this->candidateId = $candidate->id;
     }
@@ -43,12 +48,19 @@ class CandidateShow extends Component
     {
         $this->authorize('create', CandidateMatch::class);
 
+        abort_unless(
+            $this->candidate->approval_status === null
+            || $this->candidate->approval_status?->value === 'approved',
+            422,
+            'Candidat non approuvé pour le matching.'
+        );
+
         if (CandidateMatch::where('candidate_id', $this->candidate->id)->where('offer_id', $offerId)->exists()) {
             $this->dispatch('notify', type: 'warning', message: 'Cette mise en relation existe déjà.');
             return;
         }
 
-        $offer = JobOffer::with('skills', 'company.sites')->findOrFail($offerId);
+        $offer = JobOffer::with('skills', 'company.sites')->published()->findOrFail($offerId);
         $this->candidate->loadMissing('skills', 'commune');
 
         $score = $matchingService->computeScore(
@@ -84,7 +96,9 @@ class CandidateShow extends Component
             : collect();
 
         return view('livewire.candidates.candidate-show', [
-            'suggestedOffers' => $suggestedOffers,
+            'suggestedOffers'   => $suggestedOffers,
+            'employmentTypes' => ReferentialEmploymentType::active()->get()->keyBy('code'),
+            'formationTypes'  => ReferentialFormationType::active()->get()->keyBy('code'),
         ]);
     }
 }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ReferentialLicense extends Model
 {
-    use HasUuids;
+    use Concerns\FlushesReferentialCache, HasUuids;
 
     protected $table = 'referentials_licenses';
 

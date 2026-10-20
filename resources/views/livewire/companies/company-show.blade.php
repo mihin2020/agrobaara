@@ -22,13 +22,33 @@
                 </div>
             </div>
         </div>
-        @can('update', $company)
-            <a href="{{ route('admin.companies.edit', $company) }}" wire:navigate
-               class="flex items-center gap-2 px-4 py-2 border border-[#c1c9b6] text-[#41493b] font-semibold text-sm rounded-xl hover:bg-[#f5ece7] transition-colors self-start sm:self-auto">
-                <span class="material-symbols-outlined text-base">edit</span>
-                Modifier
-            </a>
-        @endcan
+        <div class="flex items-center gap-2 flex-wrap self-start sm:self-auto">
+            @if($company->trashed())
+                <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-600">Archivée</span>
+                @can('restore', $company)
+                    <button type="button" wire:click="restore"
+                            class="flex items-center gap-2 px-4 py-2 bg-green-700 text-white font-semibold text-sm rounded-xl hover:bg-green-800 transition-colors">
+                        <span class="material-symbols-outlined text-base">unarchive</span>
+                        Restaurer
+                    </button>
+                @endcan
+            @else
+                @can('update', $company)
+                    <a href="{{ route('admin.companies.edit', $company) }}" wire:navigate
+                       class="flex items-center gap-2 px-4 py-2 border border-[#c1c9b6] text-[#41493b] font-semibold text-sm rounded-xl hover:bg-[#f5ece7] transition-colors">
+                        <span class="material-symbols-outlined text-base">edit</span>
+                        Modifier
+                    </a>
+                @endcan
+                @can('delete', $company)
+                    <button type="button" wire:click="openArchiveModal"
+                            class="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white font-semibold text-sm rounded-xl hover:bg-gray-700 transition-colors">
+                        <span class="material-symbols-outlined text-base">archive</span>
+                        Archiver
+                    </button>
+                @endcan
+            @endif
+        </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -194,6 +214,12 @@
                         <span class="text-xs font-semibold text-[#1e1b18]">Support contrat</span>
                         <span @class(['text-xs font-bold px-2 py-0.5 rounded-full', 'bg-orange-100 text-orange-700' => $company->need_contract_support, 'bg-gray-100 text-gray-500' => !$company->need_contract_support])>{{ $company->need_contract_support ? 'Oui' : 'Non' }}</span>
                     </div>
+                    @if($company->other_needs)
+                        <div class="pt-2 border-t border-[#c1c9b6]/40">
+                            <p class="text-[11px] text-[#717a69] uppercase font-bold tracking-wide mb-1">Autres besoins</p>
+                            <p class="text-xs text-[#1e1b18] bg-[#fbf2ed] rounded-xl p-3 border border-[#c1c9b6]/50 leading-relaxed">{{ $company->other_needs }}</p>
+                        </div>
+                    @endif
                     @if($company->operator_notes)
                         <div class="pt-2">
                             <p class="text-[11px] text-[#717a69] uppercase font-bold tracking-wide mb-1">Notes opérateur</p>
@@ -204,6 +230,17 @@
             </div>
 
             <div class="bg-white rounded-2xl border border-[#c1c9b6] p-4 space-y-2">
+                @can('viewAny', App\Models\Contract::class)
+                    @if($company->contracts_count > 0)
+                        <div class="flex justify-between items-center text-xs pb-2 mb-2 border-b border-[#c1c9b6]/50">
+                            <span class="text-[#717a69]">Contrats</span>
+                            <a href="{{ route('admin.contracts.index', ['company_id' => $company->id]) }}" wire:navigate
+                               class="font-semibold text-[#2c6904] hover:underline">
+                                {{ $company->contracts_count }} contrat{{ $company->contracts_count > 1 ? 's' : '' }}
+                            </a>
+                        </div>
+                    @endif
+                @endcan
                 <p class="text-[11px] text-[#717a69] uppercase font-bold tracking-wide">Informations système</p>
                 <div class="space-y-1.5 text-xs">
                     <div class="flex justify-between">
@@ -224,4 +261,50 @@
             </div>
         </div>
     </div>
+
+    @if($showArchiveModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" wire:click.self="closeArchiveModal">
+            <div class="bg-white rounded-2xl border border-[#c1c9b6] shadow-xl w-full max-w-md overflow-hidden">
+                <div class="px-5 py-4 border-b border-[#c1c9b6] bg-[#fbf2ed] flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[#875212]">archive</span>
+                    <h3 class="font-sora font-bold text-sm text-[#1e1b18]">Archiver l'entreprise</h3>
+                </div>
+                <div class="p-5 space-y-4">
+                    <p class="text-sm text-[#41493b]">
+                        Archiver <span class="font-semibold text-[#1e1b18]">{{ $company->name }}</span>
+                        ({{ $company->offers->count() }} offre{{ $company->offers->count() > 1 ? 's' : '' }}).
+                        Soft-delete uniquement — restauration possible.
+                    </p>
+                    <div class="space-y-2">
+                        <label class="flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors
+                            {{ $archiveMode === 'company_only' ? 'border-[#875212] bg-[#ffdcbd]/20' : 'border-[#c1c9b6] hover:bg-[#fbf2ed]' }}">
+                            <input type="radio" wire:model="archiveMode" value="company_only" class="mt-0.5 text-[#875212] focus:ring-[#875212]/30" />
+                            <span>
+                                <span class="block text-sm font-semibold text-[#1e1b18]">Entreprise seule</span>
+                                <span class="block text-xs text-[#717a69] mt-0.5">Les offres restent actives / publiées.</span>
+                            </span>
+                        </label>
+                        <label class="flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors
+                            {{ $archiveMode === 'company_and_offers' ? 'border-[#875212] bg-[#ffdcbd]/20' : 'border-[#c1c9b6] hover:bg-[#fbf2ed]' }}">
+                            <input type="radio" wire:model="archiveMode" value="company_and_offers" class="mt-0.5 text-[#875212] focus:ring-[#875212]/30" />
+                            <span>
+                                <span class="block text-sm font-semibold text-[#1e1b18]">Entreprise + toutes ses offres</span>
+                                <span class="block text-xs text-[#717a69] mt-0.5">Archive aussi les offres non déjà archivées.</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <div class="px-5 py-4 border-t border-[#c1c9b6] bg-[#fbfdfb] flex justify-end gap-2">
+                    <button type="button" wire:click="closeArchiveModal"
+                            class="px-4 py-2 text-sm font-semibold text-[#41493b] rounded-xl border border-[#c1c9b6] hover:bg-[#f5ece7]">
+                        Annuler
+                    </button>
+                    <button type="button" wire:click="confirmArchive"
+                            class="px-4 py-2 text-sm font-semibold text-white bg-gray-700 rounded-xl hover:bg-gray-800">
+                        Confirmer l'archivage
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>

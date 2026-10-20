@@ -76,6 +76,42 @@
                 Matching
             </x-nav-link>
 
+            @if(auth()->user()->hasPermission('contracts.view'))
+                <x-nav-link href="{{ route('admin.contracts.index') }}" icon="description" :active="request()->routeIs('admin.contracts.*')">
+                    Contrats
+                </x-nav-link>
+            @endif
+
+            @if(auth()->user()->hasPermission('registrations.view'))
+                <x-nav-link href="{{ route('admin.registrations.index') }}" icon="person_add" :active="request()->routeIs('admin.registrations.*')">
+                    Inscriptions
+                </x-nav-link>
+            @endif
+
+            @if(auth()->user()->hasPermission('offers.validate'))
+                <x-nav-link href="{{ route('admin.offers.validate') }}" icon="fact_check" :active="request()->routeIs('admin.offers.validate')">
+                    Offres à valider
+                </x-nav-link>
+            @endif
+
+            @if(auth()->user()->hasPermission('testimonials.view'))
+                <x-nav-link href="{{ route('admin.testimonials.index') }}" icon="format_quote" :active="request()->routeIs('admin.testimonials.*')">
+                    Témoignages
+                </x-nav-link>
+            @endif
+
+            @if(auth()->user()->hasPermission('news.view'))
+                <x-nav-link href="{{ route('admin.news.index') }}" icon="newspaper" :active="request()->routeIs('admin.news.*')">
+                    Actualités
+                </x-nav-link>
+            @endif
+
+            @if(auth()->user()->is_system)
+                <x-nav-link href="{{ route('admin.phase2.flags') }}" icon="toggle_on" :active="request()->routeIs('admin.phase2.*')">
+                    Activation Phase 2
+                </x-nav-link>
+            @endif
+
             @php $unreadMessages = cache()->remember('unread_messages_count', 60, fn() => \App\Models\ContactMessage::where('is_read', false)->count()); @endphp
             <a href="{{ route('admin.messages.index') }}" wire:navigate
                @class([

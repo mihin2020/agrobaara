@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Livewire\Admin\Messages\ContactMessageIndex;
 use App\Models\ContactMessage;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -13,6 +14,19 @@ class ContactMessagesAdminTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function createStaffUser(): User
+    {
+        $user = User::factory()->create();
+        $role = Role::firstOrCreate(
+            ['slug' => 'super_admin'],
+            ['name' => 'Super Administrateur', 'is_system' => true]
+        );
+        $user->roles()->attach($role);
+        $user->load('roles.permissions', 'permissions');
+
+        return $user;
+    }
+
     public function test_messages_page_requires_auth(): void
     {
         $response = $this->get('/admin/messages');
@@ -21,7 +35,7 @@ class ContactMessagesAdminTest extends TestCase
 
     public function test_messages_page_is_accessible_when_authenticated(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createStaffUser();
 
         $response = $this->actingAs($user)->get('/admin/messages');
         $response->assertStatus(200);
@@ -29,7 +43,7 @@ class ContactMessagesAdminTest extends TestCase
 
     public function test_can_select_and_mark_message_as_read(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createStaffUser();
         $this->actingAs($user);
 
         $message = ContactMessage::create([
@@ -53,7 +67,7 @@ class ContactMessagesAdminTest extends TestCase
 
     public function test_can_delete_message(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createStaffUser();
         $this->actingAs($user);
 
         $message = ContactMessage::create([
@@ -73,7 +87,7 @@ class ContactMessagesAdminTest extends TestCase
 
     public function test_cache_is_cleared_on_read(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createStaffUser();
         $this->actingAs($user);
 
         $message = ContactMessage::create([

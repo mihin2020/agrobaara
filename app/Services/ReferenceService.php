@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Candidate;
 use App\Models\Company;
+use App\Models\Contract;
 use App\Models\JobOffer;
 
 class ReferenceService
@@ -29,5 +30,13 @@ class ReferenceService
         $count = JobOffer::withTrashed()->whereYear('created_at', $year)->count() + 1;
 
         return sprintf('AEB-OFF-%d-%04d', $year, $count);
+    }
+
+    public function generateContractReference(): string
+    {
+        $year  = now()->year;
+        $count = Contract::whereYear('created_at', $year)->count() + 1;
+
+        return sprintf('AEB-CTR-%d-%04d', $year, $count);
     }
 }

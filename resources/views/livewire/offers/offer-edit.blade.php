@@ -47,7 +47,9 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div class="md:col-span-2">
-                    <x-form.input wire:model="title" label="Intitulé du poste *" placeholder="Ex: Technicien en agroécologie" :error="$errors->first('title')" />
+                    <x-form.input wire:model="title" label="Intitulé du poste *"
+                        placeholder="@agroecology Ex: Technicien en agroécologie @else Ex: Technicien agricole @endagroecology"
+                        :error="$errors->first('title')" />
                 </div>
                 <div>
                     <x-form.select wire:model="contract_type" label="Type de contrat *" :error="$errors->first('contract_type')">
@@ -61,10 +63,25 @@
                     <x-form.input wire:model="positions_count" label="Nombre de postes" type="number" placeholder="1" />
                 </div>
                 <div>
-                    <x-form.input wire:model="duration" label="Durée du contrat" placeholder="Ex: 6 mois, 1 an..." />
+                    <x-form.input wire:model.live.debounce.300ms="duration" label="Durée du contrat" placeholder="Ex: 6 mois, 12 mois renouvelables..." />
                 </div>
                 <div>
-                    <x-form.input wire:model="start_date" label="Date de début souhaitée" type="date" />
+                    <x-form.input wire:model.live="start_date" label="Date de début" type="date" />
+                </div>
+                <div>
+                    <x-form.input wire:model.live="end_date" label="Date de fin (auto)" type="date" />
+                    <p class="mt-1 text-[11px] text-[#717a69]">Calculée depuis début + durée.</p>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors
+                        {{ $is_periodic ? 'border-[#875212] bg-[#ffdcbd]/20' : 'border-[#c1c9b6] bg-white hover:bg-[#fbf2ed]' }}">
+                        <input type="checkbox" wire:model.live="is_periodic"
+                               class="mt-0.5 rounded border-[#c1c9b6] text-[#875212] focus:ring-[#875212]/30" />
+                        <span>
+                            <span class="block text-sm font-semibold text-[#1e1b18]">Offre périodique</span>
+                            <span class="block text-xs text-[#717a69] mt-0.5">Relance / reconduction activables seulement si période définie et offre expirée ou archivée.</span>
+                        </span>
+                    </label>
                 </div>
             </div>
         </div>
@@ -79,6 +96,7 @@
         <div class="p-6 space-y-5">
             <x-form.textarea wire:model="mission_description" label="Description des missions *" placeholder="Décrivez les missions, responsabilités et activités du poste..." rows="5" :error="$errors->first('mission_description')" />
             <x-form.textarea wire:model="economic_conditions" label="Conditions économiques" placeholder="Rémunération, avantages, indemnités..." rows="3" />
+            <x-form.input wire:model="salary_range" label="Fourchette salariale" placeholder="Ex: 75 000 – 120 000 FCFA / mois" />
             <x-form.textarea wire:model="other_requirements" label="Autres exigences" placeholder="Conditions spécifiques, disponibilité requise..." rows="3" />
         </div>
     </div>

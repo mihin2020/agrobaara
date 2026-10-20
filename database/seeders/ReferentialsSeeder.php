@@ -2,10 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Models\ReferentialActivityType;
 use App\Models\ReferentialCommune;
+use App\Models\ReferentialEmploymentType;
+use App\Models\ReferentialFormationType;
 use App\Models\ReferentialLanguage;
 use App\Models\ReferentialLicense;
 use App\Models\ReferentialSkill;
+use App\Models\SiteSetting;
 use Illuminate\Database\Seeder;
 
 class ReferentialsSeeder extends Seeder
@@ -97,6 +101,45 @@ class ReferentialsSeeder extends Seeder
             ReferentialLicense::firstOrCreate(['name' => $name]);
         }
 
-        $this->command->info('✅ Référentiels insérés (communes, langues, compétences, permis).');
+        // Types d'emploi (candidats)
+        $employmentTypes = [
+            ['code' => 'emploi_salarie',       'name' => 'Emploi salarié',       'sort_order' => 1],
+            ['code' => 'contrats_saisonniers', 'name' => 'Contrats saisonniers', 'sort_order' => 2],
+            ['code' => 'missions_ponctuelles', 'name' => 'Missions ponctuelles', 'sort_order' => 3],
+            ['code' => 'apprentissage',        'name' => 'Apprentissage',        'sort_order' => 4],
+            ['code' => 'entrepreneuriat',      'name' => 'Entrepreneuriat',      'sort_order' => 5],
+        ];
+        foreach ($employmentTypes as $row) {
+            ReferentialEmploymentType::firstOrCreate(['code' => $row['code']], $row + ['is_active' => true]);
+        }
+
+        // Types de formation (candidats)
+        $formationTypes = [
+            ['code' => 'cours',           'name' => 'Cours',            'sort_order' => 1],
+            ['code' => 'master',          'name' => 'Master',           'sort_order' => 2],
+            ['code' => 'atelier',         'name' => 'Atelier',          'sort_order' => 3],
+            ['code' => 'stage',           'name' => 'Stage',            'sort_order' => 4],
+            ['code' => 'voyage_echange',  'name' => "Voyage d'échange", 'sort_order' => 5],
+        ];
+        foreach ($formationTypes as $row) {
+            ReferentialFormationType::firstOrCreate(['code' => $row['code']], $row + ['is_active' => true]);
+        }
+
+        // Types d'activité entreprise
+        $activityTypes = [
+            'Maraîchage', 'Élevage', 'Agroforesterie', 'Pisciculture',
+            'Transformation agro-alimentaire', 'Bio-pesticides', 'Irrigation',
+            'Énergies renouvelables', 'Formation agricole', 'Conseil agricole', 'Autre',
+        ];
+        foreach ($activityTypes as $i => $name) {
+            ReferentialActivityType::firstOrCreate(
+                ['name' => $name],
+                ['is_active' => true, 'sort_order' => $i + 1]
+            );
+        }
+
+        SiteSetting::set('show_agroecology_mention', true, 'boolean');
+
+        $this->command->info('✅ Référentiels insérés (communes, langues, compétences, permis, emploi, formation, activités).');
     }
 }

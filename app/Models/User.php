@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use App\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -131,5 +133,51 @@ class User extends Authenticatable
             'failed_login_attempts' => 0,
             'locked_until'          => null,
         ]);
+    }
+
+    public function candidateProfile(): HasOne
+    {
+        return $this->hasOne(Candidate::class);
+    }
+
+    public function companyProfile(): HasOne
+    {
+        return $this->hasOne(Company::class);
+    }
+
+    public function isPortalUser(): bool
+    {
+        return $this->hasAnyRole([
+            UserRole::Candidat->value,
+            UserRole::Entreprise->value,
+            UserRole::CentreFormation->value,
+        ]);
+    }
+
+    public function isStaffUser(): bool
+    {
+        return $this->hasAnyRole([
+            UserRole::SuperAdmin->value,
+            UserRole::Moderateur->value,
+            UserRole::Operateur->value,
+        ]);
+    }
+
+    public function homeRouteName(): string
+    {
+        if ($this->isStaffUser()) {
+            return 'admin.dashboard';
+        }
+        if ($this->hasRole(UserRole::Candidat->value)) {
+            return 'portal.candidate.dashboard';
+        }
+        if ($this->hasRole(UserRole::CentreFormation->value)) {
+            return 'portal.center.dashboard';
+        }
+        if ($this->hasRole(UserRole::Entreprise->value)) {
+            return 'portal.company.dashboard';
+        }
+
+        return 'home';
     }
 }

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class ReferentialSkill extends Model
 {
-    use HasUuids;
+    use Concerns\FlushesReferentialCache, HasUuids;
 
     protected $table = 'referentials_skills';
 

@@ -154,9 +154,18 @@
                 </button>
             </form>
 
-            <p class="mt-8 text-center text-xs text-[#717a69]">
-                Accès réservé aux agents du guichet Agro Eco BAARA.
-            </p>
+            @feature('self_registration')
+                <p class="mt-6 text-center text-sm text-[#41493b]">
+                    Pas encore de compte ?
+                    <a href="{{ route('register.choice') }}" class="text-[#2c6904] font-semibold hover:underline">
+                        S'inscrire
+                    </a>
+                </p>
+            @else
+                <p class="mt-8 text-center text-xs text-[#717a69]">
+                    Accès réservé aux agents du guichet Agro Eco BAARA.
+                </p>
+            @endfeature
 
             <a href="{{ route('home') }}" class="mt-4 flex items-center justify-center gap-1 text-sm text-[#2c6904] hover:underline font-medium">
                 <span class="material-symbols-outlined text-base">arrow_back</span>

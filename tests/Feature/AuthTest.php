@@ -2,13 +2,29 @@
 
 namespace Tests\Feature;
 
+use App\Models\Role;
+use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function createStaffUser(array $attrs = []): User
+    {
+        $user = User::factory()->create($attrs);
+        $role = Role::firstOrCreate(
+            ['slug' => 'super_admin'],
+            ['name' => 'Super Administrateur', 'is_system' => true]
+        );
+        $user->roles()->attach($role);
+        $user->load('roles.permissions', 'permissions');
+
+        return $user;
+    }
 
     public function test_login_page_is_accessible(): void
     {
@@ -18,7 +34,9 @@ class AuthTest extends TestCase
 
     public function test_user_can_login_with_valid_credentials(): void
     {
-        $user = User::factory()->create([
+        SiteSetting::set('two_factor_email_enabled', false, 'boolean');
+
+        $user = $this->createStaffUser([
             'email' => 'test@example.com',
             'password' => bcrypt('Password@1'),
         ]);
@@ -30,6 +48,27 @@ class AuthTest extends TestCase
 
         $response->assertRedirect(route('admin.dashboard'));
         $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_staff_login_requires_email_2fa_when_enabled(): void
+    {
+        Mail::fake();
+        SiteSetting::set('two_factor_email_enabled', true, 'boolean');
+
+        $user = $this->createStaffUser([
+            'email' => 'staff2fa@example.com',
+            'password' => bcrypt('Password@1'),
+        ]);
+
+        $response = $this->post('/connexion', [
+            'email' => 'staff2fa@example.com',
+            'password' => 'Password@1',
+        ]);
+
+        $response->assertRedirect(route('login.2fa'));
+        $this->assertGuest();
+        $this->assertEquals($user->id, session('2fa.user_id'));
+        Mail::assertSent(\App\Mail\TwoFactorCodeMail::class);
     }
 
     public function test_user_cannot_login_with_invalid_credentials(): void

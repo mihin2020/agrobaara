@@ -6,6 +6,7 @@ use App\Enums\MatchStatus;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class CandidateMatch extends Model
 {
@@ -15,7 +16,7 @@ class CandidateMatch extends Model
 
     protected $fillable = [
         'candidate_id', 'offer_id', 'status', 'operator_id',
-        'notes', 'score', 'proposed_at', 'closed_at',
+        'notes', 'score', 'source', 'proposed_at', 'closed_at',
     ];
 
     protected function casts(): array
@@ -45,6 +46,11 @@ class CandidateMatch extends Model
     public function operator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'operator_id');
+    }
+
+    public function contract(): HasOne
+    {
+        return $this->hasOne(Contract::class, 'match_id');
     }
 
     // -----------------------------------------------------------------

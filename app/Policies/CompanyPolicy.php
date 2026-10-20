@@ -40,9 +40,22 @@ class CompanyPolicy
         return true;
     }
 
-    public function delete(User $user): bool
+    public function delete(User $user, Company $company): bool
     {
-        return $user->hasPermission('companies.delete');
+        if (! $user->hasPermission('companies.delete')) {
+            return false;
+        }
+
+        if ($user->isOperator()) {
+            return $company->created_by === $user->id;
+        }
+
+        return true;
+    }
+
+    public function restore(User $user, Company $company): bool
+    {
+        return $user->hasPermission('companies.delete') && ! $user->isOperator();
     }
 
     public function export(User $user): bool

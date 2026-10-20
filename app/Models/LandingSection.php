@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class LandingSection extends Model
 {
@@ -31,19 +32,44 @@ class LandingSection extends Model
         ];
     }
 
-    public static function forSlug(string $slug): ?self
+    protected static function booted(): void
     {
-        return static::where('slug', $slug)->first();
+        static::saved(fn () => static::flushCache());
+        static::deleted(fn () => static::flushCache());
     }
 
+    public static function flushCache(): void
+    {
+        Cache::forget('landing_sections_ordered');
+        Cache::forget('landing_sections_by_slug');
+    }
+
+    public static function forSlug(string $slug): ?self
+    {
+        return static::allOrdered()->firstWhere('slug', $slug);
+    }
+
+    /**
+     * Cache des attributs (tableaux) — jamais d'instances Eloquent sérialisées
+     * (évite __PHP_Incomplete_Class avec le store database/file).
+     */
     public static function allOrdered(): \Illuminate\Database\Eloquent\Collection
     {
-        return static::orderBy('order_index')->get();
+        $rows = Cache::get('landing_sections_ordered');
+
+        // Ancien cache = Collection / Incomplete_Class / autre → rebuild
+        if (! is_array($rows)) {
+            Cache::forget('landing_sections_ordered');
+            $rows = static::orderBy('order_index')->get()->map->getAttributes()->values()->all();
+            Cache::put('landing_sections_ordered', $rows, 300);
+        }
+
+        return static::hydrate($rows);
     }
 
     public function hasDraft(): bool
     {
-        return !empty($this->draft_content);
+        return ! empty($this->draft_content);
     }
 
     public function publish(): void

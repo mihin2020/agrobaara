@@ -17,15 +17,17 @@ class CompaniesExport implements FromCollection, WithHeadings, WithMapping, With
         protected ?string $to = null,
         protected ?string $commune = null,
         protected ?string $status = null,
+        protected ?string $operatorId = null,
     ) {}
 
     public function collection()
     {
         return Company::with(['sites.commune'])
-            ->when($this->from, fn($q) => $q->whereDate('created_at', '>=', $this->from))
-            ->when($this->to, fn($q) => $q->whereDate('created_at', '<=', $this->to))
-            ->when($this->commune, fn($q) => $q->whereHas('sites', fn($s) => $s->where('commune_id', $this->commune)))
-            ->when($this->status, fn($q) => $q->where('status', $this->status))
+            ->when($this->operatorId, fn ($q) => $q->byOperator($this->operatorId))
+            ->when($this->from, fn ($q) => $q->whereDate('created_at', '>=', $this->from))
+            ->when($this->to, fn ($q) => $q->whereDate('created_at', '<=', $this->to))
+            ->when($this->commune, fn ($q) => $q->whereHas('sites', fn ($s) => $s->where('commune_id', $this->commune)))
+            ->when($this->status, fn ($q) => $q->where('status', $this->status))
             ->latest()
             ->get();
     }

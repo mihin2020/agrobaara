@@ -7,9 +7,9 @@ use App\Enums\ContractType;
 use App\Enums\OfferStatus;
 use App\Models\Company;
 use App\Models\JobOffer;
-use App\Models\ReferentialCommune;
-use App\Models\ReferentialSkill;
 use App\Services\ReferenceService;
+use App\Services\SecureUploadService;
+use App\Support\ReferentialCache;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
@@ -39,6 +39,7 @@ class CompanyCreate extends Component
     public bool   $need_training        = false;
     public bool   $need_financing       = false;
     public bool   $need_contract_support = false;
+    public string $other_needs          = '';
     public string $operator_notes       = '';
     public array  $sites                = [
         ['label' => '', 'commune_id' => '', 'address' => '', 'is_main' => true],
@@ -101,7 +102,7 @@ class CompanyCreate extends Component
         }
     }
 
-    public function save(ReferenceService $referenceService): void
+    public function save(ReferenceService $referenceService, SecureUploadService $uploads): void
     {
         $this->validate([
             'name'               => 'required|string|min:2|max:200',
@@ -114,6 +115,7 @@ class CompanyCreate extends Component
             'sites'              => 'required|array|min:1',
             'sites.*.label'      => 'required|string|max:150',
             'sites.*.commune_id' => 'required|uuid|exists:referentials_communes,id',
+            'other_needs'        => 'nullable|string|max:5000',
         ], [
             'name.required'               => "Le nom de l'entreprise est obligatoire.",
             'status.required'             => 'Le statut juridique est obligatoire.',
@@ -123,11 +125,11 @@ class CompanyCreate extends Component
             'sites.*.commune_id.required' => 'La commune du site est obligatoire.',
         ]);
 
-        DB::transaction(function () use ($referenceService) {
+        DB::transaction(function () use ($referenceService, $uploads) {
             $company = Company::create([
                 'reference'             => $referenceService->generateCompanyReference(),
                 'name'                  => $this->name,
-                'logo_path'             => $this->logo ? $this->logo->store('companies/logos', 'public') : null,
+                'logo_path'             => $this->logo ? $uploads->storePublic($this->logo, 'companies/logos') : null,
                 'status'                => $this->status,
                 'legal_rep_first_name'  => $this->legal_rep_first_name ?: null,
                 'legal_rep_last_name'   => $this->legal_rep_last_name ?: null,
@@ -144,6 +146,7 @@ class CompanyCreate extends Component
                 'need_training'         => $this->need_training,
                 'need_financing'        => $this->need_financing,
                 'need_contract_support' => $this->need_contract_support,
+                'other_needs'           => $this->other_needs ?: null,
                 'operator_notes'        => $this->operator_notes ?: null,
                 'created_by'            => Auth::id(),
             ]);
@@ -197,14 +200,10 @@ class CompanyCreate extends Component
     {
         return view('livewire.companies.company-create', [
             'statuses'          => CompanyStatus::options(),
-            'communes'          => ReferentialCommune::active()->get(),
-            'skills'            => ReferentialSkill::active()->get(),
+            'communes'          => ReferentialCache::communes(),
+            'skills'            => ReferentialCache::skills(),
             'contractTypes'     => ContractType::cases(),
-            'activityTypesList' => [
-                'Maraîchage', 'Élevage', 'Agroforesterie', 'Pisciculture',
-                'Transformation agro-alimentaire', 'Bio-pesticides', 'Irrigation',
-                'Énergies renouvelables', 'Formation agricole', 'Conseil agricole', 'Autre',
-            ],
+            'activityTypesList' => ReferentialCache::activityTypes(),
         ]);
     }
 }

@@ -17,15 +17,17 @@ class OffersExport implements FromCollection, WithHeadings, WithMapping, WithSty
         protected ?string $to = null,
         protected ?string $status = null,
         protected ?string $commune = null,
+        protected ?string $operatorId = null,
     ) {}
 
     public function collection()
     {
         return JobOffer::with(['company', 'skills'])
-            ->when($this->from, fn($q) => $q->whereDate('created_at', '>=', $this->from))
-            ->when($this->to, fn($q) => $q->whereDate('created_at', '<=', $this->to))
-            ->when($this->status, fn($q) => $q->where('status', $this->status))
-            ->when($this->commune, fn($q) => $q->whereJsonContains('locations', $this->commune))
+            ->when($this->operatorId, fn ($q) => $q->byOperator($this->operatorId))
+            ->when($this->from, fn ($q) => $q->whereDate('created_at', '>=', $this->from))
+            ->when($this->to, fn ($q) => $q->whereDate('created_at', '<=', $this->to))
+            ->when($this->status, fn ($q) => $q->where('status', $this->status))
+            ->when($this->commune, fn ($q) => $q->whereJsonContains('locations', $this->commune))
             ->latest()
             ->get();
     }
@@ -39,6 +41,7 @@ class OffersExport implements FromCollection, WithHeadings, WithMapping, WithSty
             'Type de contrat',
             'Durée',
             'Conditions économiques',
+            'Fourchette salariale',
             'Description de la mission',
             'Localisation(s)',
             'Autres exigences',
@@ -60,6 +63,7 @@ class OffersExport implements FromCollection, WithHeadings, WithMapping, WithSty
             $offer->contract_type?->label() ?? '',
             $offer->duration ?? '',
             $offer->economic_conditions ?? '',
+            $offer->salary_range ?? '',
             $offer->mission_description ?? '',
             is_array($offer->locations) ? implode(', ', $offer->locations) : '',
             $offer->other_requirements ?? '',

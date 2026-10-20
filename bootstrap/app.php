@@ -11,16 +11,20 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Middlewares web globaux
         $middleware->web(append: [
             \App\Http\Middleware\CheckAccountStatus::class,
+            \App\Http\Middleware\SecurityHeaders::class,
+            \App\Http\Middleware\BlockScrapers::class,
         ]);
 
-        // Alias pour usage dans les routes
         $middleware->alias([
             'role'       => \App\Http\Middleware\RequireRole::class,
             'permission' => \App\Http\Middleware\RequirePermission::class,
+            'feature'    => \App\Http\Middleware\RequireFeature::class,
+            'staff'      => \App\Http\Middleware\RequireStaff::class,
         ]);
+
+        $middleware->throttleApi('60,1');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

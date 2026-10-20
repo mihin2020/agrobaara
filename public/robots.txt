@@ -1,8 +1,53 @@
+# Agro Eco BAARA — anti-indexation des espaces privés / scrapers
 User-agent: *
+Allow: /
+Disallow: /admin
 Disallow: /admin/
+Disallow: /espace
+Disallow: /espace/
 Disallow: /connexion
+Disallow: /connexion/
+Disallow: /inscription
+Disallow: /inscription/
 Disallow: /mot-de-passe-oublie
-Disallow: /reinitialiser-mot-de-passe/
-Disallow: /changer-mot-de-passe
+Disallow: /reinitialiser-mot-de-passe
+Disallow: /fichiers
+Disallow: /fichiers/
+Disallow: /livewire
+Disallow: /livewire/
+Disallow: /storage/candidates/
+Disallow: /up
 
-Sitemap: https://agroecobaara.bf/sitemap.xml
+# Bots IA / scrapers connus
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /

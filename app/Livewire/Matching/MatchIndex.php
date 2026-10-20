@@ -28,11 +28,16 @@ class MatchIndex extends Component
 
     public function export()
     {
+        $this->authorize('viewAny', CandidateMatch::class);
+
+        $user = Auth::user();
+
         return \Maatwebsite\Excel\Facades\Excel::download(
             new MatchesExport(
                 from: $this->exportFrom ?: null,
                 to: $this->exportTo ?: null,
                 status: $this->exportStatus ?: null,
+                operatorId: $user->isOperator() ? $user->id : null,
             ),
             'matchings_' . date('Y-m-d') . '.xlsx'
         );

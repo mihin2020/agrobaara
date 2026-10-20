@@ -5,12 +5,9 @@ namespace App\Livewire\Candidates;
 use App\Enums\Gender;
 use App\Enums\TransportMode;
 use App\Models\Candidate;
-use App\Models\ReferentialCommune;
-use App\Models\ReferentialEducationLevel;
-use App\Models\ReferentialLanguage;
-use App\Models\ReferentialLicense;
 use App\Models\ReferentialNationality;
-use App\Models\ReferentialSkill;
+use App\Services\SecureUploadService;
+use App\Support\ReferentialCache;
 use App\Services\ReferenceService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -66,6 +63,8 @@ class CandidateCreate extends Component
     public array  $need_formation_types  = [];
     public bool   $need_financing        = false;
     public bool   $need_cv_support       = false;
+    public string $salary_min            = '';
+    public string $salary_max            = '';
     public string $operator_notes        = '';
 
     // Navigation par section
@@ -156,11 +155,11 @@ class CandidateCreate extends Component
         }
     }
 
-    public function save(ReferenceService $referenceService): void
+    public function save(ReferenceService $referenceService, SecureUploadService $uploads): void
     {
         $this->validateAll();
 
-        DB::transaction(function () use ($referenceService) {
+        DB::transaction(function () use ($referenceService, $uploads) {
             $candidate = Candidate::create([
                 'reference'           => $referenceService->generateCandidateReference(),
                 'first_name'          => $this->first_name,
@@ -172,8 +171,8 @@ class CandidateCreate extends Component
                 'nationality'         => $this->nationality,
                 'commune_id'          => $this->commune_id,
                 'address'             => $this->address ?: null,
-                'photo_path'             => $this->photo ? $this->photo->store('candidates/photos', 'public') : null,
-                'identity_document_path' => $this->identity_document ? $this->identity_document->store('candidates/documents', 'public') : null,
+                'photo_path'             => $this->photo ? $uploads->storePublic($this->photo, 'candidates/photos') : null,
+                'identity_document_path' => $this->identity_document ? $uploads->storePrivate($this->identity_document, 'candidates/documents') : null,
                 'transport_mode'      => $this->transport_mode ?: null,
                 'phone'               => $this->phone,
                 'phone_secondary'     => $this->phone_secondary ?: null,
@@ -181,8 +180,10 @@ class CandidateCreate extends Component
                 'education_level'     => $this->education_level,
                 'agro_training_text'  => $this->agro_training_text ?: null,
                 'agro_training_place' => $this->agro_training_place ?: null,
-                'diploma_paths'       => !empty($this->diploma_files) ? collect($this->diploma_files)->map(fn($f) => $f->store('candidates/diplomas', 'public'))->toArray() : null,
-                'cv_path'             => $this->cv_file ? $this->cv_file->store('candidates/cvs', 'public') : null,
+                'diploma_paths'       => ! empty($this->diploma_files)
+                    ? collect($this->diploma_files)->map(fn ($f) => $uploads->storePrivate($f, 'candidates/diplomas'))->toArray()
+                    : null,
+                'cv_path'             => $this->cv_file ? $uploads->storePrivate($this->cv_file, 'candidates/cvs') : null,
                 'other_skills_text'   => $this->other_skills_text ?: null,
                 'has_previous_jobs'      => $this->has_previous_jobs,
                 'need_employment_types'  => $this->need_employment_types ?: null,
@@ -190,6 +191,12 @@ class CandidateCreate extends Component
                 'need_training'          => !empty($this->need_formation_types),
                 'need_financing'         => $this->need_financing,
                 'need_cv_support'        => $this->need_cv_support,
+                'salary_min'             => $this->salary_min !== '' ? (int) $this->salary_min : null,
+                'salary_max'             => $this->salary_max !== '' ? (int) $this->salary_max : null,
+                'salary_expectation'     => Candidate::buildSalaryExpectationLabel(
+                    $this->salary_min !== '' ? (int) $this->salary_min : null,
+                    $this->salary_max !== '' ? (int) $this->salary_max : null
+                ),
                 'operator_notes'         => $this->operator_notes ?: null,
                 'created_by'          => Auth::id(),
             ]);
@@ -246,7 +253,21 @@ class CandidateCreate extends Component
             $this->sectionBRules(),
             $this->sectionCRules(),
             $this->sectionDRules(),
+            $this->sectionERules(),
         ), $this->validationMessages());
+    }
+
+    private function sectionERules(): array
+    {
+        return [
+            'salary_min' => 'nullable|integer|min:0',
+            'salary_max' => array_filter([
+                'nullable',
+                'integer',
+                'min:0',
+                $this->salary_min !== '' ? 'gte:salary_min' : null,
+            ]),
+        ];
     }
 
     private function sectionDRules(): array
@@ -315,20 +336,23 @@ class CandidateCreate extends Component
             'language_ids.min'         => 'Au moins une langue parlée est requise.',
             'education_level.required' => "Le niveau d'étude est obligatoire.",
             'education_level.in'       => "Le niveau d'étude sélectionné est invalide.",
+            'salary_max.gte'           => 'Le maximum doit être supérieur ou égal au minimum.',
         ];
     }
 
     public function render()
     {
         return view('livewire.candidates.candidate-create', [
-            'communes'      => ReferentialCommune::active()->get(),
-            'languages'     => ReferentialLanguage::active()->get(),
-            'licenses'      => ReferentialLicense::active()->get(),
-            'skills'        => ReferentialSkill::active()->get(),
-            'genders'       => Gender::cases(),
-            'transports'    => TransportMode::cases(),
-            'educations'    => ReferentialEducationLevel::active()->get(),
-            'nationalities' => ReferentialNationality::active()->get(),
+            'communes'        => ReferentialCache::communes(),
+            'languages'       => ReferentialCache::languages(),
+            'licenses'        => ReferentialCache::licenses(),
+            'skills'          => ReferentialCache::skills(),
+            'genders'         => Gender::cases(),
+            'transports'      => TransportMode::cases(),
+            'educations'      => ReferentialCache::educations(),
+            'nationalities'   => ReferentialCache::nationalities(),
+            'employmentTypes' => ReferentialCache::employmentTypes(),
+            'formationTypes'  => ReferentialCache::formationTypes(),
         ]);
     }
 }

@@ -74,7 +74,7 @@ class AdminAccessTest extends TestCase
 
     public function test_authenticated_user_can_access_profile(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createSuperAdmin();
 
         $response = $this->actingAs($user)->get('/admin/profil');
         $response->assertStatus(200);

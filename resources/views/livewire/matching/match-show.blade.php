@@ -1,7 +1,7 @@
 <div class="space-y-5 max-w-5xl mx-auto">
 
     {{-- En-tête --}}
-    <div class="flex items-center gap-3">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-3">
         <a href="{{ route('admin.matches.index') }}" wire:navigate
            class="p-2 text-[#41493b] hover:bg-[#f5ece7] rounded-xl transition-colors">
             <span class="material-symbols-outlined text-lg">arrow_back</span>
@@ -9,14 +9,35 @@
         <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
             <span class="material-symbols-outlined text-lg text-green-700" style="font-variation-settings: 'FILL' 1">handshake</span>
         </div>
-        <div>
+        <div class="flex-1 min-w-0">
             <h1 class="font-sora text-xl font-bold text-[#1e1b18] leading-tight">Mise en relation</h1>
-            <div class="flex items-center gap-2 mt-0.5">
+            <div class="flex items-center gap-2 mt-0.5 flex-wrap">
                 <span class="text-sm text-[#41493b]">{{ $match->candidate->full_name }}</span>
                 <span class="text-[#c1c9b6]">↔</span>
                 <span class="text-sm text-[#875212] font-semibold">{{ $match->offer->title }}</span>
                 <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ $match->status->badgeClass() }}">{{ $match->status->label() }}</span>
             </div>
+        </div>
+        <div class="flex items-center gap-2 flex-shrink-0">
+            @if($match->status === App\Enums\MatchStatus::Acceptee)
+                @if($match->contract)
+                    @can('view', $match->contract)
+                        <a href="{{ route('admin.contracts.show', $match->contract) }}" wire:navigate
+                           class="flex items-center gap-2 px-4 py-2 bg-[#2c6904] text-white font-semibold text-sm rounded-xl hover:bg-[#448322] transition-colors">
+                            <span class="material-symbols-outlined text-base">description</span>
+                            Voir le contrat
+                        </a>
+                    @endcan
+                @else
+                    @can('create', App\Models\Contract::class)
+                        <a href="{{ route('admin.contracts.create', ['match_id' => $match->id]) }}" wire:navigate
+                           class="flex items-center gap-2 px-4 py-2 bg-[#2c6904] text-white font-semibold text-sm rounded-xl hover:bg-[#448322] transition-colors">
+                            <span class="material-symbols-outlined text-base">description</span>
+                            Créer un contrat
+                        </a>
+                    @endcan
+                @endif
+            @endif
         </div>
     </div>
 

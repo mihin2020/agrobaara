@@ -368,12 +368,12 @@
             <div>
                 <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">Formation reçue</label>
                 <textarea wire:model="agro_training_text" rows="4"
-                          placeholder="Décrivez les formations reçues en lien avec l'agroécologie..."
+                          placeholder="@agroecology Décrivez les formations reçues en lien avec l'agroécologie... @else Décrivez les formations reçues... @endagroecology"
                           class="w-full px-4 py-2.5 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904] resize-none"></textarea>
             </div>
             <div>
                 <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">
-                    Diplômes ou attestations en agroécologie
+                    @agroecology Diplômes ou attestations en agroécologie @else Diplômes ou attestations @endagroecology
                     <span class="text-xs font-normal text-[#717a69] ml-1">Plusieurs fichiers possibles · PDF/JPG/PNG · max 10 Mo/fichier</span>
                 </label>
                 <label class="relative flex items-center gap-4 px-4 py-4 bg-[#fbf2ed] border-2 border-dashed {{ $errors->has('diploma_files.*') ? 'border-red-400' : 'border-[#c1c9b6]' }} rounded-xl cursor-pointer hover:border-[#2c6904]/60 transition-colors overflow-hidden">
@@ -527,24 +527,18 @@
                         @endif
                     </div>
                     <div class="px-5 pb-4 flex flex-wrap gap-2">
-                        @foreach([
-                            'emploi_salarie'       => 'Emploi salarié',
-                            'contrats_saisonniers' => 'Contrats saisonniers',
-                            'missions_ponctuelles' => 'Missions ponctuelles',
-                            'apprentissage'        => 'Apprentissage',
-                            'entrepreneuriat'      => 'Entrepreneuriat',
-                        ] as $value => $label)
+                        @foreach($employmentTypes as $employmentType)
                             <label class="cursor-pointer">
-                                <input type="checkbox" wire:model.live="need_employment_types" value="{{ $value }}" class="sr-only" />
+                                <input type="checkbox" wire:model.live="need_employment_types" value="{{ $employmentType->code }}" class="sr-only" />
                                 <span @class([
                                     'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all',
-                                    'bg-[#2c6904] text-white border-[#2c6904] shadow-sm' => in_array($value, $need_employment_types),
-                                    'bg-white text-[#41493b] border-[#c1c9b6] hover:border-[#2c6904]/40 hover:text-[#2c6904]' => !in_array($value, $need_employment_types),
+                                    'bg-[#2c6904] text-white border-[#2c6904] shadow-sm' => in_array($employmentType->code, $need_employment_types),
+                                    'bg-white text-[#41493b] border-[#c1c9b6] hover:border-[#2c6904]/40 hover:text-[#2c6904]' => !in_array($employmentType->code, $need_employment_types),
                                 ])>
-                                    @if(in_array($value, $need_employment_types))
+                                    @if(in_array($employmentType->code, $need_employment_types))
                                         <span class="material-symbols-outlined" style="font-size:11px">check</span>
                                     @endif
-                                    {{ $label }}
+                                    {{ $employmentType->name }}
                                 </span>
                             </label>
                         @endforeach
@@ -569,7 +563,7 @@
                             </div>
                             <div>
                                 <p @class(['text-sm font-bold', 'text-[#2c6904]' => $formationActive, 'text-[#1e1b18]' => !$formationActive])>Formation</p>
-                                <p class="text-[11px] text-[#717a69]">Opportunités de formation en agroécologie</p>
+                                <p class="text-[11px] text-[#717a69]">@agroecology Opportunités de formation en agroécologie @else Opportunités de formation @endagroecology</p>
                             </div>
                         </div>
                         @if($formationActive)
@@ -579,24 +573,18 @@
                         @endif
                     </div>
                     <div class="px-5 pb-4 flex flex-wrap gap-2">
-                        @foreach([
-                            'cours'          => 'Cours',
-                            'master'         => 'Master',
-                            'atelier'        => 'Atelier',
-                            'stage'          => 'Stage',
-                            'voyage_echange' => 'Voyage d\'échange',
-                        ] as $value => $label)
+                        @foreach($formationTypes as $formationType)
                             <label class="cursor-pointer">
-                                <input type="checkbox" wire:model.live="need_formation_types" value="{{ $value }}" class="sr-only" />
+                                <input type="checkbox" wire:model.live="need_formation_types" value="{{ $formationType->code }}" class="sr-only" />
                                 <span @class([
                                     'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all',
-                                    'bg-[#2c6904] text-white border-[#2c6904] shadow-sm' => in_array($value, $need_formation_types),
-                                    'bg-white text-[#41493b] border-[#c1c9b6] hover:border-[#2c6904]/40 hover:text-[#2c6904]' => !in_array($value, $need_formation_types),
+                                    'bg-[#2c6904] text-white border-[#2c6904] shadow-sm' => in_array($formationType->code, $need_formation_types),
+                                    'bg-white text-[#41493b] border-[#c1c9b6] hover:border-[#2c6904]/40 hover:text-[#2c6904]' => !in_array($formationType->code, $need_formation_types),
                                 ])>
-                                    @if(in_array($value, $need_formation_types))
+                                    @if(in_array($formationType->code, $need_formation_types))
                                         <span class="material-symbols-outlined" style="font-size:11px">check</span>
                                     @endif
-                                    {{ $label }}
+                                    {{ $formationType->name }}
                                 </span>
                             </label>
                         @endforeach
@@ -678,6 +666,31 @@
                     </button>
 
                 </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-[#1e1b18] mb-1.5">Prétentions salariales</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-[#41493b] mb-1">Minimum</label>
+                        <div class="relative">
+                            <input type="number" wire:model="salary_min" min="0" step="1000" placeholder="Ex: 75000"
+                                   class="w-full px-4 py-2.5 pr-16 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904]" />
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#41493b] pointer-events-none">FCFA</span>
+                        </div>
+                        @error('salary_min') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-xs text-[#41493b] mb-1">Maximum</label>
+                        <div class="relative">
+                            <input type="number" wire:model="salary_max" min="0" step="1000" placeholder="Ex: 120000"
+                                   class="w-full px-4 py-2.5 pr-16 bg-[#fbf2ed] border border-[#c1c9b6] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2c6904]/20 focus:border-[#2c6904]" />
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#41493b] pointer-events-none">FCFA</span>
+                        </div>
+                        @error('salary_max') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+                <p class="mt-1.5 text-xs text-[#41493b]/70">Montants en FCFA / mois</p>
             </div>
 
             {{-- Notes opérateur --}}

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ApprovalStatus;
 use App\Enums\Gender;
 use App\Enums\TransportMode;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -23,7 +24,9 @@ class Candidate extends Model
         'transport_mode', 'phone', 'phone_secondary', 'email', 'education_level',
         'agro_training_text', 'agro_training_place', 'diploma_paths', 'cv_path', 'other_skills_text',
         'has_previous_jobs', 'need_types', 'need_employment_types', 'need_formation_types',
-        'need_training', 'need_financing', 'need_cv_support', 'operator_notes',
+        'need_training', 'need_financing', 'need_cv_support',
+        'salary_expectation', 'salary_min', 'salary_max', 'operator_notes',
+        'user_id', 'training_center_id', 'approval_status', 'approved_at', 'approved_by', 'rejection_reason',
         'created_by', 'updated_by',
     ];
 
@@ -41,7 +44,42 @@ class Candidate extends Model
             'need_employment_types'  => 'array',
             'need_formation_types'   => 'array',
             'diploma_paths'          => 'array',
+            'salary_min'             => 'integer',
+            'salary_max'             => 'integer',
+            'approval_status'        => ApprovalStatus::class,
+            'approved_at'            => 'datetime',
         ];
+    }
+
+    /**
+     * Libellé affichable : « 75 000 – 120 000 FCFA / mois »
+     */
+    public function formattedSalaryExpectation(): ?string
+    {
+        if ($this->salary_min || $this->salary_max) {
+            $fmt = fn (?int $n) => $n !== null ? number_format($n, 0, ',', ' ') : null;
+            $min = $fmt($this->salary_min);
+            $max = $fmt($this->salary_max);
+
+            if ($min && $max) {
+                return $min . ' – ' . $max . ' FCFA / mois';
+            }
+            if ($min) {
+                return 'À partir de ' . $min . ' FCFA / mois';
+            }
+            if ($max) {
+                return 'Jusqu\'à ' . $max . ' FCFA / mois';
+            }
+        }
+
+        return $this->salary_expectation ?: null;
+    }
+
+    public static function buildSalaryExpectationLabel(?int $min, ?int $max): ?string
+    {
+        $tmp = new static(['salary_min' => $min, 'salary_max' => $max]);
+
+        return $tmp->formattedSalaryExpectation();
     }
 
     // -----------------------------------------------------------------
@@ -61,6 +99,16 @@ class Candidate extends Model
     // -----------------------------------------------------------------
     // Relations
     // -----------------------------------------------------------------
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function trainingCenter(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'training_center_id');
+    }
 
     public function educationLevel(): BelongsTo
     {
@@ -107,9 +155,47 @@ class Candidate extends Model
         return $this->hasMany(CandidateMatch::class);
     }
 
+    public function contracts(): HasMany
+    {
+        return $this->hasMany(Contract::class);
+    }
+
     // -----------------------------------------------------------------
     // Scopes
     // -----------------------------------------------------------------
+
+    public function scopeApproved($query)
+    {
+        return $query->where('approval_status', ApprovalStatus::Approved);
+    }
+
+    public function scopePendingApproval($query)
+    {
+        return $query->where('approval_status', ApprovalStatus::Pending);
+    }
+
+    /** Candidats staff + auto-inscrits déjà approuvés (null = legacy). */
+    public function scopeApprovedForMatching($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereNull('approval_status')
+                ->orWhere('approval_status', ApprovalStatus::Approved);
+        });
+    }
+
+    public function scopeWithList($query)
+    {
+        return $query->with(['commune', 'skills']);
+    }
+
+    public function scopeWithProfile($query)
+    {
+        return $query->with([
+            'commune', 'languages', 'licenses', 'skills', 'experiences',
+            'educationLevel', 'createdBy', 'trainingCenter',
+            'matches.offer.company', 'contracts.company', 'contracts.offer', 'contracts.renewedFrom',
+        ]);
+    }
 
     public function scopeByCommune($query, string $communeId)
     {

@@ -6,12 +6,11 @@ use App\Enums\CompanyStatus;
 use App\Enums\ContractType;
 use App\Enums\OfferStatus;
 use App\Models\Company;
-use App\Models\ReferentialCommune;
-use App\Models\ReferentialSkill;
 use App\Services\ReferenceService;
+use App\Services\SecureUploadService;
+use App\Support\ReferentialCache;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
@@ -45,6 +44,7 @@ class CompanyEdit extends Component
     public bool   $need_training        = false;
     public bool   $need_financing       = false;
     public bool   $need_contract_support = false;
+    public string $other_needs          = '';
     public string $operator_notes       = '';
     public array  $sites                = [];
 
@@ -71,6 +71,7 @@ class CompanyEdit extends Component
         $this->need_training        = $company->need_training;
         $this->need_financing       = $company->need_financing;
         $this->need_contract_support = $company->need_contract_support;
+        $this->other_needs          = $company->other_needs ?? '';
         $this->operator_notes       = $company->operator_notes ?? '';
         $this->sites                = $company->sites->map(fn($s) => [
             'label'      => $s->label,
@@ -97,7 +98,7 @@ class CompanyEdit extends Component
         }
     }
 
-    public function save(): void
+    public function save(SecureUploadService $uploads): void
     {
         $this->validate([
             'name'               => 'required|string|min:2|max:200',
@@ -110,6 +111,7 @@ class CompanyEdit extends Component
             'sites'              => 'required|array|min:1',
             'sites.*.label'      => 'required|string|max:150',
             'sites.*.commune_id' => 'required|uuid|exists:referentials_communes,id',
+            'other_needs'        => 'nullable|string|max:5000',
         ], [
             'name.required'               => "Le nom de l'entreprise est obligatoire.",
             'status.required'             => 'Le statut juridique est obligatoire.',
@@ -138,13 +140,14 @@ class CompanyEdit extends Component
                 'need_training'         => $this->need_training,
                 'need_financing'        => $this->need_financing,
                 'need_contract_support' => $this->need_contract_support,
+                'other_needs'           => $this->other_needs ?: null,
                 'operator_notes'        => $this->operator_notes ?: null,
                 'updated_by'            => Auth::id(),
             ];
 
             if ($this->logo) {
-                if ($this->company->logo_path) Storage::disk('public')->delete($this->company->logo_path);
-                $updates['logo_path'] = $this->logo->store('companies/logos', 'public');
+                $uploads->delete($this->company->logo_path, SecureUploadService::DISK_PUBLIC);
+                $updates['logo_path'] = $uploads->storePublic($this->logo, 'companies/logos');
             }
 
             $this->company->update($updates);
@@ -173,12 +176,8 @@ class CompanyEdit extends Component
     {
         return view('livewire.companies.company-edit', [
             'statuses'          => CompanyStatus::options(),
-            'communes'          => ReferentialCommune::active()->get(),
-            'activityTypesList' => [
-                'Maraîchage', 'Élevage', 'Agroforesterie', 'Pisciculture',
-                'Transformation agro-alimentaire', 'Bio-pesticides', 'Irrigation',
-                'Énergies renouvelables', 'Formation agricole', 'Conseil agricole', 'Autre',
-            ],
+            'communes'          => ReferentialCache::communes(),
+            'activityTypesList' => ReferentialCache::activityTypes(),
         ]);
     }
 }

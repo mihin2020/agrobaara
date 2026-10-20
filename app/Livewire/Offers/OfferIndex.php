@@ -5,7 +5,7 @@ namespace App\Livewire\Offers;
 use App\Enums\OfferStatus;
 use App\Exports\OffersExport;
 use App\Models\JobOffer;
-use App\Models\ReferentialCommune;
+use App\Support\ReferentialCache;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -34,12 +34,17 @@ class OfferIndex extends Component
 
     public function export()
     {
+        $this->authorize('export', JobOffer::class);
+
+        $user = Auth::user();
+
         return \Maatwebsite\Excel\Facades\Excel::download(
             new OffersExport(
                 from: $this->exportFrom ?: null,
                 to: $this->exportTo ?: null,
                 status: $this->exportStatus ?: null,
                 commune: $this->exportCommune ?: null,
+                operatorId: $user->isOperator() ? $user->id : null,
             ),
             'offres_' . date('Y-m-d') . '.xlsx'
         );
@@ -81,16 +86,15 @@ class OfferIndex extends Component
 
         $user = Auth::user();
 
-        $offers = JobOffer::with('company')
-            ->when($user->isOperator(), fn($q) => $q->byOperator($user->id))
-            ->when($this->search, fn($q) => $q->search($this->search))
-            ->when($this->status, fn($q) => $q->where('status', $this->status))
-            ->withCount('matches')
+        $offers = JobOffer::withList()
+            ->when($user->isOperator(), fn ($q) => $q->byOperator($user->id))
+            ->when($this->search, fn ($q) => $q->search($this->search))
+            ->when($this->status, fn ($q) => $q->where('status', $this->status))
             ->latest()
             ->paginate(10);
 
         $statuses = OfferStatus::cases();
-        $communes = ReferentialCommune::active()->get();
+        $communes = ReferentialCache::communes();
 
         return view('livewire.offers.offer-index', compact('offers', 'statuses', 'communes'));
     }
